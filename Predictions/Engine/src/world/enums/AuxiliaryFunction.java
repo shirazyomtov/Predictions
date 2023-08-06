@@ -16,7 +16,7 @@ public enum AuxiliaryFunction {
         if (index != -1) {
             String name = functionName.substring(0, index).trim();
             for(AuxiliaryFunction option: AuxiliaryFunction.values()){
-                if (option.functionName.contains(name)) {
+                if (option.functionName.equals(name)) {
                     return true;
                 }
             }

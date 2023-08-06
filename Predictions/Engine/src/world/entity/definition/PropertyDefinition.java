@@ -11,26 +11,36 @@ public class PropertyDefinition {
 
     private final boolean isRandomInitialize;
 
-    private final Object init;
+    private Object init = null;
 
-    private final Range range;
+    private Range range = null;
 
     public PropertyDefinition(PRDProperty prdProperty) {
         this.name = prdProperty.getPRDName();
         this.type = Enum.valueOf(Type.class, prdProperty.getType().toUpperCase());
         this.isRandomInitialize = prdProperty.getPRDValue().isRandomInitialize();
-        this.init = prdProperty.getPRDValue().getInit();
-        this.range = new Range((float) prdProperty.getPRDRange().getFrom(), (float) prdProperty.getPRDRange().getTo());
+        if (prdProperty.getPRDValue().getInit() != null) {
+            this.init = prdProperty.getPRDValue().getInit();
+        }
+        if(prdProperty.getPRDRange()!= null) {
+            this.range = new Range((float) prdProperty.getPRDRange().getFrom(), (float) prdProperty.getPRDRange().getTo());
+        };
     }
 
     @Override
     public String toString() {
-        return "Property{" +
-                "Name='" + name + '\'' +
-                ", Type=" + type.name() +
-                ", Is random initialize=" + isRandomInitialize +
-                ", Range=" + range +
-                '}';
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Property{");
+        stringBuilder.append("Name='").append(name).append('\'');
+        stringBuilder.append(", Type=").append(type.name());
+        stringBuilder.append(", Is random initialize=").append(isRandomInitialize);
+
+        if (range != null) {
+            stringBuilder.append(", Range=").append(range);
+        }
+
+        stringBuilder.append('}');
+        return stringBuilder.toString();
     }
 
     public String getName() {

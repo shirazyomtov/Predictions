@@ -6,7 +6,7 @@ public class NameAlreadyExist extends Exception {
 
     private final String className;
     private final String EXCEPTION_MESSAGE = "The %s name: %s is already exists in the %s names,please enter a unique name for every %s name  ";
-    // change later
+    // change later line 8
 
     public NameAlreadyExist(String name, String className)
     {

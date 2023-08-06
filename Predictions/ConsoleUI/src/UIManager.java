@@ -1,16 +1,16 @@
-import com.sun.rowset.internal.XmlReaderContentHandler;
-import exceptions.FileException;
-import exceptions.NameAlreadyExist;
-import exceptions.ObjectNotExist;
+import exceptions.FilePathException;
+import world.World;
 import xml.XMLReader;
 import xml.XMLValidation;
 
-import javax.sql.rowset.spi.XmlReader;
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.WeakHashMap;
 
 public class UIManager {
+
+    private World world = null;
     public void RunProgram()
     {
         int option = 0;
@@ -47,7 +47,22 @@ public class UIManager {
             case LOAD_XML:
                 loadXML();
                 break;
+            case SIMULATION_DETAILS:
+                simulationDetails();
+                break;
         }
+    }
+
+    private void simulationDetails() {
+        try{
+            System.out.println("The information about the simulation defined in the xml file are:");
+            System.out.println("1.Entities");
+            System.out.println(world.getEntityDefinition());
+        }
+       catch (NullPointerException e){
+            System.out.println("You cannot see the simulation details before you have loaded the xml file");
+        }
+
     }
 
     private void loadXML() {
@@ -55,27 +70,27 @@ public class UIManager {
         Scanner scanner = new Scanner(System.in);
         String xmlPath = scanner.nextLine();
         try{
-            if (!checkIfXMLFile(xmlPath)) {
-                throw new FileException(xmlPath);
-            }
+            checkValidationXMLPath(xmlPath);
             XMLReader.openXmlAndGetData(xmlPath);
             XMLValidation.checkValidationXmlFile();
+            world = XMLReader.defineWorld();
             System.out.println("The XML file has been loaded successfully");
         }
         catch (FileNotFoundException | JAXBException  e) {
-            System.out.println("File has not been found in this path " + xmlPath + ", please enter the full path of the XML file.");
-        } catch (Exception e) {
+            //check JAXBException
+            System.out.println("File has not been found in this path " + xmlPath + ".");
+        }
+        catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private boolean checkIfXMLFile(String path) {
-        boolean flag = false;
-        String regex = "^[^א-ת]+$";
-        if(path.matches(regex) && path.length() > 4 && path.endsWith(".xml")){
-            flag = true;
+    private void checkValidationXMLPath(String path) throws FilePathException {
+         if (path.length() <= 4) {
+            throw new FilePathException(FilePathException.ErrorType.FILE_NAME_CONTAINS_LESS_THAN_4_CHARACTERS);
+        } else if (!path.endsWith(".xml")) {
+            throw new FilePathException(FilePathException.ErrorType.NOT_ENDS_WITH_XML);
         }
 
-        return flag;
     }
 }

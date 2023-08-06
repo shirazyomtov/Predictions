@@ -9,12 +9,17 @@ public enum AuxiliaryFunction {
 
     AuxiliaryFunction(String functionName) {
         this.functionName = functionName;
-    }env()
+    }
 
     public static boolean checkOptionByFunctionName(String functionName){
-        for(AuxiliaryFunction option: AuxiliaryFunction.values()){
-            if (option.functionName.equals(functionName.split("(")))
-                return true;
+        int index = functionName.indexOf("(");
+        if (index != -1) {
+            String name = functionName.substring(0, index).trim();
+            for(AuxiliaryFunction option: AuxiliaryFunction.values()){
+                if (option.functionName.contains(name)) {
+                    return true;
+                }
+            }
         }
         return false;
     }

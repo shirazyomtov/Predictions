@@ -1,6 +1,4 @@
 public class Menu {
-
-
     public void ShowMenu()
     {
         System.out.println("Please choose one of the following options:");

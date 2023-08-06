@@ -125,37 +125,45 @@ public class XMLValidation {
                     checkTypeOfArg(action.getProperty(), entityName);
                 }
                 else if(action.getType().equals("calculation")){
-                    if(!checkTypeOfEntityProperty(action.getResultProp(), action.getEntity())){
-                        throw new NumberFormatException("Not a number: " + action.getBy());
-                    }
-                    if(action.getPRDDivide() != null){
-                        checkTypeOfArg(action.getPRDDivide().getArg1(), entityName);
-                        checkTypeOfArg(action.getPRDDivide().getArg2(), entityName);
-                    }
-                    else{
-                        checkTypeOfArg(action.getPRDMultiply().getArg1(), entityName);
-                        checkTypeOfArg(action.getPRDMultiply().getArg2(), entityName);
-                    }
+                    checkTypeOfArgCalculation(action, entityName);
                 }
                 else if(action.getType().equals("condition")){
-                    for(PRDAction actionSubThen: action.getPRDThen().getPRDAction()){
-                        if(actionSubThen.getType().equals("decrease") || actionSubThen.getType().equals("increase")){
-                            String bySub = actionSubThen.getBy();
-                            checkTypeOfArg(bySub, entityName);
-                            checkTypeOfArg(actionSubThen.getProperty(), entityName);
-                        }
-                    }
-                    if(action.getPRDElse() != null){
-                        for(PRDAction actionSubElse: action.getPRDElse().getPRDAction()){
-                            if(actionSubElse.getType().equals("decrease") || actionSubElse.getType().equals("increase")){
-                                String bySub = actionSubElse.getBy();
-                                checkTypeOfArg(bySub, entityName);
-                                checkTypeOfArg(actionSubElse.getProperty(), entityName);
-                            }
-                        }
-                    }
+                    checkTypeOfArgCondition(action, entityName);
                 }
             }
+        }
+    }
+
+    private static void checkTypeOfArgCondition(PRDAction action, String entityName) throws NumberFormatException{
+        for(PRDAction actionSubThen: action.getPRDThen().getPRDAction()){
+            if(actionSubThen.getType().equals("decrease") || actionSubThen.getType().equals("increase")){
+                String bySub = actionSubThen.getBy();
+                checkTypeOfArg(bySub, entityName);
+                checkTypeOfArg(actionSubThen.getProperty(), entityName);
+            }
+        }
+        if(action.getPRDElse() != null){
+            for(PRDAction actionSubElse: action.getPRDElse().getPRDAction()){
+                if(actionSubElse.getType().equals("decrease") || actionSubElse.getType().equals("increase")){
+                    String bySub = actionSubElse.getBy();
+                    checkTypeOfArg(bySub, entityName);
+                    checkTypeOfArg(actionSubElse.getProperty(), entityName);
+                }
+            }
+        }
+    }
+
+    private static void checkTypeOfArgCalculation(PRDAction action, String entityName) throws NumberFormatException{
+        if(!checkTypeOfEntityProperty(action.getResultProp(), action.getEntity())){
+            throw new NumberFormatException("Not a number: " + action.getBy());
+        }
+        if(action.getPRDDivide() != null){
+            checkTypeOfArg(action.getPRDDivide().getArg1(), entityName);
+            checkTypeOfArg(action.getPRDDivide().getArg2(), entityName);
+        }
+        else{
+            checkTypeOfArg(action.getPRDMultiply().getArg1(), entityName);
+            checkTypeOfArg(action.getPRDMultiply().getArg2(), entityName);
         }
     }
 

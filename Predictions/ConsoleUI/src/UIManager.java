@@ -14,8 +14,10 @@ public class UIManager {
     public void RunProgram()
     {
         int option = 0;
-        option = chooseOption() ;
-        runOptionSelectedByUser(MenuOptions.GetOptionByNumber(option));
+        while(option != MenuOptions.EXIT.GetNUmberOfOption()) {
+            option = chooseOption();
+            runOptionSelectedByUser(MenuOptions.GetOptionByNumber(option));
+        }
     }
 
     private int chooseOption()

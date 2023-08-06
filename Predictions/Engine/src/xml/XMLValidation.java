@@ -136,6 +136,22 @@ public class XMLValidation {
                         checkTypeOfArg(action.getPRDMultiply().getArg2(), entityName);
                     }
                 }
+                else if(action.getType().equals("condition")){
+                    for(PRDAction actionSubThen: action.getPRDThen().getPRDAction()){
+                        if(actionSubThen.getType().equals("decrease") || actionSubThen.getType().equals("increase")){
+                            String bySub = actionSubThen.getBy();
+                            checkTypeOfArg(bySub, entityName);
+                        }
+                    }
+                    if(action.getPRDElse() != null){
+                        for(PRDAction actionSubElse: action.getPRDElse().getPRDAction()){
+                            if(actionSubElse.getType().equals("decrease") || actionSubElse.getType().equals("increase")){
+                                String bySub = actionSubElse.getBy();
+                                checkTypeOfArg(bySub, entityName);
+                            }
+                        }
+                    }
+                }
             }
         }
     }

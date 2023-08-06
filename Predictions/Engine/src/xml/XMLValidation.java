@@ -122,6 +122,7 @@ public class XMLValidation {
                 if(action.getType().equals("decrease") || action.getType().equals("increase")){
                     String by = action.getBy();
                     checkTypeOfArg(by, entityName);
+                    checkTypeOfArg(action.getProperty(), entityName);
                 }
                 else if(action.getType().equals("calculation")){
                     if(!checkTypeOfEntityProperty(action.getResultProp(), action.getEntity())){
@@ -141,6 +142,7 @@ public class XMLValidation {
                         if(actionSubThen.getType().equals("decrease") || actionSubThen.getType().equals("increase")){
                             String bySub = actionSubThen.getBy();
                             checkTypeOfArg(bySub, entityName);
+                            checkTypeOfArg(actionSubThen.getProperty(), entityName);
                         }
                     }
                     if(action.getPRDElse() != null){
@@ -148,6 +150,7 @@ public class XMLValidation {
                             if(actionSubElse.getType().equals("decrease") || actionSubElse.getType().equals("increase")){
                                 String bySub = actionSubElse.getBy();
                                 checkTypeOfArg(bySub, entityName);
+                                checkTypeOfArg(actionSubElse.getProperty(), entityName);
                             }
                         }
                     }

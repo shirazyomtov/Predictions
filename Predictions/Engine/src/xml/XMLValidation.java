@@ -185,8 +185,10 @@ public final class XMLValidation {
         if(action.getType().equals("decrease") || action.getType().equals("increase")){
             String by = action.getBy();
             checkTypeOfArg(by, entityName);
+            checkTypeOfArg(action.getProperty(), entityName);
         }
         else if(action.getType().equals("calculation")){
+            checkTypeOfArg(action.getResultProp(), entityName);
             checkTypeOfArgCalculation(action, entityName);
         }
         else if(action.getType().equals("condition")){

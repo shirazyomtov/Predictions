@@ -22,8 +22,9 @@ public final class XMLReader {
 
     public static void openXmlAndGetData(String xmlPath) throws FileNotFoundException, JAXBException {
         InputStream inputStream = new FileInputStream(new File(xmlPath));
-        XMLValidation.setWorld(deserializeFrom(inputStream));
-        setWorld(deserializeFrom(inputStream));
+        PRDWorld world = deserializeFrom(inputStream);
+        XMLValidation.setWorld(world);
+        setWorld(world);
     }
 
     private static PRDWorld deserializeFrom(InputStream inputStream) throws JAXBException {

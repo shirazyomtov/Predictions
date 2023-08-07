@@ -50,13 +50,30 @@ public class UIManager {
             case SIMULATION_DETAILS:
                 simulationDetails();
                 break;
+            case  SIMULATION:
+                simulation();
+                break;
+        }
+    }
+
+    private void simulation() {
+        try {
+            if (world != null) {
+                System.out.println("These are all the environment variables defined in the xml file");
+            }
+            System.out.println(world.getEnvironmentDefinition());
+        }
+        catch (NullPointerException e){
+            System.out.println("You cannot run the simulation before loading the xml file");
         }
     }
 
     private void simulationDetails() {
         try{
-            System.out.println("The information about the simulation defined in the xml file are:");
-            System.out.println("1.Entities");
+            if (world != null) {
+                System.out.println("The information about the simulation defined in the xml file are:");
+                System.out.println("1.Entities");
+            }
             System.out.println(world.getEntityDefinition());
             System.out.println("2.Rules");
             System.out.println(world.getRules());

@@ -4,6 +4,7 @@ import jaxb.schema.generated.*;
 import world.World;
 import world.entity.definition.EntityDefinitionImpl;
 import world.entity.definition.PropertyDefinition;
+import world.environment.definition.EnvironmentDefinition;
 import world.rule.RuleImpl;
 import world.termination.Termination;
 
@@ -39,22 +40,37 @@ public final class XMLReader {
 
     public static World defineWorld()
     {
-        PRDBySecond prdBySecond = null;
-        PRDByTicks prdByTicks = null;
+
         Map<String, EntityDefinitionImpl> entityDefinition = defineEntities();
         Map<String, RuleImpl> ruleIml = defineRules();
-        for (Object terminationParamter: world.getPRDTermination().getPRDByTicksOrPRDBySecond()){
-            if(terminationParamter.getClass().getSimpleName().equals("PRDByTicks")){
-                prdByTicks = (PRDByTicks) terminationParamter;
-            }
-            else if (terminationParamter.getClass().getSimpleName().equals("PRDBySecond")) {
-                 prdBySecond = (PRDBySecond) terminationParamter;
-            }
-        }
-        Termination termination = new Termination(prdByTicks, prdBySecond);
-        return new World(entityDefinition, ruleIml, termination);
+        Termination termination = defineTermination();
+        Map <String, EnvironmentDefinition> environmentDefinition = defineEnvironment();
+        return new World(entityDefinition, ruleIml, termination, environmentDefinition);
     }
 
+    private static Map<String, EnvironmentDefinition> defineEnvironment() {
+        Map<String, EnvironmentDefinition> environmentDefinition = new HashMap<>();
+        for(PRDEnvProperty environment: world.getPRDEvironment().getPRDEnvProperty()){
+            environmentDefinition.put(environment.getPRDName(), new EnvironmentDefinition(environment));
+        }
+
+        return environmentDefinition;
+    }
+
+    private static  Termination defineTermination()
+    {
+        PRDBySecond prdBySecond = null;
+        PRDByTicks prdByTicks = null;
+        for (Object terminationParameter: world.getPRDTermination().getPRDByTicksOrPRDBySecond()){
+            if(terminationParameter.getClass().getSimpleName().equals("PRDByTicks")){
+                prdByTicks = (PRDByTicks) terminationParameter;
+            }
+            else if (terminationParameter.getClass().getSimpleName().equals("PRDBySecond")) {
+                prdBySecond = (PRDBySecond) terminationParameter;
+            }
+        }
+        return new Termination(prdByTicks, prdBySecond);
+    }
     private static Map<String, RuleImpl> defineRules() {
         Map<String, RuleImpl> ruleIml = new HashMap<>();
         for(PRDRule rule: world.getPRDRules().getPRDRule()){

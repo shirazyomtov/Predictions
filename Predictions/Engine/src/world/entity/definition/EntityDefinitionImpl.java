@@ -1,14 +1,15 @@
 package world.entity.definition;
 
 
-import java.util.Map;
+import java.util.List;
 
-public class EntityDefinition {
+
+public class EntityDefinitionImpl implements EntityDefiniton {
     private final String name;
     private final Integer amountOfPopulation;
-    private final Map<String, PropertyDefinition> allProperties;
+    private final List<PropertyDefinition> allProperties;
 
-    public EntityDefinition(String name, Integer amountOfPopulation, Map<String, PropertyDefinition> allProperties)
+    public EntityDefinitionImpl(String name, Integer amountOfPopulation, List<PropertyDefinition> allProperties)
     {
         this.name = name;
         this.amountOfPopulation = amountOfPopulation;
@@ -24,15 +25,18 @@ public class EntityDefinition {
                 '}';
     }
 
+    @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
-    public Integer getAmountOfPopulation() {
-        return amountOfPopulation;
+    @Override
+    public int getAmountOfPopulation() {
+        return this.amountOfPopulation;
     }
 
-    public Map<String, PropertyDefinition> getAllProperties() {
-        return allProperties;
+    @Override
+    public List<PropertyDefinition> getProps() {
+        return this.allProperties;
     }
 }

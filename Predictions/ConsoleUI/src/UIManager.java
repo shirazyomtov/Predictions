@@ -58,6 +58,9 @@ public class UIManager {
             System.out.println("The information about the simulation defined in the xml file are:");
             System.out.println("1.Entities");
             System.out.println(world.getEntityDefinition());
+            System.out.println("2.Rules");
+            System.out.println(world.getRules());
+            System.out.println(world.getTermination());
         }
        catch (NullPointerException e){
             System.out.println("You cannot see the simulation details before you have loaded the xml file");

@@ -4,7 +4,7 @@ import jaxb.schema.generated.PRDProperty;
 import world.enums.Type;
 import world.range.Range;
 
-public class PropertyDefinition {
+public class PropertyDefinition  {
     private final String name;
 
     private final Type type;

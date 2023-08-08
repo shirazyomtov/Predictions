@@ -11,13 +11,13 @@ import java.util.regex.Pattern;
 import static world.enums.AuxiliaryFunction.checkOptionByFunctionName;
 
 public final class XMLValidation {
-    private static PRDWorld world = null;
+    private  PRDWorld world = null;
 
-    public static void setWorld(PRDWorld world) {
-        XMLValidation.world = world;
+    public XMLValidation(PRDWorld world) {
+        this.world = world;
     }
 
-    public static void checkValidationXmlFile() throws NameAlreadyExist, ObjectNotExist, NumberFormatException {
+    public void checkValidationXmlFile() throws NameAlreadyExist, ObjectNotExist, NumberFormatException {
         checkEnvironmentVariables();
         checkPropertyVariablesOfSpecificEntity(world.getPRDEntities().getPRDEntity().get(0));
         checkRuleActions(true);
@@ -25,7 +25,7 @@ public final class XMLValidation {
         checkArgumentThatGivenToCalculationIncreaseDecrease();
     }
 
-    private static void checkEnvironmentVariables() throws NameAlreadyExist {
+    private void checkEnvironmentVariables() throws NameAlreadyExist {
         HashMap<String, Integer> map = new HashMap<>();
         for (PRDEnvProperty prdEnvironment : world.getPRDEvironment().getPRDEnvProperty()) {
             if (map.containsKey(prdEnvironment.getPRDName())) {
@@ -36,7 +36,7 @@ public final class XMLValidation {
         }
     }
 
-    private static void checkPropertyVariablesOfSpecificEntity(PRDEntity prdEntity) throws NameAlreadyExist {
+    private void checkPropertyVariablesOfSpecificEntity(PRDEntity prdEntity) throws NameAlreadyExist {
         // maybe do it generics
         HashMap<String, Integer> map = new HashMap<>();
         for (PRDProperty prdProperty : prdEntity.getPRDProperties().getPRDProperty()) {
@@ -48,7 +48,7 @@ public final class XMLValidation {
         }
     }
 
-    private static void checkRuleActions(boolean isEntityCheck) throws ObjectNotExist {
+    private void checkRuleActions(boolean isEntityCheck) throws ObjectNotExist {
         for (PRDRule rule : world.getPRDRules().getPRDRule()) {
             for (PRDAction action : rule.getPRDActions().getPRDAction()) {
                 if (isEntityCheck) {
@@ -60,7 +60,7 @@ public final class XMLValidation {
         }
     }
 
-    private static void checkActionEntity(PRDAction action) throws  ObjectNotExist{
+    private void checkActionEntity(PRDAction action) throws  ObjectNotExist{
         if (action.getType().equals("condition")) {
             if (action.getPRDCondition().getSingularity().equals("single")) {
                 findEntity(action.getPRDCondition().getEntity());
@@ -80,7 +80,7 @@ public final class XMLValidation {
 
 
 
-    private  static void checkActionProperty(PRDAction action)throws ObjectNotExist
+    private  void checkActionProperty(PRDAction action)throws ObjectNotExist
     {
         String entityAction = action.getEntity();
         if (action.getType().equals("condition")){
@@ -103,7 +103,7 @@ public final class XMLValidation {
         }
     }
 
-    private static void checkConditionPropertyThenAndElse(PRDAction action, boolean isEntityCheck) throws ObjectNotExist {
+    private void checkConditionPropertyThenAndElse(PRDAction action, boolean isEntityCheck) throws ObjectNotExist {
         for(PRDAction actionThen: action.getPRDThen().getPRDAction()){
             if (isEntityCheck){
                 checkActionEntity(actionThen);
@@ -124,7 +124,7 @@ public final class XMLValidation {
         }
     }
 
-    private static void checkCondition(String entityAction, List<PRDCondition> conditions, boolean isEntityCheck) throws ObjectNotExist {
+    private void checkCondition(String entityAction, List<PRDCondition> conditions, boolean isEntityCheck) throws ObjectNotExist {
         for (PRDCondition condition : conditions) {
             if (condition.getSingularity().equals("multiple")) {
                 checkCondition(entityAction, condition.getPRDCondition(), isEntityCheck);
@@ -140,7 +140,7 @@ public final class XMLValidation {
         }
     }
 
-    private static void findProperty(String propertyName, String entityAction) throws ObjectNotExist {
+    private void findProperty(String propertyName, String entityAction) throws ObjectNotExist {
         boolean flag = false;
         for(PRDEntity entity: world.getPRDEntities().getPRDEntity()){
             if(entityAction.equals(entity.getName())){
@@ -157,7 +157,7 @@ public final class XMLValidation {
         }
     }
 
-    private static void findEntity(String entityName) throws ObjectNotExist {
+    private void findEntity(String entityName) throws ObjectNotExist {
         boolean flag = false;
         for(PRDEntity entity: world.getPRDEntities().getPRDEntity()){
             if(entityName.equals(entity.getName())){
@@ -170,7 +170,7 @@ public final class XMLValidation {
         }
     }
 
-    private static void checkArgumentThatGivenToCalculationIncreaseDecrease() throws NumberFormatException
+    private void checkArgumentThatGivenToCalculationIncreaseDecrease() throws NumberFormatException
     {
         for (PRDRule rule : world.getPRDRules().getPRDRule()) {
             for (PRDAction action : rule.getPRDActions().getPRDAction()) {
@@ -179,7 +179,7 @@ public final class XMLValidation {
         }
     }
 
-    private static void checkArgument(PRDAction action)
+    private void checkArgument(PRDAction action)
     {
         String entityName = action.getEntity();
         if(action.getType().equals("decrease") || action.getType().equals("increase")){
@@ -193,7 +193,7 @@ public final class XMLValidation {
             checkTypeOfArgCondition(action);
         }
     }
-    private static void checkTypeOfArgCondition(PRDAction action) throws NumberFormatException{
+    private void checkTypeOfArgCondition(PRDAction action) throws NumberFormatException{
         for(PRDAction actionSubThen: action.getPRDThen().getPRDAction()){
             checkArgument(actionSubThen);
         }
@@ -204,7 +204,7 @@ public final class XMLValidation {
         }
     }
 
-    private static void checkTypeOfArgCalculation(PRDAction action, String entityName) throws NumberFormatException{
+    private void checkTypeOfArgCalculation(PRDAction action, String entityName) throws NumberFormatException{
         if(action.getPRDDivide() != null){
             checkTypeOfArg(action.getPRDDivide().getArg1(), entityName);
             checkTypeOfArg(action.getPRDDivide().getArg2(), entityName);
@@ -215,7 +215,7 @@ public final class XMLValidation {
         }
     }
 
-    private static void checkTypeOfArg(String arg, String entityName){
+    private void checkTypeOfArg(String arg, String entityName){
         if(checkOptionByFunctionName(arg)){
             String value = extractValueInParentheses(arg);
             if(!checkTypeOfEnvironmentProperty(value) && !isNumber(value)){
@@ -229,7 +229,7 @@ public final class XMLValidation {
         }
     }
 
-    private  static boolean isNumber(String number){
+    private boolean isNumber(String number){
         try {
             Float.parseFloat(number);
             return true;
@@ -238,7 +238,7 @@ public final class XMLValidation {
         }
     }
 
-    private static String extractValueInParentheses(String input) {
+    private String extractValueInParentheses(String input) {
         Pattern pattern = Pattern.compile("\\((.*?)\\)");
         Matcher matcher = pattern.matcher(input);
 
@@ -249,7 +249,7 @@ public final class XMLValidation {
         return null;
     }
 
-    private static boolean checkTypeOfEnvironmentProperty(String value) {
+    private boolean checkTypeOfEnvironmentProperty(String value) {
         boolean flag = false;
             for (PRDEnvProperty envProperty : world.getPRDEvironment().getPRDEnvProperty()) {
                 if (envProperty.getPRDName().equals(value)) {
@@ -262,7 +262,7 @@ public final class XMLValidation {
         return flag;
     }
 
-    private static boolean checkValueOfProperty(String value, String entityName) {
+    private boolean checkValueOfProperty(String value, String entityName) {
         boolean flag = false;
         for (PRDEntity entity : world.getPRDEntities().getPRDEntity()) {
             if (entity.getName().equals(entityName)) {

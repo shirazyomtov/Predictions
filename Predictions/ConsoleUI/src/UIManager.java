@@ -15,6 +15,8 @@ import java.util.WeakHashMap;
 public class UIManager {
 
     private World world = null;
+    private XMLReader xmlReader = null;
+    private XMLValidation xmlValidation = null;
     public void RunProgram()
     {
         int option = 0;
@@ -113,11 +115,12 @@ public class UIManager {
         System.out.println("Enter the full path of the XML file");
         Scanner scanner = new Scanner(System.in);
         String xmlPath = scanner.nextLine();
+        xmlReader = new XMLReader(xmlPath);
         try{
             checkValidationXMLPath(xmlPath);
-            XMLReader.openXmlAndGetData(xmlPath);
-            XMLValidation.checkValidationXmlFile();
-            world = XMLReader.defineWorld();
+            xmlValidation = xmlReader.openXmlAndGetData();
+            xmlValidation.checkValidationXmlFile();
+            world = xmlReader.defineWorld();
             System.out.println("The XML file has been loaded successfully");
         }
         catch (FileNotFoundException | JAXBException  e) {

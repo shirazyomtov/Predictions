@@ -1,16 +1,20 @@
 import exceptions.FilePathException;
 import world.World;
 import world.entity.definition.EntityDefinitionImpl;
-import world.entity.definition.EntityDefiniton;
+import world.environment.definition.EnvironmentDefinition;
+import world.environment.instance.EnvironmentInstance;
+import world.propertyInstance.impl.BooleanPropertyInstance;
+import world.propertyInstance.impl.FloatPropertyInstance;
+import world.propertyInstance.impl.IntegerPropertyInstance;
+import world.propertyInstance.impl.StringPropertyInstance;
 import world.rule.RuleImpl;
+import world.value.generator.api.ValueGeneratorFactory;
 import xml.XMLReader;
 import xml.XMLValidation;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.WeakHashMap;
+import java.util.*;
 
 public class UIManager {
 
@@ -63,16 +67,194 @@ public class UIManager {
     }
 
     private void simulation() {
+        Map <String, EnvironmentInstance> environmentValuesByUser = new HashMap<>();
         try {
-            if (world != null) {
-                System.out.println("These are all the environment variables defined in the xml file");
+            int userIntegerInput = 0;
+            List<String> enviromentName = createListEnvironmentNames();
+            while(userIntegerInput != world.getEnvironmentDefinition().size() + 1){
+                userIntegerInput = chooseEnvironmentProperty();
+                setValueEnvironment(userIntegerInput, enviromentName, environmentValuesByUser);
             }
-            System.out.println(world.getEnvironmentDefinition());
+           startSimulation(environmentValuesByUser);
         }
         catch (NullPointerException e){
             System.out.println("You cannot run the simulation before loading the xml file");
         }
     }
+
+    private void startSimulation( Map <String, EnvironmentInstance> environmentValuesByUser) {
+        Map<String, EnvironmentInstance> environmentInstanceMap = environmentValuesByUser; // problem
+
+        for (String environmentName: world.getEnvironmentDefinition().keySet()){
+            if(!environmentValuesByUser.containsKey(environmentName)){
+                provideRandomValues(world.getEnvironmentDefinition().get(environmentName));
+            }
+        }
+
+    }
+
+    private void provideRandomValues(EnvironmentDefinition environmentDefinition) {
+        EnvironmentInstance environmentInstance = null;
+
+        switch (environmentDefinition.getType()) {
+            case FLOAT:
+                if (environmentDefinition.getRange() != null) {
+                    environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
+                            ValueGeneratorFactory.createRandomFloat(environmentDefinition.getRange().getFrom(), environmentDefinition.getRange().getTo())));
+                }
+                else {
+                    environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
+                            ValueGeneratorFactory.createRandomFloat(null, null)));
+                }
+                break;
+            case DECIMAL:
+                if (environmentDefinition.getRange() != null) {
+                    environmentInstance = new EnvironmentInstance(new IntegerPropertyInstance(environmentDefinition.getName(),
+                            ValueGeneratorFactory.createRandomInteger((Integer) environmentDefinition.getRange().getFrom(), (Integer) environmentDefinition.getRange().getTo())));
+                }
+                else {
+                    environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
+                            ValueGeneratorFactory.createRandomFloat(null, null)));
+                }
+                break;
+            case BOOLEAN:
+                environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createRandomBoolean()));
+                break;
+            case STRING:
+                environmentInstance = new EnvironmentInstance(new StringPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createRandomString()));
+                break;
+
+        }
+    }
+
+    private void setValueEnvironment(int userIntegerInput, List<String> enviromentName,  Map <String, EnvironmentInstance> environmentValuesByUser) {
+        String environmentName = enviromentName.get(userIntegerInput -1);
+        EnvironmentDefinition environmentDefinition = world.getEnvironmentDefinition().get(environmentName);
+        boolean validInput = false;
+
+        do {
+            try {
+                System.out.println("Please enter a value that stand in the required details of the this environment");
+                System.out.println(environmentDefinition);
+                checkValidationValue(environmentDefinition, environmentValuesByUser);
+                validInput = true;
+                System.out.println("success");
+            }
+            catch (NumberFormatException exception)
+            {
+                System.out.println("NumberFormatException");
+            }
+            catch (IndexOutOfBoundsException exception)
+            {
+                System.out.println("IndexOutOfBoundsException");
+            }
+        }while(!validInput);
+    }
+
+    private void checkValidationValue( EnvironmentDefinition environmentDefinition,  Map <String, EnvironmentInstance> environmentValuesByUser) throws NumberFormatException, IndexOutOfBoundsException{
+        Scanner scanner = new Scanner(System.in);
+        Object userInput;
+        EnvironmentInstance environmentInstance = null;
+        switch (environmentDefinition.getType()) {
+            case FLOAT:
+                userInput = Float.parseFloat(scanner.nextLine());
+                checkIfInputInRange(userInput, environmentDefinition, false);
+                environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((float)userInput)));
+                break;
+            case DECIMAL:
+                userInput = Integer.parseInt(scanner.nextLine());
+                checkIfInputInRange(userInput, environmentDefinition, true);
+                environmentInstance= new EnvironmentInstance(new IntegerPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((int)userInput)));
+                break;
+            case BOOLEAN:
+                userInput = Boolean.parseBoolean(scanner.nextLine()); // shiraz  exception and impl
+                environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((boolean)userInput)));
+                break;
+            case STRING:
+                userInput = scanner.nextLine(); // change later - shiraz exception and impl
+                environmentInstance = new EnvironmentInstance(new StringPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((String) userInput)));
+                break;
+
+        }
+        if (environmentInstance != null) {
+            environmentValuesByUser.put(environmentInstance.getProperty().getName(), environmentInstance); // problem
+        }
+    }
+
+    private void checkIfInputInRange(Object userInput, EnvironmentDefinition environmentDefinition, boolean isDecimal) throws IndexOutOfBoundsException{
+        if (environmentDefinition.getRange() != null){
+            if(!isDecimal) {
+                if ((float) userInput < environmentDefinition.getRange().getFrom() || (float) userInput > environmentDefinition.getRange().getTo()) {
+                    throw new IndexOutOfBoundsException();
+                }
+            }
+            else {
+                if ((int) userInput < environmentDefinition.getRange().getFrom() || (int) userInput > environmentDefinition.getRange().getTo()) {
+                    throw new IndexOutOfBoundsException();
+                }
+            }
+        }
+    }
+
+    private int chooseEnvironmentProperty() throws  NullPointerException{
+        // change duplicate code
+        boolean validInput = false;
+        int userIntegerInput = 0;
+        int index = 0;
+        Scanner scanner = new Scanner(System.in);
+
+        do {
+            try{
+                if (world != null) {
+                    System.out.println("These are all the environment variables defined in the xml file.");
+                    System.out.println("You can provide a value for each of the environment variables.");
+                    System.out.println("Please enter the number of the environment variable you want to provide a value for.");
+                }
+                index = printEnvironmentNames();
+                userIntegerInput = Integer.parseInt(scanner.nextLine());
+                checkValidationInput(userIntegerInput);
+                validInput = true;
+            }
+            catch (NumberFormatException  | IndexOutOfBoundsException exception){
+                System.out.println("Invalid input. Please insert a number between 1 and " + index + ".");
+            }
+        }while (!validInput);
+
+        return userIntegerInput;
+    }
+
+    private void checkValidationInput(int userIntegerInput) throws IndexOutOfBoundsException {
+        if(userIntegerInput < 1 || userIntegerInput > world.getEnvironmentDefinition().size() + 1){
+           throw new IndexOutOfBoundsException();
+        }
+
+    }
+
+    private  int  printEnvironmentNames() throws NullPointerException {
+        int index = 1;
+
+        for (Map.Entry<String, EnvironmentDefinition> environmentEntry : world.getEnvironmentDefinition().entrySet()) {
+            System.out.print(index);
+            System.out.print(".");
+            System.out.println(environmentEntry.getValue().getName());
+            index += 1;
+        }
+        System.out.print(index);
+        System.out.print(".");
+        System.out.println("Start the simulation");
+
+        return index;
+    }
+
+    private  List<String>  createListEnvironmentNames() throws NullPointerException {
+        List<String> enviromentName = new ArrayList<>();
+        for (Map.Entry<String, EnvironmentDefinition> environmentEntry : world.getEnvironmentDefinition().entrySet()) {
+            enviromentName.add(environmentEntry.getValue().getName());
+        }
+
+        return enviromentName;
+    }
+
 
     private void simulationDetails() {
         try{

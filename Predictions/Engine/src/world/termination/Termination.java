@@ -19,10 +19,10 @@ public class Termination {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder("Termination{");
+        StringBuilder stringBuilder = new StringBuilder("    Termination: ");
 
         if (ticks != null) {
-            stringBuilder.append("ticks=").append(ticks);
+            stringBuilder.append("ticks = ").append(ticks);
         }
 
         if (ticks != null && second != null) {
@@ -30,10 +30,9 @@ public class Termination {
         }
 
         if (second != null) {
-            stringBuilder.append("seconds=").append(second);
+            stringBuilder.append("seconds = ").append(second);
         }
 
-        stringBuilder.append('}');
         return stringBuilder.toString();
     }
 }

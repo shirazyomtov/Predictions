@@ -1,6 +1,8 @@
 package world.entity.definition;
 
 
+import jaxb.schema.generated.PRDProperty;
+
 import java.util.List;
 
 
@@ -18,11 +20,15 @@ public class EntityDefinitionImpl implements EntityDefiniton {
 
     @Override
     public String toString() {
-        return "Entity{" +
-                "Name='" + name + '\'' +
-                ", Amount of population=" + amountOfPopulation +
-                ", All properties=" + allProperties +
-                '}';
+        StringBuilder entityDetails = new StringBuilder();
+        entityDetails.append("    Entity ").append(name).append(" details: ").append("\n");
+        entityDetails.append("        Name = '").append(name).append("',").append("\n");
+        entityDetails.append("        Amount of population = ").append(amountOfPopulation).append(",").append("\n");
+        entityDetails.append("        All properties: ").append("\n");
+        for (PropertyDefinition property : allProperties) {
+            entityDetails.append("    ").append(property).append("\n");
+        }
+        return entityDetails.toString();
     }
 
     @Override

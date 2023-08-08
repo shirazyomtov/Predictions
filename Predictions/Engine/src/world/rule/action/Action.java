@@ -15,9 +15,7 @@ public abstract class Action implements ActionOperation {
 
     @Override
     public String toString() {
-        return "Action{" +
-                "actionType=" + actionType +
-                '}';
+        return "    Action: " + "actionType = " + actionType;
     }
 
     public abstract void operation();

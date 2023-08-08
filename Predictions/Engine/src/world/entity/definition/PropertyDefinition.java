@@ -30,16 +30,15 @@ public class PropertyDefinition  {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Property{");
-        stringBuilder.append("Name='").append(name).append('\'');
-        stringBuilder.append(", Type=").append(type.name());
-        stringBuilder.append(", Is random initialize=").append(isRandomInitialize);
+        stringBuilder.append("        Property ").append(name).append(" details: ").append("\n");
+        stringBuilder.append("                Name = '").append(name).append("',").append("\n");
+        stringBuilder.append("                Type = ").append(type.name()).append("',").append("\n");
+        stringBuilder.append("                Is random initialize = ").append(isRandomInitialize);
 
         if (range != null) {
-            stringBuilder.append(", Range=").append(range);
+            stringBuilder.append("',").append("\n").append("                Range=").append(range);
         }
 
-        stringBuilder.append('}');
         return stringBuilder.toString();
     }
 

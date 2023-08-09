@@ -184,8 +184,13 @@ public class UIManager {
                 environmentInstance= new EnvironmentInstance(new IntegerPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((int)userInput)));
                 break;
             case BOOLEAN:
-                userInput = Boolean.parseBoolean(scanner.nextLine()); // ido
-                environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((boolean)userInput)));
+                userInput = chooseBooleanValue();
+                if((int)userInput == 1) {
+                    environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed(true)));
+                }
+                else{
+                    environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed(false)));
+                }
                 break;
             case STRING:
                 userInput = scanner.nextLine();
@@ -195,6 +200,35 @@ public class UIManager {
         }
         if (environmentInstance != null) {
             environmentValuesByUser.put(environmentInstance.getProperty().getName(), environmentInstance); // problem
+        }
+    }
+
+    private int chooseBooleanValue() {
+        boolean validInput = false;
+        int userIntegerInput = 0;
+        Scanner scanner = new Scanner(System.in);
+
+        do {
+            try{
+                System.out.println("Please select one of the following options using a number.");
+                System.out.println("1. True");
+                System.out.println("2. False");
+                userIntegerInput = Integer.parseInt(scanner.nextLine());
+                checkValidationBooleanInput(userIntegerInput);
+                validInput = true;
+            }
+            catch (NumberFormatException  | IndexOutOfBoundsException exception){
+                System.out.println("Invalid input. Please insert a number between 1 and " + 2 + ".");
+            }
+        }while (!validInput);
+
+        return userIntegerInput;
+
+    }
+
+    private void checkValidationBooleanInput(int userIntegerInput) throws IndexOutOfBoundsException{
+        if(userIntegerInput < 1 || userIntegerInput > 2){
+            throw new IndexOutOfBoundsException();
         }
     }
 

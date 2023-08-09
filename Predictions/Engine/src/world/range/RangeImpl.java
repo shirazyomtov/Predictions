@@ -2,8 +2,8 @@ package world.range;
 
 public class RangeImpl {
     private final Float from;
-    private final Float to;
-    public RangeImpl(float from, float to) {
+    private final  Float to;
+    public RangeImpl(Float from, Float to) {
         this.from = from;
         this.to = to;
     }

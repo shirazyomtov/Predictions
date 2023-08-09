@@ -71,9 +71,11 @@ public class UIManager {
         try {
             int userIntegerInput = 0;
             List<String> enviromentName = createListEnvironmentNames();
-            while(userIntegerInput != world.getEnvironmentDefinition().size() + 1){
+            while(userIntegerInput != world.getEnvironmentDefinition().size() + 1) {
                 userIntegerInput = chooseEnvironmentProperty();
-                setValueEnvironment(userIntegerInput, enviromentName, environmentValuesByUser);
+                if (userIntegerInput != world.getEnvironmentDefinition().size() + 1) {
+                    setValueEnvironment(userIntegerInput, enviromentName, environmentValuesByUser);
+                }
             }
            startSimulation(environmentValuesByUser);
         }
@@ -87,20 +89,21 @@ public class UIManager {
 
         for (String environmentName: world.getEnvironmentDefinition().keySet()){
             if(!environmentValuesByUser.containsKey(environmentName)){
-                provideRandomValues(world.getEnvironmentDefinition().get(environmentName));
+                provideRandomValues(world.getEnvironmentDefinition().get(environmentName), environmentInstanceMap);
             }
         }
-
+        world.setEnvironmentInstanceMap(environmentInstanceMap);
+        System.out.println(world.getEnvironmentInstanceMap());
     }
 
-    private void provideRandomValues(EnvironmentDefinition environmentDefinition) {
+    private void provideRandomValues(EnvironmentDefinition environmentDefinition,  Map<String, EnvironmentInstance> environmentInstanceMap) {
         EnvironmentInstance environmentInstance = null;
 
         switch (environmentDefinition.getType()) {
             case FLOAT:
                 if (environmentDefinition.getRange() != null) {
                     environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
-                            ValueGeneratorFactory.createRandomFloat(environmentDefinition.getRange().getFrom(), environmentDefinition.getRange().getTo())));
+                            ValueGeneratorFactory.createRandomFloat( environmentDefinition.getRange().getFrom(), environmentDefinition.getRange().getTo())));
                 }
                 else {
                     environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
@@ -110,7 +113,7 @@ public class UIManager {
             case DECIMAL:
                 if (environmentDefinition.getRange() != null) {
                     environmentInstance = new EnvironmentInstance(new IntegerPropertyInstance(environmentDefinition.getName(),
-                            ValueGeneratorFactory.createRandomInteger((Integer) environmentDefinition.getRange().getFrom(), (Integer) environmentDefinition.getRange().getTo())));
+                            ValueGeneratorFactory.createRandomInteger(environmentDefinition.getRange().getFrom().intValue(), environmentDefinition.getRange().getTo().intValue())));
                 }
                 else {
                     environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
@@ -124,6 +127,9 @@ public class UIManager {
                 environmentInstance = new EnvironmentInstance(new StringPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createRandomString()));
                 break;
 
+        }
+        if (environmentInstance != null) {
+            environmentInstanceMap.put(environmentInstance.getProperty().getName(), environmentInstance); // problem
         }
     }
 
@@ -167,11 +173,11 @@ public class UIManager {
                 environmentInstance= new EnvironmentInstance(new IntegerPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((int)userInput)));
                 break;
             case BOOLEAN:
-                userInput = Boolean.parseBoolean(scanner.nextLine()); // shiraz  exception and impl
+                userInput = Boolean.parseBoolean(scanner.nextLine()); // ido
                 environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((boolean)userInput)));
                 break;
             case STRING:
-                userInput = scanner.nextLine(); // change later - shiraz exception and impl
+                userInput = scanner.nextLine();
                 environmentInstance = new EnvironmentInstance(new StringPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((String) userInput)));
                 break;
 
@@ -189,7 +195,7 @@ public class UIManager {
                 }
             }
             else {
-                if ((int) userInput < environmentDefinition.getRange().getFrom() || (int) userInput > environmentDefinition.getRange().getTo()) {
+                if ((int) userInput < environmentDefinition.getRange().getFrom().intValue() || (int) userInput > environmentDefinition.getRange().getTo().intValue()) {
                     throw new IndexOutOfBoundsException();
                 }
             }

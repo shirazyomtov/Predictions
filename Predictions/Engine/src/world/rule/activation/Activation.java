@@ -3,7 +3,7 @@ package world.rule.activation;
 import jaxb.schema.generated.PRDActivation;
 
 public class Activation {
-    private Integer ticks = 1;
+    private int ticks = 1;
 
     private  double probability = 1;
 
@@ -24,5 +24,13 @@ public class Activation {
                 "ticks=" + ticks +
                 ", probability=" + probability +
                 '}';
+    }
+
+    public int getTicks() {
+        return ticks;
+    }
+
+    public double getProbability() {
+        return probability;
     }
 }

@@ -31,7 +31,7 @@ public final class ActionFactory {
                     selectedAction = BinaryCalcuationActionFactory.createBinaryAction(DIVIDE ,entityName, resultPropertyName, divide.getArg1(), divide.getArg2());
                 }
                 break;
-            case CONDITION:
+            case CONDITION: // change
                 selectedAction = new Condition(entityName);
                 break;
             case SET:

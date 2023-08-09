@@ -1,5 +1,10 @@
 import exceptions.FilePathException;
-import world.World;
+import world.entity.definition.EntityDefiniton;
+import world.entity.definition.PropertyDefinition;
+import world.entity.instance.EntityInstance;
+import world.propertyInstance.api.Property;
+import world.rule.action.Action;
+import world.worldDefinition.WorldDefinition;
 import world.entity.definition.EntityDefinitionImpl;
 import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
@@ -9,16 +14,20 @@ import world.propertyInstance.impl.IntegerPropertyInstance;
 import world.propertyInstance.impl.StringPropertyInstance;
 import world.rule.RuleImpl;
 import world.value.generator.api.ValueGeneratorFactory;
+import world.worldInstance.WorldInstance;
 import xml.XMLReader;
 import xml.XMLValidation;
 
+import javax.swing.*;
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
 import java.util.*;
 
 public class UIManager {
 
-    private World world = null;
+    private WorldDefinition world = null;
+
+    private WorldInstance worldInstance = null;
     private XMLReader xmlReader = null;
     private XMLValidation xmlValidation = null;
     public void RunProgram()
@@ -78,28 +87,131 @@ public class UIManager {
                 }
             }
            startSimulation(environmentValuesByUser);
+           runSimulation();
         }
         catch (NullPointerException e){
             System.out.println("You cannot run the simulation before loading the xml file");
         }
     }
 
+    private void runSimulation() {
+        while (true){
+            for (RuleImpl rule: world.getRules()){
+                Random random = new Random();
+                double probability = random.nextDouble();
+                if(rule.getActivation().getTicks() == worldInstance.getCurrentTick() && (rule.getActivation().getProbability() == 1 || rule.getActivation().getTicks() > probability)){
+                    for(Action action: rule.nameActions()){
+                        performeOperation(action);
+                    }
+                }
+            }
+
+            worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
+        }
+    }
+
+    private void performeOperation(Action action) {
+        String entityName = action.getEntityName();
+        for(EntityInstance entityInstance: worldInstance.getEntityInstanceList()){
+            if(entityName.equals(entityInstance.getName())) {
+
+            }
+        }
+
+    }
+
     private void startSimulation( Map <String, EnvironmentInstance> environmentValuesByUser) {
-        Map<String, EnvironmentInstance> environmentInstanceMap = environmentValuesByUser; // problem
+        Map<String, EnvironmentInstance> environmentInstanceMap = environmentValuesByUser;
 
         for (String environmentName: world.getEnvironmentDefinition().keySet()){
             if(!environmentValuesByUser.containsKey(environmentName)){
                 provideRandomValues(world.getEnvironmentDefinition().get(environmentName), environmentInstanceMap);
             }
         }
-        world.setEnvironmentInstanceMap(environmentInstanceMap);
-        printEntitiesNameAndValue();
+
+        worldInstance = new WorldInstance(environmentInstanceMap, initEntites());
+        worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
+        printEnvironmentNamesAndValues();
     }
 
-    private void printEntitiesNameAndValue() {
+    private List<EntityInstance> initEntites() {
+        List<EntityInstance> entityInstanceList = new ArrayList<>();
+        List<Property> allProperty = new ArrayList<>();
+        for (EntityDefiniton entityDefiniton: world.getEntityDefinition().values()){
+            for (int count = 0; count< entityDefiniton.getAmountOfPopulation(); count++){
+                for(PropertyDefinition propertyDefinition: entityDefiniton.getProps()){
+                    allProperty.add(initProperty(propertyDefinition));
+                }
+                entityInstanceList.add(new EntityInstance(entityDefiniton.getName(), allProperty));
+                allProperty.clear();
+            }
+        }
+
+        return entityInstanceList;
+    }
+
+    private Property initProperty(PropertyDefinition propertyDefinition) {
+        Property property = null;
+        switch (propertyDefinition.getType()) {
+            case FLOAT:
+                if(propertyDefinition.isRandomInitialize()) {
+                    if (propertyDefinition.getRange() != null) {
+                        property = new FloatPropertyInstance(propertyDefinition.getName(),
+                                ValueGeneratorFactory.createRandomFloat( propertyDefinition.getRange().getFrom(), propertyDefinition.getRange().getTo()));
+                    }
+                    else {
+                        property = new FloatPropertyInstance(propertyDefinition.getName(),
+                                ValueGeneratorFactory.createRandomFloat(null, null));
+                    }
+                }
+                else{
+                    property = new FloatPropertyInstance(propertyDefinition.getName(),
+                            ValueGeneratorFactory.createFixed((float)propertyDefinition.getInit()));
+                }
+                break;
+            case DECIMAL:
+                if(propertyDefinition.isRandomInitialize()) {
+                    if (propertyDefinition.getRange() != null) {
+                        property = new IntegerPropertyInstance(propertyDefinition.getName(),
+                                ValueGeneratorFactory.createRandomInteger(propertyDefinition.getRange().getFrom().intValue(), propertyDefinition.getRange().getTo().intValue()));
+                    }
+                    else {
+                        property = new IntegerPropertyInstance(propertyDefinition.getName(),
+                                ValueGeneratorFactory.createRandomInteger(null, null));
+                    }
+                }
+                else{
+                    property = new IntegerPropertyInstance(propertyDefinition.getName(),
+                            ValueGeneratorFactory.createFixed((int)propertyDefinition.getInit()));
+                }
+                break;
+            case BOOLEAN:
+                if(propertyDefinition.isRandomInitialize()) {
+                    property = new BooleanPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomBoolean());
+                }
+                else{
+                    property = new BooleanPropertyInstance(propertyDefinition.getName(),
+                            ValueGeneratorFactory.createFixed((boolean)propertyDefinition.getInit()));
+                }
+                break;
+            case STRING:
+                if(propertyDefinition.isRandomInitialize()) {
+                    property = new StringPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomString());
+                }
+                else{
+                    property = new StringPropertyInstance(propertyDefinition.getName(),
+                            ValueGeneratorFactory.createFixed((String) propertyDefinition.getInit()));
+                }
+                break;
+
+        }
+        return property;
+    }
+
+    private void printEnvironmentNamesAndValues() {
         int index = 1;
         System.out.println("All the environment properties name and value: ");
-        for (Map.Entry<String,  EnvironmentInstance> entry : world.getEnvironmentInstanceMap().entrySet()) {
+        for (Map.Entry<String,  EnvironmentInstance> entry : worldInstance.getEnvironmentInstanceMap().entrySet()) {
             System.out.print(index);
             System.out.print(".");
             System.out.println(entry.getValue());
@@ -329,9 +441,8 @@ public class UIManager {
 
     private void printRulesDetalis() {
         System.out.println("2.Rules:");
-        Map<String, RuleImpl> entityDefinitions = world.getRules();
-        for (Map.Entry<String, RuleImpl> entry : entityDefinitions.entrySet()) {
-            System.out.println(entry.getValue());
+        for (RuleImpl rule : world.getRules()) {
+            System.out.println(rule);
         }
 
     }

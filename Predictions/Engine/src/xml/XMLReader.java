@@ -1,7 +1,7 @@
 package xml;
 
 import jaxb.schema.generated.*;
-import world.World;
+import world.worldDefinition.WorldDefinition;
 import world.entity.definition.EntityDefinitionImpl;
 import world.entity.definition.PropertyDefinition;
 import world.environment.definition.EnvironmentDefinition;
@@ -42,14 +42,14 @@ public  final class XMLReader {
         return (PRDWorld) u.unmarshal(inputStream);
     }
 
-    public  World defineWorld()
+    public WorldDefinition defineWorld()
     {
 
         Map<String, EntityDefinitionImpl> entityDefinition = defineEntities();
-        Map<String, RuleImpl> ruleIml = defineRules();
+        List<RuleImpl> ruleIml = defineRules();
         Termination termination = defineTermination();
         Map <String, EnvironmentDefinition> environmentDefinition = defineEnvironment();
-        return new World(entityDefinition, ruleIml, termination, environmentDefinition);
+        return new WorldDefinition(entityDefinition, ruleIml, termination, environmentDefinition);
     }
 
     private  Map<String, EnvironmentDefinition> defineEnvironment() {
@@ -75,10 +75,10 @@ public  final class XMLReader {
         }
         return new Termination(prdByTicks, prdBySecond);
     }
-    private  Map<String, RuleImpl> defineRules() {
-        Map<String, RuleImpl> ruleIml = new HashMap<>();
+    private  List<RuleImpl> defineRules() {
+        List<RuleImpl> ruleIml = new ArrayList<>();
         for(PRDRule rule: world.getPRDRules().getPRDRule()){
-            ruleIml.put(rule.getName(), new RuleImpl(rule));
+            ruleIml.add(new RuleImpl(rule));
         }
 
         return ruleIml;

@@ -19,4 +19,8 @@ public abstract class Action implements ActionOperation {
     }
 
     public abstract void operation();
+
+    public String getEntityName() {
+        return entityName;
+    }
 }

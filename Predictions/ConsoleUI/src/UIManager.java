@@ -93,7 +93,18 @@ public class UIManager {
             }
         }
         world.setEnvironmentInstanceMap(environmentInstanceMap);
-        System.out.println(world.getEnvironmentInstanceMap());
+        printEntitiesNameAndValue();
+    }
+
+    private void printEntitiesNameAndValue() {
+        int index = 1;
+        System.out.println("All the environment properties name and value: ");
+        for (Map.Entry<String,  EnvironmentInstance> entry : world.getEnvironmentInstanceMap().entrySet()) {
+            System.out.print(index);
+            System.out.print(".");
+            System.out.println(entry.getValue());
+            index += 1;
+        }
     }
 
     private void provideRandomValues(EnvironmentDefinition environmentDefinition,  Map<String, EnvironmentInstance> environmentInstanceMap) {

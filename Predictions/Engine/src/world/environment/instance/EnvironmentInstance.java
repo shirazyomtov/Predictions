@@ -16,8 +16,6 @@ public class EnvironmentInstance {
 
     @Override
     public String toString() {
-        return "EnvironmentInstance{" +
-                "property=" + property +
-                '}';
+        return "Name: " +  property.getName() + ", value: " + property.generateValue();
     }
 }

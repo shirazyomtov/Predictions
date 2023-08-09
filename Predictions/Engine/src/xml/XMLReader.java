@@ -17,28 +17,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class XMLReader {
-    private final static String JAXB_XML_GAME_PACKAGE_NAME = "jaxb.schema.generated";
-    private static PRDWorld world = null;
+public  final class XMLReader {
+    private final  String JAXB_XML_GAME_PACKAGE_NAME = "jaxb.schema.generated";
+    private  PRDWorld world = null;
+    private String xmlPath ;
 
-    public static void setWorld(PRDWorld world) {
-        XMLReader.world = world;
+    public XMLReader(String xmlPath){
+        this.xmlPath = xmlPath;
+    }
+    public  void setWorld(PRDWorld world) {
+        this.world = world;
     }
 
-    public static void openXmlAndGetData(String xmlPath) throws FileNotFoundException, JAXBException {
+    public  XMLValidation openXmlAndGetData() throws FileNotFoundException, JAXBException {
         InputStream inputStream = new FileInputStream(new File(xmlPath));
         PRDWorld world = deserializeFrom(inputStream);
-        XMLValidation.setWorld(world);
         setWorld(world);
+        return new XMLValidation(world);
     }
 
-    private static PRDWorld deserializeFrom(InputStream inputStream) throws JAXBException {
+    private  PRDWorld deserializeFrom(InputStream inputStream) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(JAXB_XML_GAME_PACKAGE_NAME);
         Unmarshaller u = jc.createUnmarshaller();
         return (PRDWorld) u.unmarshal(inputStream);
     }
 
-    public static World defineWorld()
+    public  World defineWorld()
     {
 
         Map<String, EntityDefinitionImpl> entityDefinition = defineEntities();
@@ -48,7 +52,7 @@ public final class XMLReader {
         return new World(entityDefinition, ruleIml, termination, environmentDefinition);
     }
 
-    private static Map<String, EnvironmentDefinition> defineEnvironment() {
+    private  Map<String, EnvironmentDefinition> defineEnvironment() {
         Map<String, EnvironmentDefinition> environmentDefinition = new HashMap<>();
         for(PRDEnvProperty environment: world.getPRDEvironment().getPRDEnvProperty()){
             environmentDefinition.put(environment.getPRDName(), new EnvironmentDefinition(environment));
@@ -57,7 +61,7 @@ public final class XMLReader {
         return environmentDefinition;
     }
 
-    private static  Termination defineTermination()
+    private  Termination defineTermination()
     {
         PRDBySecond prdBySecond = null;
         PRDByTicks prdByTicks = null;
@@ -71,7 +75,7 @@ public final class XMLReader {
         }
         return new Termination(prdByTicks, prdBySecond);
     }
-    private static Map<String, RuleImpl> defineRules() {
+    private  Map<String, RuleImpl> defineRules() {
         Map<String, RuleImpl> ruleIml = new HashMap<>();
         for(PRDRule rule: world.getPRDRules().getPRDRule()){
             ruleIml.put(rule.getName(), new RuleImpl(rule));
@@ -80,7 +84,7 @@ public final class XMLReader {
         return ruleIml;
     }
 
-    private static Map<String, EntityDefinitionImpl> defineEntities()
+    private  Map<String, EntityDefinitionImpl> defineEntities()
     {
         Map<String, EntityDefinitionImpl> entityDefinition = new HashMap<>();
         for (PRDEntity entity: world.getPRDEntities().getPRDEntity())
@@ -92,7 +96,7 @@ public final class XMLReader {
         return entityDefinition;
     }
 
-    private static List<PropertyDefinition> defineProperties(PRDEntity prdEntity) {
+    private  List<PropertyDefinition> defineProperties(PRDEntity prdEntity) {
         List<PropertyDefinition> PropertyDefinition = new ArrayList<>();
         for(PRDProperty property: prdEntity.getPRDProperties().getPRDProperty()){
             PropertyDefinition.add(new PropertyDefinition(property));

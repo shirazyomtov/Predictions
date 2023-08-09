@@ -2,7 +2,7 @@ package world.entity.definition;
 
 import jaxb.schema.generated.PRDProperty;
 import world.enums.Type;
-import world.range.Range;
+import world.range.RangeImpl;
 
 public class PropertyDefinition  {
     private final String name;
@@ -13,7 +13,7 @@ public class PropertyDefinition  {
 
     private Object init = null;
 
-    private Range range = null;
+    private RangeImpl range = null;
 
     public PropertyDefinition(PRDProperty prdProperty) {
         this.name = prdProperty.getPRDName();
@@ -23,8 +23,8 @@ public class PropertyDefinition  {
             this.init = prdProperty.getPRDValue().getInit();
         }
         if(prdProperty.getPRDRange()!= null) {
-            this.range = new Range((float) prdProperty.getPRDRange().getFrom(), (float) prdProperty.getPRDRange().getTo());
-        };
+                this.range = new RangeImpl((float) prdProperty.getPRDRange().getFrom(), (float) prdProperty.getPRDRange().getTo());
+        }
     }
 
     @Override
@@ -58,7 +58,7 @@ public class PropertyDefinition  {
         return init;
     }
 
-    public Range getRange() {
+    public RangeImpl getRange() {
         return range;
     }
 }

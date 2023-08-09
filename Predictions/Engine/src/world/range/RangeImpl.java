@@ -1,9 +1,9 @@
 package world.range;
 
-public class Range {
+public class RangeImpl {
     private final Float from;
     private final Float to;
-    public Range(float from, float to) {
+    public RangeImpl(float from, float to) {
         this.from = from;
         this.to = to;
     }
@@ -18,10 +18,8 @@ public class Range {
 
     @Override
     public String toString() {
-        return "Range{" +
-                "from=" + from +
-                ", to=" + to +
-                '}';
+        return "from=" + from +
+                ", to=" + to ;
     }
 
 }

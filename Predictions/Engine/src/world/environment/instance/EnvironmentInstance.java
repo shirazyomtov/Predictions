@@ -13,4 +13,11 @@ public class EnvironmentInstance {
     public Property getProperty() {
         return property;
     }
+
+    @Override
+    public String toString() {
+        return "EnvironmentInstance{" +
+                "property=" + property +
+                '}';
+    }
 }

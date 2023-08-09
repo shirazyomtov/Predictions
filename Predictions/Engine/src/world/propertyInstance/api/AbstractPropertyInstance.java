@@ -29,4 +29,12 @@ public abstract class AbstractPropertyInstance<T> implements Property {
     public T generateValue() {
         return valueGenerator.generateValue();
     }
+
+    @Override
+    public String toString() {
+        return "AbstractPropertyInstance{" +
+                "name='" + name + '\'' +
+                ", valueGenerator=" + valueGenerator +
+                '}';
+    }
 }

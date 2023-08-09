@@ -2,6 +2,7 @@ package world;
 
 import world.entity.definition.EntityDefinitionImpl;
 import world.environment.definition.EnvironmentDefinition;
+import world.environment.instance.EnvironmentInstance;
 import world.rule.RuleImpl;
 import world.termination.Termination;
 
@@ -13,6 +14,8 @@ public final class World {
     private final Map<String, RuleImpl> rules;
 
     private final Termination termination;
+
+    private  Map<String, EnvironmentInstance> environmentInstanceMap = null;
     private final Map<String, EnvironmentDefinition> environmentDefinition;
 
     public World(Map<String, EntityDefinitionImpl> entityDefinition, Map<String, RuleImpl> rules, Termination termination, Map<String, EnvironmentDefinition> environmentDefinition)
@@ -33,5 +36,13 @@ public final class World {
 
     public Map<String, EnvironmentDefinition> getEnvironmentDefinition() {
         return environmentDefinition;
+    }
+
+    public void setEnvironmentInstanceMap(Map<String, EnvironmentInstance> environmentInstanceMap) {
+        this.environmentInstanceMap = environmentInstanceMap;
+    }
+
+    public Map<String, EnvironmentInstance> getEnvironmentInstanceMap() {
+        return environmentInstanceMap;
     }
 }

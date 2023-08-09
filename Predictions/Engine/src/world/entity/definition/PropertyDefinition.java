@@ -23,7 +23,7 @@ public class PropertyDefinition  {
             this.init = prdProperty.getPRDValue().getInit();
         }
         if(prdProperty.getPRDRange()!= null) {
-                this.range = new RangeImpl((float) prdProperty.getPRDRange().getFrom(), (float) prdProperty.getPRDRange().getTo());
+            this.range = new RangeImpl((float) prdProperty.getPRDRange().getFrom(), (float) prdProperty.getPRDRange().getTo());
         }
     }
 

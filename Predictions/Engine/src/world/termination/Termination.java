@@ -35,4 +35,12 @@ public class Termination {
 
         return stringBuilder.toString();
     }
+
+    public Integer getTicks() {
+        return ticks;
+    }
+
+    public Integer getSecond() {
+        return second;
+    }
 }

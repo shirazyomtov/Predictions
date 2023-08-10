@@ -3,7 +3,7 @@ package world.rule.action.calculation.binaryCalculationAction;
 import world.enums.CalculationBinaryTypeAction;
 import world.rule.action.*;
 
-public class BinaryCalcuationActionFactory {
+public class BinaryCalculationActionFactory {
     public static Action createBinaryAction(CalculationBinaryTypeAction type, String entityName, String resultPropertyName, String argument1, String argument2)
     {
         Action selectedAction = null;

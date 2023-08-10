@@ -1,12 +1,10 @@
 package world.entity.definition;
 
 
-import jaxb.schema.generated.PRDProperty;
-
 import java.util.List;
 
 
-public class EntityDefinitionImpl implements EntityDefiniton {
+public class EntityDefinitionImpl implements EntityDefinition {
     private final String name;
     private final Integer amountOfPopulation;
     private final List<PropertyDefinition> allProperties;

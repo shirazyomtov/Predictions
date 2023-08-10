@@ -23,4 +23,8 @@ public enum AuxiliaryFunction {
         }
         return false;
     }
+
+    public String getFunctionName() {
+        return functionName;
+    }
 }

@@ -1,12 +1,14 @@
 package world.rule.action;
 
+import exceptions.ObjectNotExist;
+import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 
 public abstract class Action implements ActionOperation {
 
-    private String entityName;
+    private final String entityName;
 
-    private ActionType actionType;
+    private final ActionType actionType;
 
     public Action(String entityName, ActionType actionType) {
         this.entityName = entityName;
@@ -18,9 +20,13 @@ public abstract class Action implements ActionOperation {
         return "    Action: " + "actionType = " + actionType;
     }
 
-    public abstract void operation();
+    public abstract void operation(EntityInstance entity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException;
 
     public String getEntityName() {
         return entityName;
+    }
+
+    public ActionType getActionType() {
+        return actionType;
     }
 }

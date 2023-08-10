@@ -1,4 +1,7 @@
 import exceptions.FilePathException;
+import exceptions.ObjectNotExist;
+import history.History;
+import history.simulation.Simulation;
 import world.entity.definition.EntityDefiniton;
 import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
@@ -27,9 +30,11 @@ public class UIManager {
 
     private WorldDefinition world = null;
 
-    private WorldInstance worldInstance = null;
+    private History history = null;
     private XMLReader xmlReader = null;
     private XMLValidation xmlValidation = null;
+
+    private Integer numberOfTimesUserSelectSimulation = 0;
     public void RunProgram()
     {
         int option = 0;
@@ -69,7 +74,7 @@ public class UIManager {
             case SIMULATION_DETAILS:
                 simulationDetails();
                 break;
-            case  SIMULATION:
+            case  SIMULATION: // check
                 simulation();
                 break;
         }
@@ -95,26 +100,51 @@ public class UIManager {
     }
 
     private void runSimulation() {
-        while (true){
+        long startMillisSeconds = System.currentTimeMillis();
+        String message = null;
+        int seconds = 0;
+        Random random = new Random();
+        while (seconds <= world.getTermination().getSecond() && history.getSimulation().getWorldInstance().getCurrentTick() <= world.getTermination().getTicks()){
             for (RuleImpl rule: world.getRules()){
-                Random random = new Random();
                 double probability = random.nextDouble();
-                if(rule.getActivation().getTicks() == worldInstance.getCurrentTick() && (rule.getActivation().getProbability() == 1 || rule.getActivation().getTicks() > probability)){
+                if(rule.getActivation().getTicks() == history.getSimulation().getWorldInstance().getCurrentTick() && (rule.getActivation().getProbability() == 1 || rule.getActivation().getTicks() > probability)){
                     for(Action action: rule.nameActions()){
                         performeOperation(action);
                     }
                 }
             }
 
-            worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
+            history.getSimulation().getWorldInstance().setCurrentTick(history.getSimulation().getWorldInstance().getCurrentTick() + 1);
+            long currentMilliSeconds = System.currentTimeMillis();
+            seconds = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
         }
+
+        if(seconds > world.getTermination().getSecond()){
+            message = "The simulation has ended because more than" + world.getTermination().getSecond() + " seconds have passed";
+        }
+        else if(history.getSimulation().getWorldInstance().getCurrentTick() > world.getTermination().getTicks()){
+            message = "The simulation has ended because more than" + world.getTermination().getTicks() + " ticks have passed";
+        }
+        printIdAndTerminationReason(message);
+
+    }
+
+    private void printIdAndTerminationReason(String message) {
+        System.out.print("Simulation id: ");
+        System.out.println(numberOfTimesUserSelectSimulation);
+        System.out.print(message);
     }
 
     private void performeOperation(Action action) {
         String entityName = action.getEntityName();
-        for(EntityInstance entityInstance: worldInstance.getEntityInstanceList()){
+        for(EntityInstance entityInstance: history.getSimulation().getWorldInstance().getEntityInstanceList()){
             if(entityName.equals(entityInstance.getName())) {
-
+                try {
+                    action.operation(entityInstance);
+                }
+                catch (ObjectNotExist | NumberFormatException | ClassCastException | ArithmeticException exception){
+                    System.out.println(exception.getMessage());
+                }
             }
         }
 
@@ -128,22 +158,25 @@ public class UIManager {
                 provideRandomValues(world.getEnvironmentDefinition().get(environmentName), environmentInstanceMap);
             }
         }
-
-        worldInstance = new WorldInstance(environmentInstanceMap, initEntites());
-        worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
+        numberOfTimesUserSelectSimulation++;
+        WorldInstance  worldInstance =new WorldInstance(environmentInstanceMap, initEntites());
+        Simulation simulation = new Simulation(worldInstance);
+        history = History.getInstance();
+        history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
+        history.addSimulation(simulation);
         printEnvironmentNamesAndValues();
     }
 
     private List<EntityInstance> initEntites() {
         List<EntityInstance> entityInstanceList = new ArrayList<>();
-        List<Property> allProperty = new ArrayList<>();
+
         for (EntityDefiniton entityDefiniton: world.getEntityDefinition().values()){
-            for (int count = 0; count< entityDefiniton.getAmountOfPopulation(); count++){
+            for (int count = 0; count < entityDefiniton.getAmountOfPopulation(); count++){
+                Map<String, Property> allProperty = new HashMap<>();
                 for(PropertyDefinition propertyDefinition: entityDefiniton.getProps()){
-                    allProperty.add(initProperty(propertyDefinition));
+                    allProperty.put(propertyDefinition.getName(), initProperty(propertyDefinition));
                 }
                 entityInstanceList.add(new EntityInstance(entityDefiniton.getName(), allProperty));
-                allProperty.clear();
             }
         }
 
@@ -152,6 +185,7 @@ public class UIManager {
 
     private Property initProperty(PropertyDefinition propertyDefinition) {
         Property property = null;
+        String stringValue;
         switch (propertyDefinition.getType()) {
             case FLOAT:
                 if(propertyDefinition.isRandomInitialize()) {
@@ -181,8 +215,9 @@ public class UIManager {
                     }
                 }
                 else{
+                    stringValue = (String) propertyDefinition.getInit();
                     property = new IntegerPropertyInstance(propertyDefinition.getName(),
-                            ValueGeneratorFactory.createFixed((int)propertyDefinition.getInit()));
+                            ValueGeneratorFactory.createFixed(Integer.parseInt(stringValue)));
                 }
                 break;
             case BOOLEAN:
@@ -211,7 +246,7 @@ public class UIManager {
     private void printEnvironmentNamesAndValues() {
         int index = 1;
         System.out.println("All the environment properties name and value: ");
-        for (Map.Entry<String,  EnvironmentInstance> entry : worldInstance.getEnvironmentInstanceMap().entrySet()) {
+        for (Map.Entry<String,  EnvironmentInstance> entry : history.getSimulation().getWorldInstance().getEnvironmentInstanceMap().entrySet()) {
             System.out.print(index);
             System.out.print(".");
             System.out.println(entry.getValue());

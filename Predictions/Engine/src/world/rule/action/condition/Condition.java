@@ -1,5 +1,6 @@
 package world.rule.action.condition;
 
+import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 import world.rule.action.Action;
 
@@ -10,7 +11,7 @@ public class Condition  extends Action {
         super(entityName, ActionType.CONDITION);
     }
     @Override
-    public void operation() {
+    public void operation(EntityInstance entity) {
 
     }
 }

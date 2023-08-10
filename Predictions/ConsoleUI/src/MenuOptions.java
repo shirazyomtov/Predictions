@@ -21,7 +21,7 @@ public enum MenuOptions {
 
     public Integer GetNUmberOfOption() {return optionNumber;}
 
-    public static Integer GetCountOfOptons() {return MenuOptions.values().length;}
+    public static Integer GetCountOfOptions() {return MenuOptions.values().length;}
 
     public static MenuOptions GetOptionByNumber(int num) throws IndexOutOfBoundsException {
 

@@ -1,5 +1,5 @@
 import exceptions.FilePathException;
-import world.entity.definition.EntityDefiniton;
+import world.entity.definition.EntityDefinition;
 import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
 import world.propertyInstance.api.Property;
@@ -18,7 +18,6 @@ import world.worldInstance.WorldInstance;
 import xml.XMLReader;
 import xml.XMLValidation;
 
-import javax.swing.*;
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -54,7 +53,7 @@ public class UIManager {
                 validInput = true;
             }
             catch (NumberFormatException  | IndexOutOfBoundsException exception){
-                System.out.println("Invalid input. Please insert a number between 1 and " + MenuOptions.GetCountOfOptons() + ".");
+                System.out.println("Invalid input. Please insert a number between 1 and " + MenuOptions.GetCountOfOptions() + ".");
             }
         }while (!validInput);
 
@@ -79,15 +78,15 @@ public class UIManager {
         Map <String, EnvironmentInstance> environmentValuesByUser = new HashMap<>();
         try {
             int userIntegerInput = 0;
-            List<String> enviromentName = createListEnvironmentNames();
+            List<String> environmentName = createListEnvironmentNames();
             while(userIntegerInput != world.getEnvironmentDefinition().size() + 1) {
                 userIntegerInput = chooseEnvironmentProperty();
                 if (userIntegerInput != world.getEnvironmentDefinition().size() + 1) {
-                    setValueEnvironment(userIntegerInput, enviromentName, environmentValuesByUser);
+                    setValueEnvironment(userIntegerInput, environmentName, environmentValuesByUser);
                 }
             }
-           startSimulation(environmentValuesByUser);
-           runSimulation();
+            startSimulation(environmentValuesByUser);
+            runSimulation();
         }
         catch (NullPointerException e){
             System.out.println("You cannot run the simulation before loading the xml file");
@@ -97,11 +96,9 @@ public class UIManager {
     private void runSimulation() {
         while (true){
             for (RuleImpl rule: world.getRules()){
-                Random random = new Random();
-                double probability = random.nextDouble();
-                if(rule.getActivation().getTicks() == worldInstance.getCurrentTick() && (rule.getActivation().getProbability() == 1 || rule.getActivation().getTicks() > probability)){
+                if(isRuleActive(rule)){
                     for(Action action: rule.nameActions()){
-                        performeOperation(action);
+                        performOperation(action);
                     }
                 }
             }
@@ -110,7 +107,13 @@ public class UIManager {
         }
     }
 
-    private void performeOperation(Action action) {
+    private boolean isRuleActive(RuleImpl rule) {
+        Random random = new Random();
+        double probability = random.nextDouble();
+        return rule.getActivation().getTicks() == worldInstance.getCurrentTick() && (rule.getActivation().getProbability() == 1 || rule.getActivation().getTicks() > probability);
+    }
+
+    private void performOperation(Action action) {
         String entityName = action.getEntityName();
         for(EntityInstance entityInstance: worldInstance.getEntityInstanceList()){
             if(entityName.equals(entityInstance.getName())) {
@@ -129,20 +132,20 @@ public class UIManager {
             }
         }
 
-        worldInstance = new WorldInstance(environmentInstanceMap, initEntites());
+        worldInstance = new WorldInstance(environmentInstanceMap, initEntities());
         worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
         printEnvironmentNamesAndValues();
     }
 
-    private List<EntityInstance> initEntites() {
+    private List<EntityInstance> initEntities() {
         List<EntityInstance> entityInstanceList = new ArrayList<>();
         List<Property> allProperty = new ArrayList<>();
-        for (EntityDefiniton entityDefiniton: world.getEntityDefinition().values()){
-            for (int count = 0; count< entityDefiniton.getAmountOfPopulation(); count++){
-                for(PropertyDefinition propertyDefinition: entityDefiniton.getProps()){
+        for (EntityDefinition entityDefinition: world.getEntityDefinition().values()){
+            for (int count = 0; count< entityDefinition.getAmountOfPopulation(); count++){
+                for(PropertyDefinition propertyDefinition: entityDefinition.getProps()){
                     allProperty.add(initProperty(propertyDefinition));
                 }
-                entityInstanceList.add(new EntityInstance(entityDefiniton.getName(), allProperty));
+                entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty));
                 allProperty.clear();
             }
         }
@@ -154,57 +157,84 @@ public class UIManager {
         Property property = null;
         switch (propertyDefinition.getType()) {
             case FLOAT:
-                if(propertyDefinition.isRandomInitialize()) {
-                    if (propertyDefinition.getRange() != null) {
-                        property = new FloatPropertyInstance(propertyDefinition.getName(),
-                                ValueGeneratorFactory.createRandomFloat( propertyDefinition.getRange().getFrom(), propertyDefinition.getRange().getTo()));
-                    }
-                    else {
-                        property = new FloatPropertyInstance(propertyDefinition.getName(),
-                                ValueGeneratorFactory.createRandomFloat(null, null));
-                    }
-                }
-                else{
-                    property = new FloatPropertyInstance(propertyDefinition.getName(),
-                            ValueGeneratorFactory.createFixed((float)propertyDefinition.getInit()));
-                }
+                property = createPropertyFloat(propertyDefinition);
                 break;
             case DECIMAL:
-                if(propertyDefinition.isRandomInitialize()) {
-                    if (propertyDefinition.getRange() != null) {
-                        property = new IntegerPropertyInstance(propertyDefinition.getName(),
-                                ValueGeneratorFactory.createRandomInteger(propertyDefinition.getRange().getFrom().intValue(), propertyDefinition.getRange().getTo().intValue()));
-                    }
-                    else {
-                        property = new IntegerPropertyInstance(propertyDefinition.getName(),
-                                ValueGeneratorFactory.createRandomInteger(null, null));
-                    }
-                }
-                else{
-                    property = new IntegerPropertyInstance(propertyDefinition.getName(),
-                            ValueGeneratorFactory.createFixed((int)propertyDefinition.getInit()));
-                }
+                property = createPropertyDecimal(propertyDefinition);
                 break;
             case BOOLEAN:
-                if(propertyDefinition.isRandomInitialize()) {
-                    property = new BooleanPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomBoolean());
-                }
-                else{
-                    property = new BooleanPropertyInstance(propertyDefinition.getName(),
-                            ValueGeneratorFactory.createFixed((boolean)propertyDefinition.getInit()));
-                }
+                property = createPropertyBoolean(propertyDefinition);
                 break;
             case STRING:
-                if(propertyDefinition.isRandomInitialize()) {
-                    property = new StringPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomString());
-                }
-                else{
-                    property = new StringPropertyInstance(propertyDefinition.getName(),
-                            ValueGeneratorFactory.createFixed((String) propertyDefinition.getInit()));
-                }
+                property = createPropertyString(propertyDefinition);
                 break;
 
         }
+        return property;
+    }
+
+    private Property createPropertyString(PropertyDefinition propertyDefinition) {
+        StringPropertyInstance property;
+        if(propertyDefinition.isRandomInitialize()) {
+            property = new StringPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomString());
+        }
+        else{
+            property = new StringPropertyInstance(propertyDefinition.getName(),
+                    ValueGeneratorFactory.createFixed((String) propertyDefinition.getInit()));
+        }
+
+        return property;
+    }
+
+    private Property createPropertyBoolean(PropertyDefinition propertyDefinition) {
+        BooleanPropertyInstance property;
+        if(propertyDefinition.isRandomInitialize()) {
+            property = new BooleanPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomBoolean());
+        }
+        else{
+            property = new BooleanPropertyInstance(propertyDefinition.getName(),
+                    ValueGeneratorFactory.createFixed((boolean)propertyDefinition.getInit()));
+        }
+
+        return property;
+    }
+
+    private Property createPropertyDecimal(PropertyDefinition propertyDefinition) {
+        IntegerPropertyInstance property;
+        if(propertyDefinition.isRandomInitialize()) {
+            if (propertyDefinition.getRange() != null) {
+                property = new IntegerPropertyInstance(propertyDefinition.getName(),
+                        ValueGeneratorFactory.createRandomInteger(propertyDefinition.getRange().getFrom().intValue(), propertyDefinition.getRange().getTo().intValue()));
+            }
+            else {
+                property = new IntegerPropertyInstance(propertyDefinition.getName(),
+                        ValueGeneratorFactory.createRandomInteger(null, null));
+            }
+        }
+        else{
+            property = new IntegerPropertyInstance(propertyDefinition.getName(),
+                    ValueGeneratorFactory.createFixed((int)propertyDefinition.getInit()));
+        }
+        return property;
+    }
+
+    private Property createPropertyFloat(PropertyDefinition propertyDefinition) {
+        FloatPropertyInstance property;
+        if(propertyDefinition.isRandomInitialize()) {
+            if (propertyDefinition.getRange() != null) {
+                property = new FloatPropertyInstance(propertyDefinition.getName(),
+                        ValueGeneratorFactory.createRandomFloat( propertyDefinition.getRange().getFrom(), propertyDefinition.getRange().getTo()));
+            }
+            else {
+                property = new FloatPropertyInstance(propertyDefinition.getName(),
+                        ValueGeneratorFactory.createRandomFloat(null, null));
+            }
+        }
+        else{
+            property = new FloatPropertyInstance(propertyDefinition.getName(),
+                    ValueGeneratorFactory.createFixed((float)propertyDefinition.getInit()));
+        }
+
         return property;
     }
 
@@ -224,24 +254,11 @@ public class UIManager {
 
         switch (environmentDefinition.getType()) {
             case FLOAT:
-                if (environmentDefinition.getRange() != null) {
-                    environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
-                            ValueGeneratorFactory.createRandomFloat( environmentDefinition.getRange().getFrom(), environmentDefinition.getRange().getTo())));
-                }
-                else {
-                    environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
-                            ValueGeneratorFactory.createRandomFloat(null, null)));
-                }
+                environmentInstance = createEnvironmentFloat(environmentDefinition);
                 break;
             case DECIMAL:
-                if (environmentDefinition.getRange() != null) {
-                    environmentInstance = new EnvironmentInstance(new IntegerPropertyInstance(environmentDefinition.getName(),
-                            ValueGeneratorFactory.createRandomInteger(environmentDefinition.getRange().getFrom().intValue(), environmentDefinition.getRange().getTo().intValue())));
-                }
-                else {
-                    environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
-                            ValueGeneratorFactory.createRandomFloat(null, null)));
-                }
+                environmentInstance = createEnvironmentDecimal(environmentDefinition);
+
                 break;
             case BOOLEAN:
                 environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createRandomBoolean()));
@@ -256,8 +273,30 @@ public class UIManager {
         }
     }
 
-    private void setValueEnvironment(int userIntegerInput, List<String> enviromentName,  Map <String, EnvironmentInstance> environmentValuesByUser) {
-        String environmentName = enviromentName.get(userIntegerInput -1);
+    private EnvironmentInstance createEnvironmentDecimal(EnvironmentDefinition environmentDefinition) {
+        if (environmentDefinition.getRange() != null) {
+            return new EnvironmentInstance(new IntegerPropertyInstance(environmentDefinition.getName(),
+                    ValueGeneratorFactory.createRandomInteger(environmentDefinition.getRange().getFrom().intValue(), environmentDefinition.getRange().getTo().intValue())));
+        }
+        else {
+            return new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
+                    ValueGeneratorFactory.createRandomFloat(null, null)));
+        }
+    }
+
+    private EnvironmentInstance createEnvironmentFloat(EnvironmentDefinition environmentDefinition) {
+        if (environmentDefinition.getRange() != null) {
+            return new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
+                    ValueGeneratorFactory.createRandomFloat( environmentDefinition.getRange().getFrom(), environmentDefinition.getRange().getTo())));
+        }
+        else {
+            return new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
+                    ValueGeneratorFactory.createRandomFloat(null, null)));
+        }
+    }
+
+    private void setValueEnvironment(int userIntegerInput, List<String> environmentNameList,  Map <String, EnvironmentInstance> environmentValuesByUser) {
+        String environmentName = environmentNameList.get(userIntegerInput -1);
         EnvironmentDefinition environmentDefinition = world.getEnvironmentDefinition().get(environmentName);
         boolean validInput = false;
 
@@ -271,11 +310,11 @@ public class UIManager {
             }
             catch (NumberFormatException exception)
             {
-                System.out.println("NumberFormatException");
+                System.out.println("You did not enter a number for a numeric environment variable");
             }
             catch (IndexOutOfBoundsException exception)
             {
-                System.out.println("IndexOutOfBoundsException");
+                System.out.println("The number you entered is not in the existing range");
             }
         }while(!validInput);
     }
@@ -388,7 +427,7 @@ public class UIManager {
 
     private void checkValidationInput(int userIntegerInput) throws IndexOutOfBoundsException {
         if(userIntegerInput < 1 || userIntegerInput > world.getEnvironmentDefinition().size() + 1){
-           throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
     }
@@ -410,12 +449,12 @@ public class UIManager {
     }
 
     private  List<String>  createListEnvironmentNames() throws NullPointerException {
-        List<String> enviromentName = new ArrayList<>();
+        List<String> environmentName = new ArrayList<>();
         for (Map.Entry<String, EnvironmentDefinition> environmentEntry : world.getEnvironmentDefinition().entrySet()) {
-            enviromentName.add(environmentEntry.getValue().getName());
+            environmentName.add(environmentEntry.getValue().getName());
         }
 
-        return enviromentName;
+        return environmentName;
     }
 
 
@@ -423,23 +462,23 @@ public class UIManager {
         try{
             if (world != null) {
                 System.out.println("The information about the simulation defined in the xml file are:");
-                printEntitiesDetalis();
-                printRulesDetalis();
-                printTerminationDetalis();
+                printEntitiesDetails();
+                printRulesDetails();
+                printTerminationDetails();
             }
         }
-       catch (NullPointerException e){
+        catch (NullPointerException e){
             System.out.println("You cannot see the simulation details before you have loaded the xml file");
         }
 
     }
 
-    private void printTerminationDetalis() {
+    private void printTerminationDetails() {
         System.out.println("3.Termination:");
         System.out.println(world.getTermination());
     }
 
-    private void printRulesDetalis() {
+    private void printRulesDetails() {
         System.out.println("2.Rules:");
         for (RuleImpl rule : world.getRules()) {
             System.out.println(rule);
@@ -447,7 +486,7 @@ public class UIManager {
 
     }
 
-    private void printEntitiesDetalis() {
+    private void printEntitiesDetails() {
         System.out.println("1.Entities:");
         Map<String, EntityDefinitionImpl> entityDefinitions = world.getEntityDefinition();
         for (Map.Entry<String, EntityDefinitionImpl> entry : entityDefinitions.entrySet()) {
@@ -477,7 +516,7 @@ public class UIManager {
     }
 
     private void checkValidationXMLPath(String path) throws FilePathException {
-         if (path.length() <= 4) {
+        if (path.length() <= 4) {
             throw new FilePathException(FilePathException.ErrorType.FILE_NAME_CONTAINS_LESS_THAN_4_CHARACTERS);
         } else if (!path.endsWith(".xml")) {
             throw new FilePathException(FilePathException.ErrorType.NOT_ENDS_WITH_XML);

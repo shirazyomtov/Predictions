@@ -3,7 +3,7 @@ package world.rule.action;
 import jaxb.schema.generated.PRDDivide;
 import jaxb.schema.generated.PRDMultiply;
 import world.enums.ActionType;
-import world.rule.action.calculation.binaryCalculationAction.BinaryCalcuationActionFactory;
+import world.rule.action.calculation.binaryCalculationAction.BinaryCalculationActionFactory;
 import world.rule.action.condition.Condition;
 
 import static world.enums.CalculationBinaryTypeAction.DIVIDE;
@@ -25,10 +25,10 @@ public final class ActionFactory {
                 break;
             case CALCULATION:
                 if(multiply != null) {
-                    selectedAction = BinaryCalcuationActionFactory.createBinaryAction(MULTIPLY,entityName, resultPropertyName, multiply.getArg1(), multiply.getArg2());
+                    selectedAction = BinaryCalculationActionFactory.createBinaryAction(MULTIPLY,entityName, resultPropertyName, multiply.getArg1(), multiply.getArg2());
                 }
                 else if (divide != null) {
-                    selectedAction = BinaryCalcuationActionFactory.createBinaryAction(DIVIDE ,entityName, resultPropertyName, divide.getArg1(), divide.getArg2());
+                    selectedAction = BinaryCalculationActionFactory.createBinaryAction(DIVIDE ,entityName, resultPropertyName, divide.getArg1(), divide.getArg2());
                 }
                 break;
             case CONDITION: // change

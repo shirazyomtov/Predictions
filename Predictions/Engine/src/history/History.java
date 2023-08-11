@@ -38,4 +38,8 @@ public final class History {
     public void addSimulation(Simulation simulation){
         allSimulations.put(currentSimulationNumber, simulation);
     }
+
+    public Map<Integer, Simulation> getAllSimulations() {
+        return allSimulations;
+    }
 }

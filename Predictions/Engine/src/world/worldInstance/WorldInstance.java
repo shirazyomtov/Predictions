@@ -12,6 +12,7 @@ public class WorldInstance {
 
     private List<EntityInstance> entityInstanceList = null; //change map
 
+
     private int currentTick = 1;
     public WorldInstance(Map<String, EnvironmentInstance> environmentInstanceMap, List<EntityInstance> entityInstanceList) {
         this.environmentInstanceMap = environmentInstanceMap;

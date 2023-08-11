@@ -43,7 +43,7 @@ public class UIManager {
     public void RunProgram()
     {
         int option = 0;
-        while(option != MenuOptions.EXIT.GetNUmberOfOption()) {
+        while(option != MenuOptions.EXIT.getNumberOfOption()) {
             option = chooseOption();
             runOptionSelectedByUser(MenuOptions.getOptionByNumber(option));
         }

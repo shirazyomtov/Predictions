@@ -1,5 +1,6 @@
 package world.rule.action;
 
+import jaxb.schema.generated.PRDAction;
 import jaxb.schema.generated.PRDCondition;
 import jaxb.schema.generated.PRDDivide;
 import jaxb.schema.generated.PRDMultiply;
@@ -14,7 +15,7 @@ import static world.enums.CalculationBinaryTypeAction.MULTIPLY;
 public final class ActionFactory {
 
     public static Action createAction(ActionType type, String entityName, String propertyName, String by, String value,
-                                      PRDMultiply multiply, PRDDivide divide, String resultPropertyName, PRDCondition condition)
+                                      PRDMultiply multiply, PRDDivide divide, String resultPropertyName, PRDAction condition)
     {
         Action selectedAction = null;
         switch (type) {
@@ -32,7 +33,7 @@ public final class ActionFactory {
                     selectedAction = BinaryCalculationActionFactory.createBinaryAction(DIVIDE ,entityName, resultPropertyName, divide.getArg1(), divide.getArg2());
                 }
                 break;
-            case CONDITION: // change
+            case CONDITION:
                 selectedAction = new Condition(entityName, condition);
                 break;
             case SET:

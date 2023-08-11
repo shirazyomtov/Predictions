@@ -1,11 +1,8 @@
 package world.rule.action.expression;
 
 import exceptions.ObjectNotExist;
-import history.History;
 import world.auxiliaryFunctions.AuxiliaryFunctionsImpl;
 import world.entity.instance.EntityInstance;
-import world.propertyInstance.api.Property;
-import world.worldInstance.WorldInstance;
 
 import static world.enums.AuxiliaryFunction.*;
 
@@ -17,7 +14,7 @@ public class ExpressionIml implements Expression {
     }
 
     @Override
-    public Object decipher(String entityName) throws ObjectNotExist, NumberFormatException {
+    public Object decipher(EntityInstance entity) throws ObjectNotExist, NumberFormatException {
         Object object = null ;
         if (checkOptionByFunctionName(expressionName)) {
             int index = expressionName.indexOf("(");
@@ -30,8 +27,8 @@ public class ExpressionIml implements Expression {
                 object = AuxiliaryFunctionsImpl.random(value);
             }
         }
-        else if (checkIfValueIsProperty(entityName) != null) {
-            object = checkIfValueIsProperty(entityName);
+        else if (checkIfValueIsProperty(entity) != null) {
+            object = checkIfValueIsProperty(entity);
         }
         else {
             object = expressionName;
@@ -40,16 +37,10 @@ public class ExpressionIml implements Expression {
     }
 
 
-    private Object checkIfValueIsProperty(String entityName) {
-        WorldInstance world = History.getInstance().getSimulation().getWorldInstance();
-        for(EntityInstance entityInstance: world.getEntityInstanceList()){
-            if(entityInstance.getName().equals(entityName)){
-                    if(entityInstance.getAllProperty().containsKey(expressionName)){
-                        return entityInstance.getAllProperty().get(expressionName).generateValue();
-                    }
-                }
-            }
-
+    private Object checkIfValueIsProperty(EntityInstance entity) {
+        if(entity.getAllProperty().containsKey(expressionName)){
+            return entity.getAllProperty().get(expressionName).generateValue();
+        }
         return null;
     }
 

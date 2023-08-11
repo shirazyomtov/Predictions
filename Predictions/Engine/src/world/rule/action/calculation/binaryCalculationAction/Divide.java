@@ -1,7 +1,6 @@
 package world.rule.action.calculation.binaryCalculationAction;
 
 import exceptions.ObjectNotExist;
-import history.History;
 import world.entity.instance.EntityInstance;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
@@ -13,20 +12,16 @@ public class Divide extends BinaryAction{
 
     @Override
     public void operation(EntityInstance entity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException {
-        Object valueArg1 = this.getArgument1().decipher(this.getEntityName());
-        Object valueArg2 = this.getArgument2().decipher(this.getEntityName());
+        Object valueArg1 = this.getArgument1().decipher(entity);
+        Object valueArg2 = this.getArgument2().decipher(entity);
+        String stringValueArg1 = (String) valueArg1;
+        String stringValueArg2= (String) valueArg2;
         Property resultProp = entity.getAllProperty().get(getResultPropertyName());
         Type type = resultProp.getType();
         try {
             if (type.equals(Type.FLOAT)) {
-                Float number = null, number2 = null;
-                if(valueArg1 instanceof Float){
-                    number = (Float) valueArg1;
-                }
-                if(valueArg2 instanceof String){
-                    String value = (String) valueArg2;
-                    number2 = Float.parseFloat(value);
-                }
+                Float number = Float.parseFloat(stringValueArg1);
+                Float number2 = Float.parseFloat(stringValueArg2);
                 resultProp.setValue(number / number2);
             }
         }

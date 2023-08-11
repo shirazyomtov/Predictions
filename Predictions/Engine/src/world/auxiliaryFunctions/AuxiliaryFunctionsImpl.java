@@ -9,7 +9,7 @@ public final class AuxiliaryFunctionsImpl {
 
     public static Object environment(String environmentName) throws ObjectNotExist {
         if (History.getInstance().getSimulation().getWorldInstance().getEnvironmentInstanceMap().containsKey(environmentName)) {
-            return History.getInstance().getSimulation().getWorldInstance().getEnvironmentInstanceMap().get(environmentName).getProperty().generateValue();
+            return History.getInstance().getSimulation().getWorldInstance().getEnvironmentInstanceMap().get(environmentName).getProperty().getValue();
         } else {
             throw new ObjectNotExist(environmentName, "environment");
         }

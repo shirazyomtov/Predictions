@@ -1,7 +1,6 @@
 package world.rule.action;
 
 import exceptions.ObjectNotExist;
-import history.History;
 import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 import world.enums.Type;
@@ -21,22 +20,18 @@ public class Increase extends Action{
 
     @Override
     public void operation(EntityInstance entity) throws ObjectNotExist, NumberFormatException, ClassCastException {
-        Object by = expression.decipher(this.getEntityName());
+        Object by = expression.decipher(entity);
         String stringBy = (String) by;
         Property property = entity.getAllProperty().get(propertyName);
-        Integer value = null;
-        if(property.generateValue() instanceof Integer){
-            value = (Integer) property.generateValue();
-        }
         Type type = property.getType();
         try {
             if(type.equals(Type.DECIMAL)) {
                 Integer number = Integer.parseInt(stringBy);
-                property.setValue(number + value);
+                property.setValue(number + (Integer) property.getValue());
             }
             else if (type.equals(Type.FLOAT)) {
                 Float number = Float.parseFloat(stringBy);
-                property.setValue(number + (Float) property.generateValue());
+                property.setValue(number + (Float) property.getValue());
             }
         }
         catch (ClassCastException e){

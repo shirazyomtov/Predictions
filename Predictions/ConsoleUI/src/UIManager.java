@@ -118,19 +118,20 @@ public class UIManager {
         }
 
         if(seconds > world.getTermination().getSecond()){
-            message = "The simulation has ended because more than" + world.getTermination().getSecond() + " seconds have passed";
+            message = "The simulation has ended because more than " + world.getTermination().getSecond() + " seconds have passed";
         }
         else if(history.getSimulation().getWorldInstance().getCurrentTick() > world.getTermination().getTicks()){
-            message = "The simulation has ended because more than" + world.getTermination().getTicks() + " ticks have passed";
+            message = "The simulation has ended because more than " + world.getTermination().getTicks() + " ticks have passed";
         }
         printIdAndTerminationReason(message);
 
     }
 
     private void printIdAndTerminationReason(String message) {
+        System.out.println("The simulation has ended");
         System.out.print("Simulation id: ");
         System.out.println(numberOfTimesUserSelectSimulation);
-        System.out.print(message);
+        System.out.println(message);
     }
 
     private boolean isRuleActive(RuleImpl rule) {

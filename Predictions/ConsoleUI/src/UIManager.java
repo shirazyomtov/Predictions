@@ -29,6 +29,7 @@ public class UIManager {
 
     private WorldDefinition world = null;
 
+    private WorldInstance worldInstance = null;
     private History history = null;
     private XMLReader xmlReader = null;
     private XMLValidation xmlValidation = null;
@@ -102,17 +103,16 @@ public class UIManager {
         long startMillisSeconds = System.currentTimeMillis();
         String message = null;
         int seconds = 0;
-        Random random = new Random();
-        while (seconds <= world.getTermination().getSecond() && history.getSimulation().getWorldInstance().getCurrentTick() <= world.getTermination().getTicks()){
+        while (seconds <= world.getTermination().getSecond() && worldInstance.getCurrentTick() <= world.getTermination().getTicks()){
             for (RuleImpl rule: world.getRules()){
-                if(isRuleActive(rule)){
+                if(rule.getActivation().isActive(worldInstance.getCurrentTick())){
                     for(Action action: rule.nameActions()){
                         performOperation(action);
                     }
                 }
             }
 
-            history.getSimulation().getWorldInstance().setCurrentTick(history.getSimulation().getWorldInstance().getCurrentTick() + 1);
+            worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
             long currentMilliSeconds = System.currentTimeMillis();
             seconds = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
         }
@@ -120,7 +120,7 @@ public class UIManager {
         if(seconds > world.getTermination().getSecond()){
             message = "The simulation has ended because more than " + world.getTermination().getSecond() + " seconds have passed";
         }
-        else if(history.getSimulation().getWorldInstance().getCurrentTick() > world.getTermination().getTicks()){
+        else if(worldInstance.getCurrentTick() > world.getTermination().getTicks()){
             message = "The simulation has ended because more than " + world.getTermination().getTicks() + " ticks have passed";
         }
         printIdAndTerminationReason(message);
@@ -134,15 +134,9 @@ public class UIManager {
         System.out.println(message);
     }
 
-    private boolean isRuleActive(RuleImpl rule) {
-        Random random = new Random();
-        double probability = random.nextDouble();
-        return rule.getActivation().getTicks() == History.getInstance().getSimulation().getWorldInstance().getCurrentTick() && (rule.getActivation().getProbability() == 1 || rule.getActivation().getTicks() > probability);
-    }
-
     private void performOperation(Action action) {
         String entityName = action.getEntityName();
-        for(EntityInstance entityInstance: history.getSimulation().getWorldInstance().getEntityInstanceList()){
+        for(EntityInstance entityInstance: worldInstance.getEntityInstanceList()){
             if(entityName.equals(entityInstance.getName())) {
                 try {
                     action.operation(entityInstance);
@@ -165,12 +159,11 @@ public class UIManager {
         }
 
         numberOfTimesUserSelectSimulation++;
-        WorldInstance  worldInstance =new WorldInstance(environmentInstanceMap, initEntities());
+        worldInstance =new WorldInstance(environmentInstanceMap, initEntities());
         Simulation simulation = new Simulation(worldInstance);
         history = History.getInstance();
         history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
         history.addSimulation(simulation);
-        worldInstance = new WorldInstance(environmentInstanceMap, initEntities());
         worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
         printEnvironmentNamesAndValues();
     }
@@ -281,7 +274,7 @@ public class UIManager {
     private void printEnvironmentNamesAndValues() {
         int index = 1;
         System.out.println("All the environment properties name and value: ");
-        for (Map.Entry<String,  EnvironmentInstance> entry : history.getSimulation().getWorldInstance().getEnvironmentInstanceMap().entrySet()) {
+        for (Map.Entry<String,  EnvironmentInstance> entry : worldInstance.getEnvironmentInstanceMap().entrySet()) {
             System.out.print(index);
             System.out.print(".");
             System.out.println(entry.getValue());

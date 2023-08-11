@@ -3,11 +3,9 @@ package world.rule;
 import jaxb.schema.generated.PRDAction;
 import jaxb.schema.generated.PRDRule;
 import world.enums.ActionType;
-import world.enums.CalculationBinaryTypeAction;
-import world.enums.Type;
 import world.rule.action.Action;
 import world.rule.action.ActionFactory;
-import world.rule.activation.Activation;
+import world.rule.activation.ActivationImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +13,14 @@ import java.util.List;
 public class RuleImpl implements Rule {
     private final String ruleName;
 
-    private final Activation activation;
+    private final ActivationImpl activation;
 
     private final Integer amountOfActions;
     private final List<Action> allAction = new ArrayList<>();
 
     public RuleImpl(PRDRule prdRule) {
       this.ruleName = prdRule.getName();
-      this.activation = new Activation(prdRule.getPRDActivation());
+      this.activation = new ActivationImpl(prdRule.getPRDActivation());
       this.amountOfActions = prdRule.getPRDActions().getPRDAction().size();
       for (PRDAction prdAction: prdRule.getPRDActions().getPRDAction())
       {
@@ -44,7 +42,7 @@ public class RuleImpl implements Rule {
     }
 
     @Override
-    public Activation getActivation() {
+    public ActivationImpl getActivation() {
         return activation;
     }
 

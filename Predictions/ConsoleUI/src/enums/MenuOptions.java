@@ -1,3 +1,5 @@
+package enums;
+
 public enum MenuOptions {
     LOAD_XML("Load and read XML file.", 1),
     SIMULATION_DETAILS("Displaying the simulation details", 2),
@@ -6,7 +8,7 @@ public enum MenuOptions {
     EXIT("Exiting the system", 5);
 
     private final String message;
-    private final Integer optionNumber;
+    final Integer optionNumber;
 
     private MenuOptions(String message, Integer optionNumber)
     {
@@ -19,11 +21,11 @@ public enum MenuOptions {
         return message;
     }
 
-    public Integer GetNUmberOfOption() {return optionNumber;}
+    public Integer getNumberOfOption() {return optionNumber;}
 
-    public static Integer GetCountOfOptions() {return MenuOptions.values().length;}
+    public static Integer getCountOfOptions() {return MenuOptions.values().length;}
 
-    public static MenuOptions GetOptionByNumber(int num) throws IndexOutOfBoundsException {
+    public static MenuOptions getOptionByNumber(int num) throws IndexOutOfBoundsException {
 
         for(MenuOptions option: MenuOptions.values()){
             if (option.optionNumber == num)

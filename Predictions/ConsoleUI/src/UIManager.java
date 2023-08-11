@@ -1,3 +1,5 @@
+import enums.DisplaySimulationOption;
+import enums.MenuOptions;
 import exceptions.FilePathException;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotSupportedType;
@@ -24,7 +26,9 @@ import xml.XMLValidation;
 
 import javax.xml.bind.JAXBException;
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
 import java.util.*;
+
 
 public class UIManager {
 
@@ -41,7 +45,7 @@ public class UIManager {
         int option = 0;
         while(option != MenuOptions.EXIT.GetNUmberOfOption()) {
             option = chooseOption();
-            runOptionSelectedByUser(MenuOptions.GetOptionByNumber(option));
+            runOptionSelectedByUser(MenuOptions.getOptionByNumber(option));
         }
     }
 
@@ -56,11 +60,11 @@ public class UIManager {
             try{
                 menu.ShowMenu();
                 userIntegerInput = Integer.parseInt(scanner.nextLine());
-                MenuOptions.GetOptionByNumber(userIntegerInput);
+                MenuOptions.getOptionByNumber(userIntegerInput);
                 validInput = true;
             }
             catch (NumberFormatException  | IndexOutOfBoundsException exception){
-                System.out.println("Invalid input. Please insert a number between 1 and " + MenuOptions.GetCountOfOptions() + ".");
+                System.out.println("Invalid input. Please insert a number between 1 and " + MenuOptions.getCountOfOptions() + ".");
             }
         }while (!validInput);
 
@@ -75,10 +79,121 @@ public class UIManager {
             case SIMULATION_DETAILS:
                 simulationDetails();
                 break;
-            case  SIMULATION: // check
+            case  SIMULATION:
                 simulation();
                 break;
+            case PAST_ACTIVATION:
+                detailsOfPastRun();
+
         }
+    }
+
+    private void detailsOfPastRun() { // DUPLICATE CODE
+        TreeMap<Integer, Simulation> sortedMap = new TreeMap<>();
+        int userIntegerInput = 0;
+        int userDisplayModeInput ;
+        try{
+            sortedMap = sortMapOfSimulations();
+            userIntegerInput = chooseOfPastSimulation(sortedMap);
+            userDisplayModeInput = chooseTheDisplayMode();
+            showDetailsOfSpecificPastRun(DisplaySimulationOption.getOptionByNumber(userDisplayModeInput), userIntegerInput);
+        }
+        catch (NullPointerException exception){
+            System.out.println("You need to run at least one simulation first");
+        }
+
+    }
+
+    private void showDetailsOfSpecificPastRun(DisplaySimulationOption userDisplayModeInput, int userIntegerInput) {
+        switch (userDisplayModeInput) {
+            case DISPLAYBYQUANTITY:
+                displayByQuantity(userIntegerInput);
+                break;
+            case DISPLAYBYHISTOGRMOFPROPERTY:
+                break;
+        }
+    }
+
+    private void displayByQuantity(int userIntegerInput) {
+        int count = 0;
+        WorldInstance world = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
+        Map<String , Integer> entity = new HashMap<>();
+        System.out.println("The initial and final quantity of each entity: ");
+        for (EntityInstance entityInstance1: world.getEntityInstanceList()) {
+            if(!entity.containsKey(entityInstance1.getName())){
+                entity.put(entityInstance1.getName(), 1);
+                for (EntityInstance entityInstance2: world.getEntityInstanceList()) {
+                    if(entityInstance2.getName().equals(entityInstance1.getName())){
+                        count++;
+                    }
+                }
+                System.out.println("Entity " + entityInstance1.getName());
+                System.out.println("The initial quantity of this entity : " + world.getWorldDefinition().getEntityDefinition().get(entityInstance1.getName()).getAmountOfPopulation());
+                System.out.println("The final quantity of this entity : " + count);
+                count = 0;
+            }
+        }
+    }
+
+    private int chooseTheDisplayMode() { // duplicate
+        boolean validInput = false;
+        int userDisplayModeInput = 0;
+        Scanner scanner = new Scanner(System.in);
+        do {
+            try{
+                printDisplayMode();
+                userDisplayModeInput = Integer.parseInt(scanner.nextLine());
+                DisplaySimulationOption.getOptionByNumber(userDisplayModeInput);
+                validInput = true;
+            }
+            catch (NumberFormatException  | IndexOutOfBoundsException exception){
+                System.out.println("Invalid input. Please insert a number between 1 and " + 2 + ".");
+            }
+        }while (!validInput);
+
+        return userDisplayModeInput;
+    }
+
+    private void printDisplayMode() {
+       System.out.println("Please select the display mode");
+        for (DisplaySimulationOption displaySimulationOption : DisplaySimulationOption.values()) {
+            System.out.println(displaySimulationOption.getOptionNumber() + ". " + displaySimulationOption);
+        }
+    }
+
+    private TreeMap<Integer, Simulation> sortMapOfSimulations() {
+        return new TreeMap<>(history.getAllSimulations());
+    }
+
+    private int chooseOfPastSimulation( TreeMap<Integer, Simulation> sortedMap) {
+        boolean validInput = false;
+        int userIntegerInput = 0;
+        int index = 0;
+        Scanner scanner = new Scanner(System.in);
+        do {
+            try{
+                index = PrintDateAndIdOfPastSimulations(sortedMap);
+                userIntegerInput = Integer.parseInt(scanner.nextLine());
+                checkValidationInput(userIntegerInput, index);
+                validInput = true;
+            }
+            catch (NumberFormatException  | IndexOutOfBoundsException exception){
+                System.out.println("Invalid input. Please insert a number between 1 and " + index + ".");
+            }
+        }while (!validInput);
+
+        return userIntegerInput;
+    }
+
+    private int PrintDateAndIdOfPastSimulations(TreeMap<Integer, Simulation> sortedMap) {
+        int index = 0;
+        System.out.println("The list of all the runs performed by the system are:");
+        System.out.println("Please select the relevant run you want to see the results of");
+        for (Map.Entry<Integer, Simulation> entry : sortedMap.entrySet()) {
+            index++;
+            System.out.println( index + ". Unique identifier of the simulation : " + entry.getKey() + ", Running date: " + entry.getValue().getFormattedDateTime());
+        }
+        return index;
     }
 
     private void simulation() {
@@ -160,8 +275,8 @@ public class UIManager {
         }
 
         numberOfTimesUserSelectSimulation++;
-        worldInstance =new WorldInstance(environmentInstanceMap, initEntities());
-        Simulation simulation = new Simulation(worldInstance);
+        worldInstance =new WorldInstance(environmentInstanceMap, initEntities(), world);
+        Simulation simulation = new Simulation(worldInstance, LocalDateTime.now());
         history = History.getInstance();
         history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
         history.addSimulation(simulation);
@@ -432,7 +547,7 @@ public class UIManager {
         }
     }
 
-    private int chooseEnvironmentProperty() throws  NullPointerException{
+    private int chooseEnvironmentProperty() {
         // change duplicate code
         boolean validInput = false;
         int userIntegerInput = 0;
@@ -448,7 +563,7 @@ public class UIManager {
                 }
                 index = printEnvironmentNames();
                 userIntegerInput = Integer.parseInt(scanner.nextLine());
-                checkValidationInput(userIntegerInput);
+                checkValidationInput(userIntegerInput, world.getEnvironmentDefinition().size() + 1);
                 validInput = true;
             }
             catch (NumberFormatException  | IndexOutOfBoundsException exception){
@@ -459,8 +574,8 @@ public class UIManager {
         return userIntegerInput;
     }
 
-    private void checkValidationInput(int userIntegerInput) throws IndexOutOfBoundsException {
-        if(userIntegerInput < 1 || userIntegerInput > world.getEnvironmentDefinition().size() + 1){
+    private void checkValidationInput(int userIntegerInput, int size) throws IndexOutOfBoundsException {
+        if(userIntegerInput < 1 || userIntegerInput > size){
             throw new IndexOutOfBoundsException();
         }
 
@@ -492,7 +607,7 @@ public class UIManager {
     }
 
 
-    private void simulationDetails() {
+    private void simulationDetails() { //bug
         try{
             if (world != null) {
                 System.out.println("The information about the simulation defined in the xml file are:");

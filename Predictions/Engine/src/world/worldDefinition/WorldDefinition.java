@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class WorldDefinition {
-    private final Map<String, EntityDefinitionImpl> entityDefinition; // change to list
+    private final Map<String, EntityDefinitionImpl> entityDefinition;
 
     private final List<RuleImpl> rules;
 

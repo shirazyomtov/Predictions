@@ -24,16 +24,19 @@ public class Increase extends Action{
         Object by = expression.decipher(this.getEntityName());
         String stringBy = (String) by;
         Property property = entity.getAllProperty().get(propertyName);
-        String stringValue = (String) property.generateValue();
+        Integer value = null;
+        if(property.generateValue() instanceof Integer){
+            value = (Integer) property.generateValue();
+        }
         Type type = property.getType();
         try {
             if(type.equals(Type.DECIMAL)) {
                 Integer number = Integer.parseInt(stringBy);
-                property.setValueGenerator(number + Integer.parseInt(stringValue));
+                property.setValue(number + value);
             }
             else if (type.equals(Type.FLOAT)) {
                 Float number = Float.parseFloat(stringBy);
-                property.setValueGenerator(number + (Float) property.generateValue());
+                property.setValue(number + (Float) property.generateValue());
             }
         }
         catch (ClassCastException e){

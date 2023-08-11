@@ -183,7 +183,6 @@ public class UIManager {
                     allProperty.put(propertyDefinition.getName(), initProperty(propertyDefinition));
                 }
                 entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty));
-                allProperty.clear();
             }
         }
 
@@ -327,7 +326,7 @@ public class UIManager {
     private EnvironmentInstance createEnvironmentFloat(EnvironmentDefinition environmentDefinition) {
         if (environmentDefinition.getRange() != null) {
             return new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
-                    ValueGeneratorFactory.createRandomFloat( environmentDefinition.getRange().getFrom(), environmentDefinition.getRange().getTo())));
+                    ValueGeneratorFactory.createRandomFloat(environmentDefinition.getRange().getFrom(), environmentDefinition.getRange().getTo())));
         }
         else {
             return new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),

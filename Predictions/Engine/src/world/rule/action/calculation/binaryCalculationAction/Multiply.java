@@ -17,19 +17,31 @@ public class Multiply extends BinaryAction {
     public void operation(EntityInstance entity) throws ObjectNotExist, NumberFormatException, ClassCastException {
         Object valueArg1 = this.getArgument1().decipher(this.getEntityName());
         Object valueArg2 = this.getArgument2().decipher(this.getEntityName());
+
         Property resultProp = entity.getAllProperty().get(getResultPropertyName());
         Type type = resultProp.getType();
         try {
             if(type.equals(Type.DECIMAL)) {
-                Integer number = (Integer) valueArg1;
-                Integer number2 = (Integer) valueArg2;
-                resultProp.setValueGenerator(number * number2);
+                Integer number = null, number2 = null;
+                if(valueArg1 instanceof Integer){
+                    number = (Integer) valueArg1;
+                }
+                if(valueArg2 instanceof Integer){
+                    number2 = (Integer) valueArg1;
+                }
+
+                resultProp.setValue(number * number2);
 
             }
             else if (type.equals(Type.FLOAT)) {
-                Float number = (Float) valueArg1;
-                Float number2 = (Float) valueArg2;
-                resultProp.setValueGenerator(number * number2);
+                Float number = null, number2 = null;
+                if(valueArg1 instanceof Float){
+                    number = (Float) valueArg1;
+                }
+                if(valueArg2 instanceof Float){
+                    number2 = (Float) valueArg1;
+                }
+                resultProp.setValue(number * number2);
             }
         }
         catch (ClassCastException e){

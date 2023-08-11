@@ -27,12 +27,12 @@ public class Decrease extends Action{
         try {
             if(type.equals(Type.DECIMAL)) {
                 Integer number = (Integer) by;
-                property.setValueGenerator(number - (Integer) property.generateValue());
+                property.setValue(number - (Integer) property.generateValue());
 
             }
             else if (type.equals(Type.FLOAT)) {
                 Float number = (Float) by;
-                property.setValueGenerator(number - (Float) property.generateValue());
+                property.setValue(number - (Float) property.generateValue());
             }
         }
         catch (ClassCastException e){

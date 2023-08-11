@@ -6,6 +6,8 @@ import world.value.generator.api.ValueGenerator;
 public interface Property {
     String getName();
     Type getType();
+
+    void setValue(Object value);
     Object generateValue();
-    void setValueGenerator(Object valueGenerator);
+//    void setValueGenerator(Object valueGenerator);
 }

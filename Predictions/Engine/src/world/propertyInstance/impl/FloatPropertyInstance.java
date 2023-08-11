@@ -6,7 +6,7 @@ import world.value.generator.api.ValueGenerator;
 
 public class FloatPropertyInstance extends AbstractPropertyInstance<Float> {
 
-    public FloatPropertyInstance(String name, ValueGenerator<Float> valueGenerator) {
-        super(name, Type.FLOAT, valueGenerator);
+    public FloatPropertyInstance(String name, ValueGenerator<Float> value) {
+        super(name, Type.FLOAT, value);
     }
 }

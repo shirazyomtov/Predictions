@@ -9,10 +9,13 @@ public abstract class AbstractPropertyInstance<T> implements Property {
     private final Type propertyType;
     private  ValueGenerator<T> valueGenerator;
 
-    public AbstractPropertyInstance(String name, Type propertyType, ValueGenerator<T> valueGenerator) {
+    private Object value;
+
+    public AbstractPropertyInstance(String name, Type propertyType, ValueGenerator<T> value) {
         this.name = name;
         this.propertyType = propertyType;
-        this.valueGenerator = valueGenerator;
+        this.valueGenerator = value;
+        this.value = value;
     }
 
     @Override
@@ -30,16 +33,25 @@ public abstract class AbstractPropertyInstance<T> implements Property {
         return valueGenerator.generateValue();
     }
 
+//    @Override
+//    public void setValueGenerator(Object valueGenerator) {
+//        this.valueGenerator = (ValueGenerator<T>)valueGenerator;
+//    }
+
     @Override
-    public void setValueGenerator(Object valueGenerator) {
-        this.valueGenerator = (ValueGenerator<T>)valueGenerator;
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
+    public Object getValue() {
+        return value;
     }
 
     @Override
     public String toString() {
         return "AbstractPropertyInstance{" +
-                "name='" + name + '\'' +
-                ", valueGenerator=" + valueGenerator +
+                "name = '" + name + '\'' +
+                ", value = " + value +
                 '}';
     }
 

@@ -19,9 +19,15 @@ public class Divide extends BinaryAction{
         Type type = resultProp.getType();
         try {
             if (type.equals(Type.FLOAT)) {
-                Float number = (Float) valueArg1;
-                Float number2 = (Float) valueArg2;
-                resultProp.setValueGenerator(number / number2);
+                Float number = null, number2 = null;
+                if(valueArg1 instanceof Float){
+                    number = (Float) valueArg1;
+                }
+                if(valueArg2 instanceof String){
+                    String value = (String) valueArg2;
+                    number2 = Float.parseFloat(value);
+                }
+                resultProp.setValue(number / number2);
             }
         }
         catch (ArithmeticException e){

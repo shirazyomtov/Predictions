@@ -42,7 +42,7 @@ public class UIManager {
     public void RunProgram()
     {
         int option = 0;
-        while(option != MenuOptions.EXIT.GetNUmberOfOption()) {
+        while(option != MenuOptions.EXIT.getNumberOfOption()) {
             option = chooseOption();
             runOptionSelectedByUser(MenuOptions.getOptionByNumber(option));
         }
@@ -109,8 +109,113 @@ public class UIManager {
                 displayByQuantity(userIntegerInput);
                 break;
             case DISPLAYBYHISTOGRMOFPROPERTY:
+                displayByHistogrmOfProperty(userIntegerInput);
                 break;
         }
+    }
+
+    private void displayByHistogrmOfProperty(int userIntegerInput) {
+        WorldInstance worldInstance1 = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
+        Map<Object, Integer> valuesProperty = new HashMap<>();
+        EntityDefinition userEntityInput;
+        String propertyInput;
+        userEntityInput = chooseEntity(userIntegerInput);
+        propertyInput = chooseProperty(userEntityInput);
+        createPropertyValuesMap(valuesProperty, worldInstance1, userEntityInput, propertyInput);
+        printPropertiesValues(valuesProperty, propertyInput);
+    }
+
+    private void printPropertiesValues(Map<Object, Integer> valuesProperty, String propertyInput) {
+        System.out.println("The histogram of the property " + propertyInput);
+        for(Object object: valuesProperty.keySet()){
+            System.out.println("There are " + valuesProperty.get(object)+ " instances of the property " + propertyInput + " that is value is " + object);
+        }
+    }
+
+    private void createPropertyValuesMap(Map<Object, Integer> valuesProperty, WorldInstance worldInstance1, EntityDefinition userEntityInput, String propertyInput) {
+        for (EntityInstance entityInstance: worldInstance1.getEntityInstanceList()){
+            if (entityInstance.getName().equals(userEntityInput.getName())){
+                for (Property property: entityInstance.getAllProperty().values()){
+                    if (property.getName().equals(propertyInput)){
+                        if (!valuesProperty.containsKey(property.getValue())){
+                            valuesProperty.put(property.getValue(), 1);
+                        }
+                        else{
+                            valuesProperty.put(property.getValue(), valuesProperty.get(property.getValue()) + 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private String chooseProperty( EntityDefinition userEntityInput) {
+        boolean validInput = false;
+        int userPropertyInput = 0;
+        int index = 0;
+        Map<Integer, String> properties = new HashMap<>();
+        Scanner scanner = new Scanner(System.in);
+        do {
+            try{
+                index = printProperties(userEntityInput, properties);
+                userPropertyInput = Integer.parseInt(scanner.nextLine());
+                checkValidationInput(userPropertyInput, index);
+                validInput = true;
+            }
+            catch (NumberFormatException  | IndexOutOfBoundsException exception){
+                System.out.println("Invalid input. Please insert a number between 1 and " + index + ".");
+            }
+        }while (!validInput);
+
+        return properties.get(userPropertyInput);
+    }
+
+    private int printProperties(EntityDefinition userEntityInput, Map<Integer, String> properties) {
+        int index = 0;
+
+        System.out.println("Please select one of the given properties");
+        for(PropertyDefinition property: userEntityInput.getProps()){
+            index += 1;
+            System.out.print(index + ".");
+            System.out.println(property.getName());
+            properties.put(index, property.getName());
+        }
+        return  index;
+    }
+
+    private int printEntites(WorldInstance world, Map<Integer, String> entites)
+    {
+        int index = 0;
+
+        System.out.println("Please select one of the given entities");
+        for(String name: world.getWorldDefinition().getEntityDefinition().keySet()){
+            index += 1;
+            System.out.print(index + ".");
+            System.out.println(name);
+            entites.put(index, name);
+        }
+        return index;
+    }
+    private EntityDefinition chooseEntity(int userIntegerInput) { // duplicate
+        Map<Integer, String> entites = new HashMap<>();
+        WorldInstance world = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
+        boolean validInput = false;
+        int userEntityInput = 0;
+        int index = 0;
+        Scanner scanner = new Scanner(System.in);
+        do {
+            try{
+                index = printEntites(world, entites);
+                userEntityInput = Integer.parseInt(scanner.nextLine());
+                checkValidationInput(userEntityInput, index);
+                validInput = true;
+            }
+            catch (NumberFormatException  | IndexOutOfBoundsException exception){
+                System.out.println("Invalid input. Please insert a number between 1 and " + index + ".");
+            }
+        }while (!validInput);
+
+        return world.getWorldDefinition().getEntityDefinition().get(entites.get(userEntityInput));
     }
 
     private void displayByQuantity(int userIntegerInput) {
@@ -258,6 +363,7 @@ public class UIManager {
                 }
                 catch (ObjectNotExist | NumberFormatException | ClassCastException | ArithmeticException exception){
                     System.out.println(exception.getMessage());
+                    break;
                 }
             }
         }

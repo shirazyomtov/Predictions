@@ -33,7 +33,7 @@ public class RuleImpl implements Rule {
        return ActionFactory.createAction(Enum.valueOf(ActionType.class, prdAction.getType().toUpperCase()),
                                          prdAction.getEntity(), prdAction.getProperty(), prdAction.getBy(),
                                          prdAction.getValue(), prdAction.getPRDMultiply(), prdAction.getPRDDivide(),
-                                         prdAction.getResultProp(), prdAction.getPRDCondition());
+                                         prdAction.getResultProp(), prdAction);
     }
 
     @Override

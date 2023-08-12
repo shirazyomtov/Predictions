@@ -1,12 +1,13 @@
 import enums.MenuOptions;
 
 public class Menu {
-    public void ShowMenu()
-    {
-        System.out.println("Please choose one of the following options:");
+    public String showMenu() {
+        StringBuilder menuString = new StringBuilder("Please choose one of the following options:\n");
 
         for (MenuOptions option : MenuOptions.values()) {
-            System.out.println(option.getNumberOfOption() + ":" + option);
+            menuString.append(option.getNumberOfOption()).append(": ").append(option).append("\n");
         }
+
+        return menuString.toString();
     }
 }

@@ -19,26 +19,25 @@ public class Set extends Action {
 
     @Override
     public void operation(EntityInstance entity) throws ObjectNotExist {
-        Object value = expression.decipher(entity);
-        String stringValue = (String) value;
+        String value = expression.decipher(entity);
         Property property = entity.getAllProperty().get(propertyName);
         Type type = property.getType();
         try {
             if(type.equals(Type.DECIMAL)) {
-                Integer number = Integer.parseInt(stringValue);
+                Integer number = Integer.parseInt(value);
                 property.setValue(number);
             }
             else if (type.equals(Type.FLOAT)) {
-                Float number = Float.parseFloat(stringValue);
+                Float number = Float.parseFloat(value);
                 property.setValue(number);
             }
             else if (type.equals(Type.BOOLEAN)) {
-                if(stringValue.equals("true") || stringValue.equals("false")){
-                    property.setValue(stringValue);
+                if(value.equals("true") || value.equals("false")){
+                    property.setValue(value);
                 }
             }
             else if (type.equals(Type.STRING)) {
-                property.setValue(stringValue);
+                property.setValue(value);
             }
         }
         catch (ClassCastException e){

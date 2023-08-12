@@ -8,7 +8,6 @@ import history.simulation.Simulation;
 import world.entity.definition.EntityDefinition;
 import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
-import world.enums.ActionType;
 import world.propertyInstance.api.Property;
 import world.rule.action.Action;
 import world.worldDefinition.WorldDefinition;
@@ -212,11 +211,10 @@ public class UIManager {
                 System.out.println(environmentDefinition);
                 checkValidationValue(environmentDefinition, environmentValuesByUser);
                 validInput = true;
-                System.out.println("success");
             }
             catch (NumberFormatException exception)
             {
-                System.out.println("You did not enter a number for a numeric environment variable");
+                System.out.println("You did not enter a input for a same type like the environment variable");
             }
             catch (IndexOutOfBoundsException exception)
             {
@@ -233,25 +231,25 @@ public class UIManager {
             case FLOAT:
                 userInput = Float.parseFloat(scanner.nextLine());
                 checkIfInputInRange(userInput, environmentDefinition, false);
-                environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((float)userInput)));
+                environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((float)userInput), environmentDefinition.getRange()));
                 break;
             case DECIMAL:
                 userInput = Integer.parseInt(scanner.nextLine());
                 checkIfInputInRange(userInput, environmentDefinition, true);
-                environmentInstance= new EnvironmentInstance(new IntegerPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((int)userInput)));
+                environmentInstance= new EnvironmentInstance(new IntegerPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((int)userInput), environmentDefinition.getRange()));
                 break;
             case BOOLEAN:
                 userInput = chooseBooleanValue();
                 if((int)userInput == 1) {
-                    environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed(true)));
+                    environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed(true), environmentDefinition.getRange()));
                 }
                 else{
-                    environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed(false)));
+                    environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed(false), environmentDefinition.getRange()));
                 }
                 break;
             case STRING:
                 userInput = scanner.nextLine();
-                environmentInstance = new EnvironmentInstance(new StringPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((String) userInput)));
+                environmentInstance = new EnvironmentInstance(new StringPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((String) userInput), environmentDefinition.getRange()));
                 break;
 
         }
@@ -325,10 +323,10 @@ public class UIManager {
 
                 break;
             case BOOLEAN:
-                environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createRandomBoolean()));
+                environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createRandomBoolean(), environmentDefinition.getRange()));
                 break;
             case STRING:
-                environmentInstance = new EnvironmentInstance(new StringPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createRandomString()));
+                environmentInstance = new EnvironmentInstance(new StringPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createRandomString(), environmentDefinition.getRange()));
                 break;
 
         }
@@ -340,22 +338,22 @@ public class UIManager {
     private EnvironmentInstance createEnvironmentFloat(EnvironmentDefinition environmentDefinition) {
         if (environmentDefinition.getRange() != null) {
             return new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
-                    ValueGeneratorFactory.createRandomFloat(environmentDefinition.getRange().getFrom(), environmentDefinition.getRange().getTo())));
+                    ValueGeneratorFactory.createRandomFloat(environmentDefinition.getRange().getFrom(), environmentDefinition.getRange().getTo()), environmentDefinition.getRange()));
         }
         else {
             return new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
-                    ValueGeneratorFactory.createRandomFloat(null, null)));
+                    ValueGeneratorFactory.createRandomFloat(null, null), environmentDefinition.getRange()));
         }
     }
 
     private EnvironmentInstance createEnvironmentDecimal(EnvironmentDefinition environmentDefinition) {
         if (environmentDefinition.getRange() != null) {
             return new EnvironmentInstance(new IntegerPropertyInstance(environmentDefinition.getName(),
-                    ValueGeneratorFactory.createRandomInteger(environmentDefinition.getRange().getFrom().intValue(), environmentDefinition.getRange().getTo().intValue())));
+                    ValueGeneratorFactory.createRandomInteger(environmentDefinition.getRange().getFrom().intValue(), environmentDefinition.getRange().getTo().intValue()), environmentDefinition.getRange()));
         }
         else {
             return new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(),
-                    ValueGeneratorFactory.createRandomFloat(null, null)));
+                    ValueGeneratorFactory.createRandomFloat(null, null), environmentDefinition.getRange()));
         }
     }
 
@@ -402,16 +400,16 @@ public class UIManager {
         if(propertyDefinition.isRandomInitialize()) {
             if (propertyDefinition.getRange() != null) {
                 property = new FloatPropertyInstance(propertyDefinition.getName(),
-                        ValueGeneratorFactory.createRandomFloat( propertyDefinition.getRange().getFrom(), propertyDefinition.getRange().getTo()));
+                        ValueGeneratorFactory.createRandomFloat( propertyDefinition.getRange().getFrom(), propertyDefinition.getRange().getTo()), propertyDefinition.getRange());
             }
             else {
                 property = new FloatPropertyInstance(propertyDefinition.getName(),
-                        ValueGeneratorFactory.createRandomFloat(null, null));
+                        ValueGeneratorFactory.createRandomFloat(null, null), propertyDefinition.getRange());
             }
         }
         else{
             property = new FloatPropertyInstance(propertyDefinition.getName(),
-                    ValueGeneratorFactory.createFixed((float)propertyDefinition.getInit()));
+                    ValueGeneratorFactory.createFixed((float)propertyDefinition.getInit()), propertyDefinition.getRange());
         }
 
         return property;
@@ -423,17 +421,17 @@ public class UIManager {
         if(propertyDefinition.isRandomInitialize()) {
             if (propertyDefinition.getRange() != null) {
                 property = new IntegerPropertyInstance(propertyDefinition.getName(),
-                        ValueGeneratorFactory.createRandomInteger(propertyDefinition.getRange().getFrom().intValue(), propertyDefinition.getRange().getTo().intValue()));
+                        ValueGeneratorFactory.createRandomInteger(propertyDefinition.getRange().getFrom().intValue(), propertyDefinition.getRange().getTo().intValue()), propertyDefinition.getRange());
             }
             else {
                 property = new IntegerPropertyInstance(propertyDefinition.getName(),
-                        ValueGeneratorFactory.createRandomInteger(null, null));
+                        ValueGeneratorFactory.createRandomInteger(null, null), propertyDefinition.getRange());
             }
         }
         else{
             stringValue = (String) propertyDefinition.getInit();
             property = new IntegerPropertyInstance(propertyDefinition.getName(),
-                    ValueGeneratorFactory.createFixed(Integer.parseInt(stringValue)));
+                    ValueGeneratorFactory.createFixed(Integer.parseInt(stringValue)), propertyDefinition.getRange());
         }
         return property;
     }
@@ -441,11 +439,11 @@ public class UIManager {
     private Property createPropertyBoolean(PropertyDefinition propertyDefinition) {
         BooleanPropertyInstance property;
         if(propertyDefinition.isRandomInitialize()) {
-            property = new BooleanPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomBoolean());
+            property = new BooleanPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomBoolean(), propertyDefinition.getRange());
         }
         else{
             property = new BooleanPropertyInstance(propertyDefinition.getName(),
-                    ValueGeneratorFactory.createFixed((boolean)propertyDefinition.getInit()));
+                    ValueGeneratorFactory.createFixed((boolean)propertyDefinition.getInit()), propertyDefinition.getRange());
         }
 
         return property;
@@ -454,11 +452,11 @@ public class UIManager {
     private Property createPropertyString(PropertyDefinition propertyDefinition) {
         StringPropertyInstance property;
         if(propertyDefinition.isRandomInitialize()) {
-            property = new StringPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomString());
+            property = new StringPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomString(), propertyDefinition.getRange());
         }
         else{
             property = new StringPropertyInstance(propertyDefinition.getName(),
-                    ValueGeneratorFactory.createFixed((String) propertyDefinition.getInit()));
+                    ValueGeneratorFactory.createFixed((String) propertyDefinition.getInit()), propertyDefinition.getRange());
         }
 
         return property;
@@ -479,62 +477,41 @@ public class UIManager {
         long startMillisSeconds = System.currentTimeMillis();
         String message = null;
         int seconds = 0;
-        try {
-            while (seconds <= world.getTermination().getSecond() && worldInstance.getCurrentTick() <= world.getTermination().getTicks()) {
-                for (RuleImpl rule : world.getRules()) {
-                    if (rule.getActivation().isActive(worldInstance.getCurrentTick())) {
-                        for (Action action : rule.nameActions()) {
-                            performOperation(action);
-                        }
+        while (seconds <= world.getTermination().getSecond() && worldInstance.getCurrentTick() <= world.getTermination().getTicks()) {
+            for (RuleImpl rule : world.getRules()) {
+                if (rule.getActivation().isActive(worldInstance.getCurrentTick())) {
+                    for (Action action : rule.nameActions()) {
+                        performOperation(action);
                     }
                 }
-
-                worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
-                long currentMilliSeconds = System.currentTimeMillis();
-                seconds = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
             }
 
-            if (seconds > world.getTermination().getSecond()) {
-                message = "The simulation has ended because more than " + world.getTermination().getSecond() + " seconds have passed";
-            } else if (worldInstance.getCurrentTick() > world.getTermination().getTicks()) {
-                message = "The simulation has ended because more than " + world.getTermination().getTicks() + " ticks have passed";
-            }
-            printIdAndTerminationReason(message);
+            worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
+            long currentMilliSeconds = System.currentTimeMillis();
+            seconds = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
         }
-        catch(Exception e){
-            System.out.println(e.getMessage());
+
+        if (seconds > world.getTermination().getSecond()) {
+            message = "The simulation has ended because more than " + world.getTermination().getSecond() + " seconds have passed";
+        } else if (worldInstance.getCurrentTick() > world.getTermination().getTicks()) {
+            message = "The simulation has ended because more than " + world.getTermination().getTicks() + " ticks have passed";
         }
+        printIdAndTerminationReason(message);
+
     }
 
-    private void performOperation(Action action) throws ObjectNotExist, OperationNotSupportedType {
+    private void performOperation(Action action) {
         String entityName = action.getEntityName();
-        List<EntityInstance> entitiesToRemove = new ArrayList<>();
-        boolean flag = false;
         for(EntityInstance entityInstance: worldInstance.getEntityInstanceList()){
             if(entityName.equals(entityInstance.getName())) {
-                flag = true;
                 try {
-                    if(!action.getActionType().equals(ActionType.KILL)) {
-                        action.operation(entityInstance);
-                    }
-                    entitiesToRemove.add(entityInstance);
+                    action.operation(entityInstance);
                 }
                 catch (ObjectNotExist | NumberFormatException | ClassCastException | ArithmeticException | OperationNotSupportedType exception){
                     System.out.println(exception.getMessage());
                     break;
                 }
             }
-        }
-
-        if (action.getActionType().equals(ActionType.KILL)) {
-            for (int i = entitiesToRemove.size() - 1; i >= 0; i--) {
-                EntityInstance entityToRemove = entitiesToRemove.get(i);
-                action.operation(entityToRemove);
-            }
-        }
-
-        if(!flag){
-            throw new ObjectNotExist(action.getEntityName(), "Entity");
         }
     }
 

@@ -386,11 +386,11 @@ public class UIManager {
         history = History.getInstance();
         history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
         history.addSimulation(simulation);
-        worldInstance.setCurrentTick(worldInstance.getCurrentTick());
         printEnvironmentNamesAndValues();
     }
 
     private List<EntityInstance> initEntities() {
+        int index = 0;
         List<EntityInstance> entityInstanceList = new ArrayList<>();
         for (EntityDefinition entityDefinition: world.getEntityDefinition().values()){
             for (int count = 0; count < entityDefinition.getAmountOfPopulation(); count++){
@@ -398,7 +398,8 @@ public class UIManager {
                 for(PropertyDefinition propertyDefinition: entityDefinition.getProps()){
                     allProperty.put(propertyDefinition.getName(), initProperty(propertyDefinition));
                 }
-                entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty, count));
+                entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty, index));
+                index++;
             }
         }
 

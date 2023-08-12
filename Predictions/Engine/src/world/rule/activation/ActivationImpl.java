@@ -37,7 +37,7 @@ public class ActivationImpl implements Activation{
     }
 
     @Override
-    public boolean isActive(int tickNumber) {
+    public boolean isActive(int tickNumber) { // not good
         Random random = new Random();
         double probabilityParam = random.nextDouble();
         return ticks == tickNumber && (probability == 1 ||probability > probabilityParam);

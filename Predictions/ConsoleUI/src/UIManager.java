@@ -8,6 +8,7 @@ import history.simulation.Simulation;
 import world.entity.definition.EntityDefinition;
 import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
+import world.enums.ActionType;
 import world.propertyInstance.api.Property;
 import world.rule.action.Action;
 import world.worldDefinition.WorldDefinition;
@@ -324,28 +325,31 @@ public class UIManager {
         long startMillisSeconds = System.currentTimeMillis();
         String message = null;
         int seconds = 0;
-        while (seconds <= world.getTermination().getSecond() && worldInstance.getCurrentTick() <= world.getTermination().getTicks()){
-            for (RuleImpl rule: world.getRules()){
-                if(rule.getActivation().isActive(worldInstance.getCurrentTick())){
-                    for(Action action: rule.nameActions()){
-                        performOperation(action);
+        try {
+            while (seconds <= world.getTermination().getSecond() && worldInstance.getCurrentTick() <= world.getTermination().getTicks()) {
+                for (RuleImpl rule : world.getRules()) {
+                    if (rule.getActivation().isActive(worldInstance.getCurrentTick())) {
+                        for (Action action : rule.nameActions()) {
+                            performOperation(action);
+                        }
                     }
                 }
+
+                worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
+                long currentMilliSeconds = System.currentTimeMillis();
+                seconds = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
             }
 
-            worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
-            long currentMilliSeconds = System.currentTimeMillis();
-            seconds = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
+            if (seconds > world.getTermination().getSecond()) {
+                message = "The simulation has ended because more than " + world.getTermination().getSecond() + " seconds have passed";
+            } else if (worldInstance.getCurrentTick() > world.getTermination().getTicks()) {
+                message = "The simulation has ended because more than " + world.getTermination().getTicks() + " ticks have passed";
+            }
+            printIdAndTerminationReason(message);
         }
-
-        if(seconds > world.getTermination().getSecond()){
-            message = "The simulation has ended because more than " + world.getTermination().getSecond() + " seconds have passed";
+        catch(Exception e){
+            System.out.println(e.getMessage());
         }
-        else if(worldInstance.getCurrentTick() > world.getTermination().getTicks()){
-            message = "The simulation has ended because more than " + world.getTermination().getTicks() + " ticks have passed";
-        }
-        printIdAndTerminationReason(message);
-
     }
 
     private void printIdAndTerminationReason(String message) {
@@ -355,12 +359,18 @@ public class UIManager {
         System.out.println(message);
     }
 
-    private void performOperation(Action action) {
+    private void performOperation(Action action) throws ObjectNotExist, OperationNotSupportedType {
         String entityName = action.getEntityName();
+        List<EntityInstance> entitiesToRemove = new ArrayList<>();
+        boolean flag = false;
         for(EntityInstance entityInstance: worldInstance.getEntityInstanceList()){
             if(entityName.equals(entityInstance.getName())) {
+                flag = true;
                 try {
-                    action.operation(entityInstance);
+                    if(!action.getActionType().equals(ActionType.KILL)) {
+                        action.operation(entityInstance);
+                    }
+                    entitiesToRemove.add(entityInstance);
                 }
                 catch (ObjectNotExist | NumberFormatException | ClassCastException | ArithmeticException | OperationNotSupportedType exception){
                     System.out.println(exception.getMessage());
@@ -369,6 +379,16 @@ public class UIManager {
             }
         }
 
+        if (action.getActionType().equals(ActionType.KILL)) {
+            for (int i = entitiesToRemove.size() - 1; i >= 0; i--) {
+                EntityInstance entityToRemove = entitiesToRemove.get(i);
+                action.operation(entityToRemove);
+            }
+        }
+
+        if(!flag){
+            throw new ObjectNotExist(action.getEntityName(), "Entity");
+        }
     }
 
     private void startSimulation( Map <String, EnvironmentInstance> environmentValuesByUser) {
@@ -714,19 +734,18 @@ public class UIManager {
     }
 
 
-    private void simulationDetails() { //bug
+    private void simulationDetails() {
         try{
-            if (world != null) {
-                System.out.println("The information about the simulation defined in the xml file are:");
-                printEntitiesDetails();
-                printRulesDetails();
-                printTerminationDetails();
-            }
+            Objects.requireNonNull(world, "No simulation data is loaded from the XML file.");
+            System.out.println("The information about the simulation defined in the xml file are:");
+            printEntitiesDetails();
+            printRulesDetails();
+            printTerminationDetails();
         }
         catch (NullPointerException e){
+            System.out.println(e.getMessage());
             System.out.println("You cannot see the simulation details before you have loaded the xml file");
         }
-
     }
 
     private void printTerminationDetails() {

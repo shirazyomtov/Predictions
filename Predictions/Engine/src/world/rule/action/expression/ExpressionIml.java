@@ -14,21 +14,21 @@ public class ExpressionIml implements Expression {
     }
 
     @Override
-    public Object decipher(EntityInstance entity) throws ObjectNotExist, NumberFormatException {
-        Object object = null ;
+    public String decipher(EntityInstance entity) throws ObjectNotExist, NumberFormatException {
+        String object = null ;
         if (checkOptionByFunctionName(expressionName)) {
             int index = expressionName.indexOf("(");
             String functionName = expressionName.substring(0, index).trim();
             String value = expressionName.substring(index + 1, expressionName.length() - 1).trim();
             if (functionName.equals(ENVIRONMENT.getFunctionName())) {
-                object = AuxiliaryFunctionsImpl.environment(value);
+                object = AuxiliaryFunctionsImpl.environment(value).toString();
             }
             else if (functionName.equals(RANDOM.getFunctionName())) {
-                object = AuxiliaryFunctionsImpl.random(value);
+                object = AuxiliaryFunctionsImpl.random(value).toString();
             }
         }
         else if (checkIfValueIsProperty(entity) != null) {
-            object = checkIfValueIsProperty(entity);
+            object = checkIfValueIsProperty(entity).toString();
         }
         else {
             object = expressionName;

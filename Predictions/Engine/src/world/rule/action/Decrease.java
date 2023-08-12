@@ -20,19 +20,18 @@ public class Decrease extends Action{
 
     @Override
     public void operation(EntityInstance entity) throws ObjectNotExist, NumberFormatException, ClassCastException {
-        Object by = expression.decipher(entity);
-        String stringBy = (String) by;
+        String by = expression.decipher(entity);
         Property property = entity.getAllProperty().get(propertyName);
         Type type = property.getType();
         try {
             if(type.equals(Type.DECIMAL)) {
-                Integer number = Integer.parseInt(stringBy);
-                property.setValue(number - (Integer)property.getValue() );
+                Integer number = Integer.parseInt(by);
+                property.setValue((Integer)property.getValue() - number);
 
             }
             else if (type.equals(Type.FLOAT)) {
-                Float number = Float.parseFloat(stringBy);
-                property.setValue(number - (Float) property.getValue());
+                Float number = Float.parseFloat(by);
+                property.setValue((Float) property.getValue() - number);
             }
         }
         catch (ClassCastException e){

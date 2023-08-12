@@ -2,6 +2,7 @@ import enums.DisplaySimulationOption;
 import enums.MenuOptions;
 import exceptions.FilePathException;
 import exceptions.ObjectNotExist;
+import exceptions.OperationNotSupportedType;
 import history.History;
 import history.simulation.Simulation;
 import world.entity.definition.EntityDefinition;
@@ -361,7 +362,7 @@ public class UIManager {
                 try {
                     action.operation(entityInstance);
                 }
-                catch (ObjectNotExist | NumberFormatException | ClassCastException | ArithmeticException exception){
+                catch (ObjectNotExist | NumberFormatException | ClassCastException | ArithmeticException | OperationNotSupportedType exception){
                     System.out.println(exception.getMessage());
                     break;
                 }
@@ -385,6 +386,7 @@ public class UIManager {
         history = History.getInstance();
         history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
         history.addSimulation(simulation);
+        worldInstance.setCurrentTick(worldInstance.getCurrentTick());
         printEnvironmentNamesAndValues();
     }
 
@@ -396,7 +398,7 @@ public class UIManager {
                 for(PropertyDefinition propertyDefinition: entityDefinition.getProps()){
                     allProperty.put(propertyDefinition.getName(), initProperty(propertyDefinition));
                 }
-                entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty));
+                entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty, count));
             }
         }
 

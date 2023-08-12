@@ -15,6 +15,7 @@ public class WorldInstance {
 
     private WorldDefinition worldDefinition = null;
 
+
     private int currentTick = 1;
     public WorldInstance(Map<String, EnvironmentInstance> environmentInstanceMap, List<EntityInstance> entityInstanceList, WorldDefinition worldDefinition) {
         this.environmentInstanceMap = environmentInstanceMap;

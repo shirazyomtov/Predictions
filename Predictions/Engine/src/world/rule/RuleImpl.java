@@ -55,9 +55,9 @@ public class RuleImpl implements Rule {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("    Rule ").append(ruleName).append(" details: ").append("\n");
-        stringBuilder.append("        Rule Name: ").append(ruleName).append("',").append("\n");
-        stringBuilder.append("        Activation: ").append(activation).append("',").append("\n");
-        stringBuilder.append("        Amount of Actions: ").append(amountOfActions).append("',").append("\n");
+        stringBuilder.append("        Rule Name: ").append(ruleName).append(",").append("\n");
+        stringBuilder.append("        Activation: ").append(activation).append(",").append("\n");
+        stringBuilder.append("        Amount of Actions: ").append(amountOfActions).append(",").append("\n");
         stringBuilder.append("        All Actions:\n");
         if (allAction != null) {
             for (Action action : allAction) {

@@ -40,6 +40,6 @@ public class ActivationImpl implements Activation{
     public boolean isActive(int tickNumber) { // not good
         Random random = new Random();
         double probabilityParam = random.nextDouble();
-        return ticks == tickNumber && (probability == 1 ||probability > probabilityParam);
+        return (tickNumber % ticks == 0) && (probability == 1 || probability > probabilityParam);
     }
 }

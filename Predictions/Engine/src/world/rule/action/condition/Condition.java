@@ -2,37 +2,41 @@ package world.rule.action.condition;
 
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotSupportedType;
-import jaxb.schema.generated.PRDAction;
-import jaxb.schema.generated.PRDCondition;
+import jaxb.schema.generated.*;
 import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 import world.enums.ComparisonOperator;
 import world.propertyInstance.api.Property;
 import world.rule.action.Action;
-import world.rule.action.ActionFactory;
 import world.rule.action.expression.ExpressionIml;
 
 import java.util.List;
 
 public class Condition  extends Action {
 
-    private final PRDAction condition;
+    private final PRDCondition condition;
 
-    public Condition(String entityName, PRDAction condition)
+    private final PRDThen thenActions;
+
+    private final PRDElse elseActions;
+
+
+    public Condition(String entityName, PRDCondition condition, PRDThen thenActions, PRDElse elseActions)
     {
         super(entityName, ActionType.CONDITION);
         this.condition = condition;
-//        this.expression = new ExpressionIml(condition.getValue());
+        this.thenActions = thenActions;
+        this.elseActions = elseActions;
     }
     @Override
     public void operation(EntityInstance entity) throws ObjectNotExist, ClassCastException, OperationNotSupportedType {
         boolean flag = false;
-        if (condition.getPRDCondition().getSingularity().equals("single")) {
-            flag = checkIfConditionIsTrue(entity, condition.getPRDCondition());
+        if (condition.getSingularity().equals("single")) {
+            flag = checkIfConditionIsTrue(entity, condition);
         }
         else{
-            List<PRDCondition> conditions = condition.getPRDCondition().getPRDCondition();
-            flag = checkCondition(entity, conditions, condition.getPRDCondition().getLogical());
+            List<PRDCondition> conditions = condition.getPRDCondition();
+            flag = checkCondition(entity, conditions, condition.getLogical());
         }
         performThenOrElse(flag);
     }
@@ -40,7 +44,7 @@ public class Condition  extends Action {
     private void performThenOrElse(boolean flag) {
         Action action;
         if(flag){
-            for(PRDAction actionThen: condition.getPRDThen().getPRDAction()){
+            for(PRDAction actionThen: thenActions.getPRDAction()){
 //                action = new ActionFactory.createAction(Enum.valueOf(ActionType.class, prdAction.getType().toUpperCase()),
 //                        prdAction.getEntity(), prdAction.getProperty(), prdAction.getBy(),
 //                        prdAction.getValue(), prdAction.getPRDMultiply(), prdAction.getPRDDivide(),
@@ -49,8 +53,8 @@ public class Condition  extends Action {
             }
         }
         else{
-            if(condition.getPRDElse() != null){
-                for(PRDAction actionElse: condition.getPRDElse().getPRDAction()){
+            if(elseActions != null){
+                for(PRDAction actionElse: elseActions.getPRDAction()){
 
                 }
             }
@@ -88,19 +92,6 @@ public class Condition  extends Action {
         }
         return false;
     }
-
-
-//    private boolean checkCondition(EntityInstance entity, List<PRDCondition> conditions, String logical) throws ObjectNotExist, OperationNotSupportedType {
-//        for (PRDCondition condition : conditions) {
-//            if (condition.getSingularity().equals("multiple")) {
-//                checkCondition(entity, condition.getPRDCondition(), condition.getLogical());
-//            }
-//            else {
-//                return checkIfConditionIsTrue(entity, condition);
-////                this.performCondition(entity, condition, logical);
-//            }
-//        }
-//    }
 
     private boolean checkIfConditionIsTrue(EntityInstance entity, PRDCondition condition) throws ObjectNotExist, ClassCastException, OperationNotSupportedType {
         ExpressionIml expression = new ExpressionIml(condition.getValue());

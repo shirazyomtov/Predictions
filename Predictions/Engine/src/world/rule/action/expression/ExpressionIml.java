@@ -39,7 +39,7 @@ public class ExpressionIml implements Expression {
 
     private Object checkIfValueIsProperty(EntityInstance entity) {
         if(entity.getAllProperty().containsKey(expressionName)){
-            return entity.getAllProperty().get(expressionName).generateValue();
+            return entity.getAllProperty().get(expressionName).getValue();
         }
         return null;
     }

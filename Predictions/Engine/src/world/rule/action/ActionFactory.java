@@ -3,7 +3,8 @@ package world.rule.action;
 import jaxb.schema.generated.*;
 import world.enums.ActionType;
 import world.rule.action.calculation.binaryCalculationAction.BinaryCalculationActionFactory;
-import world.rule.action.condition.Condition;
+import world.rule.action.condition.MultipleCondition;
+import world.rule.action.condition.SingleCondition;
 
 import static world.enums.CalculationBinaryTypeAction.DIVIDE;
 import static world.enums.CalculationBinaryTypeAction.MULTIPLY;
@@ -32,7 +33,12 @@ public final class ActionFactory {
                 }
                 break;
             case CONDITION:
-                selectedAction = new Condition(entityName, condition, prdThen, prdElse);
+                if(condition.getSingularity().equals("single")) {
+                    selectedAction = new SingleCondition(prdThen, prdElse, condition.getOperator(),condition.getValue(), condition.getEntity(), condition.getProperty());
+                }
+                else if(condition.getSingularity().equals("multiple")){
+                    selectedAction = new MultipleCondition(prdThen, prdElse, entityName, condition.getPRDCondition(), condition.getLogical());
+                }
                 break;
             case SET:
                 selectedAction = new Set(entityName, propertyName, value);

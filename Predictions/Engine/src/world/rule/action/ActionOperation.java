@@ -3,7 +3,8 @@ package world.rule.action;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotSupportedType;
 import world.entity.instance.EntityInstance;
+import world.worldInstance.WorldInstance;
 
 public interface ActionOperation {
-    void operation(EntityInstance entity) throws ObjectNotExist, OperationNotSupportedType;
+    boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, OperationNotSupportedType;
 }

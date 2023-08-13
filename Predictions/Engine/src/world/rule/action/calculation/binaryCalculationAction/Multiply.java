@@ -4,6 +4,7 @@ import exceptions.ObjectNotExist;
 import world.entity.instance.EntityInstance;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
+import world.worldInstance.WorldInstance;
 
 public class Multiply extends BinaryAction {
 
@@ -13,9 +14,9 @@ public class Multiply extends BinaryAction {
     }
 
     @Override
-    public void operation(EntityInstance entity) throws ObjectNotExist, NumberFormatException, ClassCastException {
-        String valueArg1 = this.getArgument1().decipher(entity);
-        String valueArg2 = this.getArgument2().decipher(entity);
+    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException {
+        String valueArg1 = this.getArgument1().decipher(entity, worldInstance);
+        String valueArg2 = this.getArgument2().decipher(entity, worldInstance);
         Property resultProp = entity.getAllProperty().get(getResultPropertyName());
         Type type = resultProp.getType();
         try {
@@ -29,6 +30,7 @@ public class Multiply extends BinaryAction {
                 Float number2 = Float.parseFloat(valueArg2);
                 resultProp.setValue(number * number2);
             }
+            return false;
         }
         catch (ClassCastException e){
             throw new ClassCastException("At least one of the value that you provide in the action " + getActionType() + " is not a " + type);

@@ -2,10 +2,11 @@ package history.simulation;
 
 import world.worldInstance.WorldInstance;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public  class Simulation {
+public  class Simulation implements Serializable {
     private WorldInstance worldInstance = null;
 
     private LocalDateTime dateTime;

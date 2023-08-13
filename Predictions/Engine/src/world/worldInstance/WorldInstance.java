@@ -4,10 +4,11 @@ import world.entity.instance.EntityInstance;
 import world.environment.instance.EnvironmentInstance;
 import world.worldDefinition.WorldDefinition;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class WorldInstance {
+public class WorldInstance implements Serializable {
 
     private  Map<String, EnvironmentInstance> environmentInstanceMap = null;
 

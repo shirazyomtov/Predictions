@@ -10,6 +10,7 @@ import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 import world.rule.action.Action;
 import world.rule.action.ActionFactory;
+import world.worldInstance.WorldInstance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,18 +49,29 @@ public abstract class AbstractCondition extends Action {
         return singularity;
     }
 
-    public void performThenOrElse(boolean flag, EntityInstance entityInstance) throws ObjectNotExist, OperationNotSupportedType {
+    public boolean performThenOrElse(boolean flag, EntityInstance entityInstance, WorldInstance worldInstance) throws ObjectNotExist, OperationNotSupportedType {
         if(flag){
             for(Action actionThen: thenActions){
-                actionThen.operation(entityInstance);
+                if (!actionThen.getActionType().equals(ActionType.KILL)) {
+                    actionThen.operation(entityInstance, worldInstance);
+                }
+                else {
+                    return true;
+                }
             }
         }
         else{
             if(elseActions != null){
                 for(Action actionElse: elseActions){
-                    actionElse.operation(entityInstance);
+                    if (!actionElse.getActionType().equals(ActionType.KILL)) {
+                        actionElse.operation(entityInstance, worldInstance);
+                    }
+                    else {
+                       return true;
+                    }
                 }
             }
         }
+        return false;
     }
 }

@@ -4,6 +4,9 @@ import exceptions.ObjectNotExist;
 import exceptions.OperationNotSupportedType;
 import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
+import world.worldInstance.WorldInstance;
+
+import java.util.WeakHashMap;
 
 public abstract class Action implements ActionOperation {
 
@@ -21,7 +24,7 @@ public abstract class Action implements ActionOperation {
         return "    Action: " + "actionType = " + actionType;
     }
 
-    public abstract void operation(EntityInstance entity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType;
+    public abstract boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType;
 
     public String getEntityName() {
         return entityName;

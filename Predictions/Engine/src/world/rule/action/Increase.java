@@ -6,6 +6,7 @@ import world.enums.ActionType;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
 import world.rule.action.expression.ExpressionIml;
+import world.worldInstance.WorldInstance;
 
 public class Increase extends Action{
 
@@ -19,8 +20,8 @@ public class Increase extends Action{
     }
 
     @Override
-    public void operation(EntityInstance entity) throws ObjectNotExist, NumberFormatException, ClassCastException {
-        String by = expression.decipher(entity);
+    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException {
+        String by = expression.decipher(entity, worldInstance);
         Property property = entity.getAllProperty().get(propertyName);
         Type type = property.getType();
         try {
@@ -32,6 +33,7 @@ public class Increase extends Action{
                 Float number = Float.parseFloat(by);
                 property.setValue(number + (Float) property.getValue());
             }
+            return false;
         }
         catch (ClassCastException e){
             throw new ClassCastException("This value that you provide in the action " + getActionType() + " is not a " + type);

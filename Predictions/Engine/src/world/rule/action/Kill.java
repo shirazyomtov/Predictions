@@ -5,6 +5,7 @@ import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
+import world.worldInstance.WorldInstance;
 
 public class Kill extends Action {
     public Kill(String entityName)
@@ -12,8 +13,16 @@ public class Kill extends Action {
         super(entityName, ActionType.KILL);
     }
     @Override
-    public void operation(EntityInstance entity) {
-        //need the list of entities
-        History.getInstance().getSimulation().getWorldInstance().getEntityInstanceList().remove(entity.getCount());
+    public boolean operation(EntityInstance entity, WorldInstance worldInstance) {
+        EntityInstance entityToRemove = null;
+        for (EntityInstance entityInstance: worldInstance.getEntityInstanceList()){
+            if(entityInstance == entity){
+                entityToRemove = entityInstance;
+            }
+        }
+        if (entityToRemove != null) {
+            worldInstance.getEntityInstanceList().remove(entityToRemove);
+        }
+        return false;
     }
 }

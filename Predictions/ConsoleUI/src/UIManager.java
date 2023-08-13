@@ -8,8 +8,10 @@ import history.simulation.Simulation;
 import world.entity.definition.EntityDefinition;
 import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
+import world.enums.ActionType;
 import world.propertyInstance.api.Property;
 import world.rule.action.Action;
+import world.rule.action.Kill;
 import world.worldDefinition.WorldDefinition;
 import world.entity.definition.EntityDefinitionImpl;
 import world.environment.definition.EnvironmentDefinition;
@@ -358,7 +360,6 @@ public class UIManager {
     }
 
     private List<EntityInstance> initEntities() {
-        int index = 0;
         List<EntityInstance> entityInstanceList = new ArrayList<>();
         for (EntityDefinition entityDefinition: world.getEntityDefinition().values()){
             for (int count = 0; count < entityDefinition.getAmountOfPopulation(); count++){
@@ -366,8 +367,7 @@ public class UIManager {
                 for(PropertyDefinition propertyDefinition: entityDefinition.getProps()){
                     allProperty.put(propertyDefinition.getName(), initProperty(propertyDefinition));
                 }
-                entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty, index));
-                index++;
+                entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty));
             }
         }
 
@@ -501,18 +501,35 @@ public class UIManager {
     }
 
     private void performOperation(Action action) {
+        boolean flag = false;
         String entityName = action.getEntityName();
-        for(EntityInstance entityInstance: worldInstance.getEntityInstanceList()){
-            if(entityName.equals(entityInstance.getName())) {
+        List<EntityInstance> entitiesToRemove = new ArrayList<>();
+        for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
+            if (entityName.equals(entityInstance.getName())) {
                 try {
-                    action.operation(entityInstance);
+                    if (!action.getActionType().equals(ActionType.KILL)) {
+                       flag = action.operation(entityInstance, worldInstance);
+                       if (flag){
+                           entitiesToRemove.add(entityInstance);
+                       }
+                    }
+                    else {
+                        entitiesToRemove.add(entityInstance);
+                    }
                 }
-                catch (ObjectNotExist | NumberFormatException | ClassCastException | ArithmeticException | OperationNotSupportedType exception){
+                catch (ObjectNotExist | NumberFormatException | ClassCastException | ArithmeticException |
+                         OperationNotSupportedType exception) {
                     System.out.println(exception.getMessage());
                     break;
                 }
             }
         }
+
+        for (EntityInstance entityInstance : entitiesToRemove) {
+                Kill killAction = new Kill(entityInstance.getName());
+                killAction.operation(entityInstance, worldInstance);
+            }
+
     }
 
     private void printIdAndTerminationReason(String message) {
@@ -586,12 +603,16 @@ public class UIManager {
                         count++;
                     }
                 }
-                System.out.println("Entity " + entityInstance1.getName());
-                System.out.println("The initial quantity of this entity : " + world.getWorldDefinition().getEntityDefinition().get(entityInstance1.getName()).getAmountOfPopulation());
-                System.out.println("The final quantity of this entity : " + count);
+                printInitAndFinalEntities(entityInstance1, world, count);
                 count = 0;
             }
         }
+    }
+
+    private void printInitAndFinalEntities(EntityInstance entityInstance1,  WorldInstance world, int count){
+        System.out.println("Entity " + entityInstance1.getName());
+        System.out.println("The initial quantity of this entity : " + world.getWorldDefinition().getEntityDefinition().get(entityInstance1.getName()).getAmountOfPopulation());
+        System.out.println("The final quantity of this entity : " + count);
     }
 
     private void displayByHistogrmOfProperty(int userIntegerInput) {

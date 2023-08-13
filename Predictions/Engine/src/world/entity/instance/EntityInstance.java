@@ -9,12 +9,10 @@ public class EntityInstance {
     private final String name;
     private final Map<String, Property> allProperty;
 
-    private final int count;
 
-    public EntityInstance(String name, Map<String, Property> allProperty, int count) {
+    public EntityInstance(String name, Map<String, Property> allProperty) {
         this.name = name;
         this.allProperty = allProperty;
-        this.count = count;
     }
 
     public String getName() {
@@ -23,9 +21,5 @@ public class EntityInstance {
 
     public Map<String, Property> getAllProperty() {
         return allProperty;
-    }
-
-    public int getCount() {
-        return count;
     }
 }

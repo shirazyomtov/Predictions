@@ -7,9 +7,9 @@ import world.worldInstance.WorldInstance;
 
 public final class AuxiliaryFunctionsImpl {
 
-    public static Object environment(String environmentName) throws ObjectNotExist {
-        if (History.getInstance().getSimulation().getWorldInstance().getEnvironmentInstanceMap().containsKey(environmentName)) {
-            return History.getInstance().getSimulation().getWorldInstance().getEnvironmentInstanceMap().get(environmentName).getProperty().getValue();
+    public static Object environment(String environmentName, WorldInstance worldInstance) throws ObjectNotExist {
+        if (worldInstance.getEnvironmentInstanceMap().containsKey(environmentName)) {
+            return worldInstance.getEnvironmentInstanceMap().get(environmentName).getProperty().getValue();
         } else {
             throw new ObjectNotExist(environmentName, "environment");
         }

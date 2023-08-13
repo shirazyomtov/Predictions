@@ -3,6 +3,7 @@ package world.rule.action.expression;
 import exceptions.ObjectNotExist;
 import world.auxiliaryFunctions.AuxiliaryFunctionsImpl;
 import world.entity.instance.EntityInstance;
+import world.worldInstance.WorldInstance;
 
 import static world.enums.AuxiliaryFunction.*;
 
@@ -14,14 +15,14 @@ public class ExpressionIml implements Expression {
     }
 
     @Override
-    public String decipher(EntityInstance entity) throws ObjectNotExist, NumberFormatException {
+    public String decipher(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException {
         String object = null ;
         if (checkOptionByFunctionName(expressionName)) {
             int index = expressionName.indexOf("(");
             String functionName = expressionName.substring(0, index).trim();
             String value = expressionName.substring(index + 1, expressionName.length() - 1).trim();
             if (functionName.equals(ENVIRONMENT.getFunctionName())) {
-                object = AuxiliaryFunctionsImpl.environment(value).toString();
+                object = AuxiliaryFunctionsImpl.environment(value, worldInstance).toString();
             }
             else if (functionName.equals(RANDOM.getFunctionName())) {
                 object = AuxiliaryFunctionsImpl.random(value).toString();

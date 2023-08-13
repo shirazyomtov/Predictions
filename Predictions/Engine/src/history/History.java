@@ -2,10 +2,11 @@ package history;
 
 import history.simulation.Simulation;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class History {
+public final class History implements Serializable {
     private static final Object creationalLockContext = new Object();
     private static History instance = null;
     private Map<Integer, Simulation> allSimulations = new HashMap<>();

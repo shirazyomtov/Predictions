@@ -8,6 +8,7 @@ import world.entity.instance.EntityInstance;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
 import world.rule.action.expression.ExpressionIml;
+import world.worldInstance.WorldInstance;
 
 public class SingleCondition extends AbstractCondition{
     private String operator;
@@ -22,24 +23,25 @@ public class SingleCondition extends AbstractCondition{
     }
 
     @Override
-    public void operation(EntityInstance entity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
+    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
         boolean flag = false;
-        flag = checkIfConditionIsTrue(entity);
-        performThenOrElse(flag, entity);
+        boolean kill = false;
+        flag = checkIfConditionIsTrue(entity, worldInstance);
+        kill = performThenOrElse(flag, entity, worldInstance);
+        return kill;
     }
 
-    public boolean checkIfConditionIsTrue(EntityInstance entity) throws ObjectNotExist, ClassCastException, OperationNotSupportedType {
+    public boolean checkIfConditionIsTrue(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, ClassCastException, OperationNotSupportedType {
         ExpressionIml expression = new ExpressionIml(value);
-        Object valueInCondition = expression.decipher(entity);
+        String valueInCondition = expression.decipher(entity, worldInstance);
         Property property = entity.getAllProperty().get(propertyName);
-        Object propertyValue = property.getValue();
         boolean flag = false;
         switch (operator){
             case "=":
-                flag = checkIfPropertyIsEqualToValue(propertyValue, valueInCondition);
+                flag = checkIfPropertyIsEqualToValue(property, valueInCondition);
                 break;
             case "!=":
-                flag = checkIfPropertyIsNotEqualToValue(propertyValue, valueInCondition);
+                flag = checkIfPropertyIsNotEqualToValue(property, valueInCondition);
                 break;
             case "bt":
                 flag = checkIfPropertyIsLessOrBiggerThanValue(property, valueInCondition, ComparisonOperator.BIGGERTHAN);
@@ -85,11 +87,32 @@ public class SingleCondition extends AbstractCondition{
         return false;
     }
 
-    private boolean checkIfPropertyIsNotEqualToValue(Object propertyValue, Object valueInCondition) {
-        return !(propertyValue.equals(valueInCondition));
+    private boolean checkIfPropertyIsNotEqualToValue(Property property, String valueInCondition) {
+        return !(checkIfPropertyIsEqualToValue(property, valueInCondition));
     }
 
-    private boolean checkIfPropertyIsEqualToValue(Object propertyValue, Object valueInCondition) {
-        return propertyValue.equals(valueInCondition);
+    private boolean checkIfPropertyIsEqualToValue(Property property, String valueInCondition) {
+        boolean flag = false;
+        switch (property.getType()) {
+            case DECIMAL:
+                Integer intValue = Integer.parseInt(valueInCondition);
+                Integer propertyValue = (Integer) property.getValue();
+                flag = propertyValue.equals(intValue);
+                break;
+            case FLOAT:
+                Float floatValue = Float.parseFloat(valueInCondition);
+                Float propertyFloatValue = (Float) property.getValue();
+                flag = propertyFloatValue.equals(floatValue);
+                break;
+            case BOOLEAN:
+                flag = property.getValue().toString().equals(valueInCondition);
+                break;
+            case STRING:
+                String propertyStringValue = (String) property.getValue();
+                flag = propertyStringValue.equals(valueInCondition);
+                break;
+        }
+        
+        return  flag;
     }
 }

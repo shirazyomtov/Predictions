@@ -10,6 +10,7 @@ import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 import world.rule.action.Action;
 import world.rule.action.ActionFactory;
+import world.worldInstance.WorldInstance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,19 +43,23 @@ public class MultipleCondition extends AbstractCondition{
     }
 
     @Override
-    public void operation(EntityInstance entity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
-        checkCondition(entity, conditions, logical);
+    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
+        boolean flag;
+        boolean kill = false;
+        flag = checkCondition(entity, conditions, logical, worldInstance);
+        kill = performThenOrElse(flag, entity, worldInstance);
+        return kill;
     }
 
-    private boolean checkCondition(EntityInstance entity, List<AbstractCondition> conditions, String logical) throws ObjectNotExist, OperationNotSupportedType {
+    private boolean checkCondition(EntityInstance entity, List<AbstractCondition> conditions, String logical, WorldInstance worldInstance) throws ObjectNotExist, OperationNotSupportedType {
         if (logical.equals("or")) {
             for (AbstractCondition condition : conditions) {
                 if (condition.getSingularity().equals("multiple")) {
-                    if (checkCondition(entity, ((MultipleCondition)condition).getConditions(), ((MultipleCondition)condition).getLogical())) {
+                    if (checkCondition(entity, ((MultipleCondition)condition).getConditions(), ((MultipleCondition)condition).getLogical(), worldInstance)) {
                         return true;
                     }
                 } else {
-                    if (((SingleCondition)condition).checkIfConditionIsTrue(entity)) {
+                    if (((SingleCondition)condition).checkIfConditionIsTrue(entity, worldInstance)) {
                         return true;
                     }
                 }
@@ -64,11 +69,11 @@ public class MultipleCondition extends AbstractCondition{
         else if (logical.equals("and")) {
             for (AbstractCondition condition : conditions) {
                 if (condition.getSingularity().equals("multiple")) {
-                    if (!checkCondition(entity, ((MultipleCondition)condition).getConditions(), ((MultipleCondition)condition).getLogical())) {
+                    if (!checkCondition(entity, ((MultipleCondition)condition).getConditions(), ((MultipleCondition)condition).getLogical(), worldInstance)) {
                         return false;
                     }
                 } else {
-                    if (!((SingleCondition)condition).checkIfConditionIsTrue(entity)) {
+                    if (!((SingleCondition)condition).checkIfConditionIsTrue(entity, worldInstance)) {
                         return false;
                     }
                 }

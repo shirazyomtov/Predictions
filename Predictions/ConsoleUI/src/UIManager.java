@@ -112,7 +112,6 @@ public class UIManager {
             System.out.println("The XML file has been loaded successfully");
         }
         catch (FileNotFoundException | JAXBException  e) {
-            //check JAXBException
             System.out.println("File has not been found in this path " + xmlPath + ".");
         }
         catch (Exception e) {
@@ -179,6 +178,11 @@ public class UIManager {
         }
         catch (NullPointerException e){
             System.out.println("You cannot run the simulation before loading the xml file");
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            History.getInstance().removeCurrentSimulation();
+            numberOfTimesUserSelectSimulation--;
         }
     }
 
@@ -473,11 +477,12 @@ public class UIManager {
         }
     }
 
-    private void runSimulation() {
+    private void runSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
         long startMillisSeconds = System.currentTimeMillis();
         String message = null;
         int seconds = 0;
-        while (seconds <= world.getTermination().getSecond() && worldInstance.getCurrentTick() <= world.getTermination().getTicks()) {
+        while ((world.getTermination().getSecond() == null || seconds <= world.getTermination().getSecond()) &&
+                (world.getTermination().getTicks() == null || worldInstance.getCurrentTick() <= world.getTermination().getTicks())) {
             for (RuleImpl rule : world.getRules()) {
                 if (rule.getActivation().isActive(worldInstance.getCurrentTick())) {
                     for (Action action : rule.nameActions()) {
@@ -491,36 +496,29 @@ public class UIManager {
             seconds = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
         }
 
-        if (seconds > world.getTermination().getSecond()) {
+        if (world.getTermination().getSecond() != null && seconds > world.getTermination().getSecond()) {
             message = "The simulation has ended because more than " + world.getTermination().getSecond() + " seconds have passed";
-        } else if (worldInstance.getCurrentTick() > world.getTermination().getTicks()) {
+        } else if (world.getTermination().getTicks() != null && worldInstance.getCurrentTick() > world.getTermination().getTicks()) {
             message = "The simulation has ended because more than " + world.getTermination().getTicks() + " ticks have passed";
         }
         printIdAndTerminationReason(message);
 
     }
 
-    private void performOperation(Action action) {
+    private void performOperation(Action action) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
         boolean flag = false;
         String entityName = action.getEntityName();
         List<EntityInstance> entitiesToRemove = new ArrayList<>();
         for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
             if (entityName.equals(entityInstance.getName())) {
-                try {
-                    if (!action.getActionType().equals(ActionType.KILL)) {
-                       flag = action.operation(entityInstance, worldInstance);
-                       if (flag){
-                           entitiesToRemove.add(entityInstance);
-                       }
-                    }
-                    else {
+                if (!action.getActionType().equals(ActionType.KILL)) {
+                    flag = action.operation(entityInstance, worldInstance);
+                    if (flag){
                         entitiesToRemove.add(entityInstance);
                     }
                 }
-                catch (ObjectNotExist | NumberFormatException | ClassCastException | ArithmeticException |
-                         OperationNotSupportedType exception) {
-                    System.out.println(exception.getMessage());
-                    break;
+                else {
+                    entitiesToRemove.add(entityInstance);
                 }
             }
         }
@@ -528,7 +526,7 @@ public class UIManager {
         for (EntityInstance entityInstance : entitiesToRemove) {
                 Kill killAction = new Kill(entityInstance.getName());
                 killAction.operation(entityInstance, worldInstance);
-            }
+        }
 
     }
 
@@ -544,13 +542,16 @@ public class UIManager {
         int userIntegerInput = 0;
         int userDisplayModeInput ;
         try{
+            if(History.getInstance().getAllSimulations().size() == 0){
+                throw new NullPointerException();
+            }
             sortedMap = sortMapOfSimulations();
             userIntegerInput = chooseOfPastSimulation(sortedMap);
             userDisplayModeInput = chooseTheDisplayMode();
             showDetailsOfSpecificPastRun(DisplaySimulationOption.getOptionByNumber(userDisplayModeInput), userIntegerInput);
         }
         catch (NullPointerException exception){
-            System.out.println("You need to run at least one simulation first");
+            System.out.println("You need to run at least one proper simulation ");
         }
     }
 

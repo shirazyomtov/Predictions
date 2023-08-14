@@ -32,11 +32,8 @@ public class Multiply extends BinaryAction {
             }
             return false;
         }
-        catch (ClassCastException e){
-            throw new ClassCastException("At least one of the value that you provide in the action " + getActionType() + " is not a " + type);
-        }
-        catch (NumberFormatException e){
-            throw new NumberFormatException("At least one of the value that you provide in the action " + getActionType() + " is not a " + type);
+        catch (NumberFormatException | ClassCastException e){
+            throw new NumberFormatException("At least one of the values  that you provide in the action " + getActionType() + " is not a " + type);
         }
     }
 }

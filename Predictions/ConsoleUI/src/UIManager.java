@@ -98,26 +98,31 @@ public class UIManager {
             case PAST_ACTIVATION:
                 detailsOfPastRun();
                 break;
-            case LOAD_FILE:
-                loadFile();
+            case LOAD_SIMULATIONS_FROM_FILE:
+                loadSimulationsFromFile();
                 break;
-            case SAVE_FILE:
-                saveFile();
+            case SAVE_SIMULATIONS_TO_FILE:
+                saveSimulationsToFile();
                 break;
         }
     }
 
-    private void loadFile() {
+    private void loadSimulationsFromFile() {
         System.out.println("Please choose the full path including the name of the file (without the extension) that he wanted to load the system from");
         Scanner scan = new Scanner(System.in);
         String filePath = scan.nextLine();
         filePath += ".txt";
-        History history1;
+        History loadedHistory;
         try (ObjectInputStream in =
                      new ObjectInputStream(
                              new FileInputStream(filePath))) {
-            history1 = (History) in.readObject();
-            System.out.println(history1);
+            history = (History) in.readObject();
+            History.getInstance().setAllSimulations(history.getAllSimulations());
+            History.getInstance().setCurrentSimulationNumber(history.getCurrentSimulationNumber());
+            world = history.getSimulation().getWorldInstance().getWorldDefinition();
+            worldInstance = history.getSimulation().getWorldInstance();
+            numberOfTimesUserSelectSimulation = history.getCurrentSimulationNumber();
+            System.out.println("The file was loaded successfully.");
         }
         catch (ClassNotFoundException e){
             System.out.println("sssss");
@@ -128,7 +133,7 @@ public class UIManager {
 
     }
 
-    private void saveFile() {
+    private void saveSimulationsToFile() {
         System.out.println("Please choose the full path including the name of the file (without the extension) that he wanted to save the system to");
         Scanner scanner = new Scanner(System.in);
         filePath = scanner.nextLine();
@@ -137,6 +142,7 @@ public class UIManager {
              ObjectOutputStream out = new ObjectOutputStream(fos)) {
                 out.writeObject(history);
                 out.flush();
+            System.out.println("The file was saved successfully.");
         }
         catch (IOException e) {
             System.out.println("IOException");
@@ -679,15 +685,24 @@ public class UIManager {
         Map<Object, Integer> valuesProperty = new HashMap<>();
         EntityDefinition userEntityInput;
         String propertyInput;
-        userEntityInput = chooseEntity(userIntegerInput);
-        propertyInput = chooseProperty(userEntityInput);
-        createPropertyValuesMap(valuesProperty, worldInstance1, userEntityInput, propertyInput);
-        printPropertiesValues(valuesProperty, propertyInput);
+        try {
+            if(worldInstance1.getEntityInstanceList().size() == 0){
+                throw new Exception("All of the entities were killed during the simulation\n");
+            }
+            userEntityInput = chooseEntity(userIntegerInput);
+            propertyInput = chooseProperty(userEntityInput);
+            createPropertyValuesMap(valuesProperty, worldInstance1, userEntityInput, propertyInput);
+            printPropertiesValues(valuesProperty, propertyInput);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
     private EntityDefinition chooseEntity(int userIntegerInput) {
         Map<Integer, String> entities = new HashMap<>();
         WorldInstance world = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
+
         int index = world.getWorldDefinition().getEntityDefinition().keySet().size();
         String message = getEntitiesMessage(world, entities);
         int userEntityInput = chooseInput(index, message);

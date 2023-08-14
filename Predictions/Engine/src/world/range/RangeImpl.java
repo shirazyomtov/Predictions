@@ -1,6 +1,8 @@
 package world.range;
 
-public class RangeImpl {
+import java.io.Serializable;
+
+public class RangeImpl implements Serializable {
     private final Float from;
     private final  Float to;
     public RangeImpl(Float from, Float to) {

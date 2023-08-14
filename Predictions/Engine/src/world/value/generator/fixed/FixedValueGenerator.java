@@ -2,7 +2,9 @@ package world.value.generator.fixed;
 
 import world.value.generator.api.ValueGenerator;
 
-public class FixedValueGenerator<T> implements ValueGenerator<T> {
+import java.io.Serializable;
+
+public class FixedValueGenerator<T> implements ValueGenerator<T>, Serializable {
 
     private final T fixedValue;
 

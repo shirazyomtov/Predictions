@@ -2,7 +2,9 @@ package world.value.generator.random.impl.bool;
 
 import world.value.generator.random.api.AbstractRandomValueGenerator;
 
-public class RandomBooleanValueGenerator extends AbstractRandomValueGenerator<Boolean> {
+import java.io.Serializable;
+
+public class RandomBooleanValueGenerator extends AbstractRandomValueGenerator<Boolean> implements Serializable {
 
     @Override
     public Boolean generateValue() {

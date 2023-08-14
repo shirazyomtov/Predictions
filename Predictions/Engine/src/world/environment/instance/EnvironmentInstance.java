@@ -3,7 +3,9 @@ package world.environment.instance;
 import world.propertyInstance.api.AbstractPropertyInstance;
 import world.propertyInstance.api.Property;
 
-public class EnvironmentInstance {
+import java.io.Serializable;
+
+public class EnvironmentInstance implements Serializable {
     private final Property property;
 
     public EnvironmentInstance(Property property) {

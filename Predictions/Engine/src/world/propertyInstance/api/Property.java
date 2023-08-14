@@ -3,7 +3,9 @@ package world.propertyInstance.api;
 import world.enums.Type;
 import world.value.generator.api.ValueGenerator;
 
-public interface Property {
+import java.io.Serializable;
+
+public interface Property extends Serializable {
     String getName();
     Type getType();
     Object getValue();

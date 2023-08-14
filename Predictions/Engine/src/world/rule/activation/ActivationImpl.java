@@ -2,9 +2,10 @@ package world.rule.activation;
 
 import jaxb.schema.generated.PRDActivation;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class ActivationImpl implements Activation{
+public class ActivationImpl implements Activation, Serializable {
     private int ticks = 1;
 
     private  double probability = 1;

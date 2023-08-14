@@ -8,7 +8,9 @@ import world.propertyInstance.api.Property;
 import world.rule.action.expression.ExpressionIml;
 import world.worldInstance.WorldInstance;
 
-public class Increase extends Action{
+import java.io.Serializable;
+
+public class Increase extends Action implements Serializable {
 
     private final String propertyName;
     private final ExpressionIml expression;

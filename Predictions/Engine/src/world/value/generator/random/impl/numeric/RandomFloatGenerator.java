@@ -1,6 +1,8 @@
 package world.value.generator.random.impl.numeric;
 
-public class RandomFloatGenerator extends AbstractNumericRandomGenerator<Float> {
+import java.io.Serializable;
+
+public class RandomFloatGenerator extends AbstractNumericRandomGenerator<Float> implements Serializable {
 
     public RandomFloatGenerator(Float from, Float to) {
         super(from, to);

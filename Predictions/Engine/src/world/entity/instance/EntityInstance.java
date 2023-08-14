@@ -2,9 +2,10 @@ package world.entity.instance;
 
 import world.propertyInstance.api.Property;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class EntityInstance {
+public class EntityInstance implements Serializable {
 
     private final String name;
     private final Map<String, Property> allProperty;

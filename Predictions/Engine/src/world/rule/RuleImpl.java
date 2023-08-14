@@ -7,10 +7,11 @@ import world.rule.action.Action;
 import world.rule.action.ActionFactory;
 import world.rule.activation.ActivationImpl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RuleImpl implements Rule {
+public class RuleImpl implements Rule, Serializable {
     private final String ruleName;
 
     private final ActivationImpl activation;

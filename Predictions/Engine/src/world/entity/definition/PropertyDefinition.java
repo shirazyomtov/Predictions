@@ -4,7 +4,9 @@ import jaxb.schema.generated.PRDProperty;
 import world.enums.Type;
 import world.range.RangeImpl;
 
-public class PropertyDefinition  {
+import java.io.Serializable;
+
+public class PropertyDefinition implements Serializable {
     private final String name;
 
     private final Type type;

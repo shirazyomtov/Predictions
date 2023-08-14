@@ -4,7 +4,9 @@ import jaxb.schema.generated.PRDEnvProperty;
 import world.enums.Type;
 import world.range.RangeImpl;
 
-public class EnvironmentDefinition {
+import java.io.Serializable;
+
+public class EnvironmentDefinition implements Serializable {
 
     private final String name;
 

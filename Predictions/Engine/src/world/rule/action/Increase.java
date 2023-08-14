@@ -35,10 +35,8 @@ public class Increase extends Action{
             }
             return false;
         }
-        catch (ClassCastException e){
-            throw new ClassCastException("This value that you provide in the action " + getActionType() + " is not a " + type);
-        }
-        catch (NumberFormatException e){
+
+        catch (NumberFormatException | ClassCastException e){
             throw new NumberFormatException("The value " + by + " that you provide in the action " + getActionType() + " is not a " + type);
         }
     }

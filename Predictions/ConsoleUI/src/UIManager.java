@@ -130,7 +130,7 @@ public class UIManager {
 
     private void simulationDetails() {
         try{
-            Objects.requireNonNull(world, "No simulation data is loaded from the XML file.");
+            Objects.requireNonNull(world);
             System.out.println("The information about the simulation defined in the xml file are:");
             printEntitiesDetails();
             printRulesDetails();

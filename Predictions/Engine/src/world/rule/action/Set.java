@@ -21,7 +21,7 @@ public class Set extends Action implements Serializable {
     }
 
     @Override
-    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist {
+    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException {
           String value = expression.decipher(entity, worldInstance);
           Property property = entity.getAllProperty().get(propertyName);
           Type type = property.getType();
@@ -39,15 +39,15 @@ public class Set extends Action implements Serializable {
                     property.setValue(value);
                 }
                 else {
-                    throw new ClassCastException();
+                    throw new NumberFormatException();
                 }
             }
             else if (type.equals(Type.STRING)) {
                 property.setValue(value);
             }
         }
-        catch (ClassCastException e){
-            throw new ClassCastException("This value that you provide in the action " + getActionType() + " is not a " + type);
+        catch (NumberFormatException e){
+            throw new NumberFormatException("The value: " + value + " that you provide in the action " + getActionType() + " is not a " + type);
         }
         return false;
     }

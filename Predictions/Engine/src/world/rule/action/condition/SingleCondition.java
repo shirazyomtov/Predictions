@@ -56,12 +56,11 @@ public class SingleCondition extends AbstractCondition implements Serializable {
         return flag;
     }
 
-    private boolean checkIfPropertyIsLessOrBiggerThanValue(Property property, Object valueInCondition, ComparisonOperator operator) throws ClassCastException, OperationNotSupportedType {
+    private boolean checkIfPropertyIsLessOrBiggerThanValue(Property property, String valueInCondition, ComparisonOperator operator) throws ClassCastException, OperationNotSupportedType {
         String stringValue;
         switch (property.getType()) {
             case DECIMAL:
-                stringValue = (String) valueInCondition;
-                Integer intValue = Integer.parseInt(stringValue);
+                Integer intValue = Integer.parseInt(valueInCondition);
                 Integer propertyValue = (Integer) property.getValue();
                 switch (operator) {
                     case LESSTHAN:
@@ -71,8 +70,7 @@ public class SingleCondition extends AbstractCondition implements Serializable {
                 }
                 break;
             case FLOAT:
-                stringValue = (String) valueInCondition;
-                Float floatValue = Float.parseFloat(stringValue);
+                Float floatValue = Float.parseFloat(valueInCondition);
                 Float propertyFloatValue = (Float) property.getValue();
                 switch (operator) {
                     case LESSTHAN:

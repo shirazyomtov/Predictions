@@ -30,8 +30,8 @@ public class Divide extends BinaryAction implements Serializable {
         catch (ArithmeticException e){
             throw new ArithmeticException("You can not divide by zero");
         }
-        catch (ClassCastException e){
-            throw new ClassCastException("At least one of the value that you provide in the action " + getActionType() + " is not a " + type);
+        catch (NumberFormatException | ClassCastException e){
+            throw new NumberFormatException("At least one of the values  that you provide in the action " + getActionType() + " is not a " + type);
         }
     }
 }

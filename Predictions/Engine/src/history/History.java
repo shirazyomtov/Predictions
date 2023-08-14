@@ -35,12 +35,15 @@ public final class History implements Serializable {
         return allSimulations.get(currentSimulationNumber);
     }
 
-
     public void addSimulation(Simulation simulation){
         allSimulations.put(currentSimulationNumber, simulation);
     }
 
     public Map<Integer, Simulation> getAllSimulations() {
         return allSimulations;
+    }
+
+    public void removeCurrentSimulation(){
+        allSimulations.remove(currentSimulationNumber);
     }
 }

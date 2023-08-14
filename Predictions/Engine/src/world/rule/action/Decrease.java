@@ -39,6 +39,9 @@ public class Decrease extends Action{
         catch (ClassCastException e){
             throw new ClassCastException("This value that you provide in the action " + getActionType() + " is not a " + type);
         }
+        catch (NumberFormatException e){
+            throw new NumberFormatException("The value " + by + " that you provide in the action " + getActionType() + " is not a " + type);
+        }
     }
 }
 

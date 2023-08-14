@@ -35,6 +35,9 @@ public class Multiply extends BinaryAction {
         catch (ClassCastException e){
             throw new ClassCastException("At least one of the value that you provide in the action " + getActionType() + " is not a " + type);
         }
+        catch (NumberFormatException e){
+            throw new NumberFormatException("At least one of the value that you provide in the action " + getActionType() + " is not a " + type);
+        }
     }
 }
 

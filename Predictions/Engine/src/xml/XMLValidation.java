@@ -37,7 +37,6 @@ public final class XMLValidation {
     }
 
     private void checkPropertyVariablesOfSpecificEntity(PRDEntity prdEntity) throws NameAlreadyExist {
-        // maybe do it generics
         HashMap<String, Integer> map = new HashMap<>();
         for (PRDProperty prdProperty : prdEntity.getPRDProperties().getPRDProperty()) {
             if (map.containsKey(prdProperty.getPRDName())) {
@@ -184,7 +183,7 @@ public final class XMLValidation {
         String entityName = action.getEntity();
         if(action.getType().equals("decrease") || action.getType().equals("increase")){
             String by = action.getBy();
-            checkTypeOfArg(by, entityName);
+            checkTypeOfArg(by, entityName, action.getType());
         }
         else if(action.getType().equals("calculation")){
             checkTypeOfArgCalculation(action, entityName);
@@ -206,25 +205,25 @@ public final class XMLValidation {
 
     private void checkTypeOfArgCalculation(PRDAction action, String entityName) throws NumberFormatException{
         if(action.getPRDDivide() != null){
-            checkTypeOfArg(action.getPRDDivide().getArg1(), entityName);
-            checkTypeOfArg(action.getPRDDivide().getArg2(), entityName);
+            checkTypeOfArg(action.getPRDDivide().getArg1(), entityName, action.getType());
+            checkTypeOfArg(action.getPRDDivide().getArg2(), entityName, action.getType());
         }
         else{
-            checkTypeOfArg(action.getPRDMultiply().getArg1(), entityName);
-            checkTypeOfArg(action.getPRDMultiply().getArg2(), entityName);
+            checkTypeOfArg(action.getPRDMultiply().getArg1(), entityName, action.getType());
+            checkTypeOfArg(action.getPRDMultiply().getArg2(), entityName, action.getType());
         }
     }
 
-    private void checkTypeOfArg(String arg, String entityName){
+    private void checkTypeOfArg(String arg, String entityName, String actionType){
         if(checkOptionByFunctionName(arg)){
             String value = extractValueInParentheses(arg);
             if(!checkTypeOfEnvironmentProperty(value) && !isNumber(value)){
-                throw new NumberFormatException("Not a number: " + value);
+                throw new NumberFormatException("You provide a value that is not a number " + value + " in the action " + actionType);
             }
         }
         else{
             if(!isNumber(arg) && !checkValueOfProperty(arg, entityName)){
-                throw new NumberFormatException("Not a number: " + arg);
+                throw new NumberFormatException("You provide a value that is not a number " + arg + " in the action " + actionType);
             }
         }
     }

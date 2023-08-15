@@ -4,7 +4,6 @@ import enums.DisplaySimulationOption;
 import enums.MenuOptions;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotSupportedType;
-import history.History;
 
 import java.io.*;
 import java.util.*;
@@ -91,15 +90,20 @@ public class UIManager {
     }
 
     private void saveSimulationsToFile() {
-        System.out.println("Please choose the full path including the name of the file (without the extension) that he wanted to save the system to");
         Scanner scanner = new Scanner(System.in);
-        filePath = scanner.nextLine();
+
         try {
+            engineManager.checkIfThereIsHistory();
+            System.out.println("Please choose the full path including the name of the file (without the extension) that he wanted to save the system to");
+            filePath = scanner.nextLine();
             engineManager.saveFile(filePath);
             System.out.println("The file was saved successfully.");
         }
         catch (IOException e) {
             System.out.println("IOException");
+        }
+        catch (NullPointerException e){
+            System.out.println("You need to run at least one proper simulation before saving the state of the system");
         }
     }
 
@@ -175,7 +179,6 @@ public class UIManager {
     private int chooseEnvironmentProperty() {
         int maxOptions =  engineManager.getAmountOfEnvironmentDefinition() + 1;
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Select an environment variable: \n");
         stringBuilder.append("These are all the environment variables defined in the xml file.\n");
         stringBuilder.append("You can provide a value for each of the environment variables.\n");
         stringBuilder.append("Please enter the number of the environment variable you want to provide a value for.\n");
@@ -185,13 +188,12 @@ public class UIManager {
 
     private void setValueEnvironment(int userIntegerInput) {
         boolean validInput = false;
-        Scanner scanner = new Scanner(System.in);
+
         do {
             try {
                 System.out.println("Please enter a value that stand in the required details of the this environment");
                 System.out.println(engineManager.getEnvironmentDetails(userIntegerInput));
-                String valueInput = scanner.nextLine();
-                checkValidationValue(userIntegerInput, valueInput);
+                checkValidationValue(userIntegerInput);
                 validInput = true;
             }
             catch (NumberFormatException exception)
@@ -205,12 +207,16 @@ public class UIManager {
         }while(!validInput);
     }
 
-    private void checkValidationValue(int userIntegerInput, String valueInput) throws NumberFormatException, IndexOutOfBoundsException{
+    private void checkValidationValue(int userIntegerInput) throws NumberFormatException, IndexOutOfBoundsException{
+        Scanner scanner = new Scanner(System.in);
+        String valueInput;
         switch (engineManager.getEnvironmentType(userIntegerInput)) {
             case FLOAT:
+                valueInput = scanner.nextLine();
                 engineManager.checkValidationFloatEnvironment(valueInput, userIntegerInput);
                 break;
             case DECIMAL:
+                valueInput = scanner.nextLine();
                 engineManager.checkValidationDecimalEnvironment(valueInput, userIntegerInput);
                 break;
             case BOOLEAN:
@@ -218,6 +224,7 @@ public class UIManager {
                 engineManager.checkValidationBoolEnvironment(userInput, userIntegerInput);
                 break;
             case STRING:
+                valueInput = scanner.nextLine();
                 engineManager.checkValidationStringEnvironment(valueInput, userIntegerInput);
                 break;
         }
@@ -389,7 +396,7 @@ public class UIManager {
     private void printPropertiesValues(Map<Object, Integer> valuesProperty, String propertyName) {
         System.out.println("The histogram of the property " + propertyName);
         for(Object object: valuesProperty.keySet()){
-            System.out.println("There are " + valuesProperty.get(object)+ " instances of the property " + propertyInput + " that is value is " + object);
+            System.out.println("There are " + valuesProperty.get(object)+ " instances of the property " + propertyName + " that is value is " + object);
         }
     }
 }

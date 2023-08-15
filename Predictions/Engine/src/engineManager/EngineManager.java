@@ -388,14 +388,14 @@ public class EngineManager {
                 }
                 int amount = history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityInstance1.getName()).getAmountOfPopulation();
                 String name = entityInstance1.getName();
-                dtoEntityInfo = new DTOEntityInfo(amount, count, name, propertyInfoListDTO);
+                dtoEntityInfo = new DTOEntityInfo(amount, count, name);
                 count = 0;
             }
         }
 
         if (!flag) {
             for (Map.Entry<String, EntityDefinitionImpl> entityDefinition : history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().entrySet()) {
-                dtoEntityInfo = new DTOEntityInfo(entityDefinition.getValue().getAmountOfPopulation(), 0, entityDefinition.getKey(), propertyInfoListDTO);
+                dtoEntityInfo = new DTOEntityInfo(entityDefinition.getValue().getAmountOfPopulation(), 0, entityDefinition.getKey());
             }
         }
         return dtoEntityInfo;
@@ -468,6 +468,9 @@ public class EngineManager {
             worldInstance = history.getSimulation().getWorldInstance();
             numberOfTimesUserSelectSimulation = history.getCurrentSimulationNumber();
         }
+        catch (NullPointerException e){
+            throw new NullPointerException("You need to upload a file that matches how it is saved by the this system");
+        }
         catch (FileNotFoundException e){
             throw new FileNotFoundException("No such file exists in this " + filePath + " path");
         }
@@ -482,11 +485,13 @@ public class EngineManager {
              ObjectOutputStream out = new ObjectOutputStream(fos)) {
             out.writeObject(history);
             out.flush();
-            System.out.println("The file was saved successfully.");
         }
         catch (IOException e) {
             throw new IOException("Something went wrong while loading the file");
         }
     }
-}
 
+    public void checkIfThereIsHistory() throws NullPointerException{
+        Objects.requireNonNull(history);
+    }
+}

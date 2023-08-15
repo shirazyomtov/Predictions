@@ -11,11 +11,11 @@ public class DTOEntityInfo {
 
     private List<DTOPropertyInfo> propertyInfoListDTO;
 
-    public DTOEntityInfo(int initialAmount, int finalAmount, String entityName, List<DTOPropertyInfo> propertyInfoListDTO) {
+    public DTOEntityInfo(int initialAmount, int finalAmount, String entityName) {
         this.initialAmount = initialAmount;
         this.finalAmount = finalAmount;
         this.entityName = entityName;
-        this.propertyInfoListDTO = propertyInfoListDTO;
+//        this.propertyInfoListDTO = propertyInfoListDTO;
     }
 
     public int getInitialAmount() {

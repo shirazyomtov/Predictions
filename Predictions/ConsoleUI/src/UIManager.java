@@ -5,11 +5,6 @@ import enums.MenuOptions;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotSupportedType;
 import history.History;
-import world.entity.definition.EntityDefinition;
-import world.entity.definition.PropertyDefinition;
-import world.entity.instance.EntityInstance;
-import world.propertyInstance.api.Property;
-import world.worldInstance.WorldInstance;
 
 import java.io.*;
 import java.util.*;
@@ -86,37 +81,21 @@ public class UIManager {
         System.out.println("Please choose the full path including the name of the file (without the extension) that he wanted to load the system from");
         Scanner scan = new Scanner(System.in);
         String filePath = scan.nextLine();
-        filePath += ".txt";
-        History loadedHistory;
-        try (ObjectInputStream in =
-                     new ObjectInputStream(
-                             new FileInputStream(filePath))) {
-            history = (History) in.readObject();
-            History.getInstance().setAllSimulations(history.getAllSimulations());
-            History.getInstance().setCurrentSimulationNumber(history.getCurrentSimulationNumber());
-            world = history.getSimulation().getWorldInstance().getWorldDefinition();
-            worldInstance = history.getSimulation().getWorldInstance();
-            numberOfTimesUserSelectSimulation = history.getCurrentSimulationNumber();
+        try{
+            engineManager.loadFileAndSetHistory(filePath);
             System.out.println("The file was loaded successfully.");
         }
-        catch (ClassNotFoundException e){
-            System.out.println("sssss");
+        catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-        catch (IOException e) {
-            System.out.println("lalalala");// problem
-        }
-
     }
 
     private void saveSimulationsToFile() {
         System.out.println("Please choose the full path including the name of the file (without the extension) that he wanted to save the system to");
         Scanner scanner = new Scanner(System.in);
         filePath = scanner.nextLine();
-        filePath += ".txt";
-        try (FileOutputStream fos = new FileOutputStream(filePath);
-             ObjectOutputStream out = new ObjectOutputStream(fos)) {
-                out.writeObject(history);
-                out.flush();
+        try {
+            engineManager.saveFile(filePath);
             System.out.println("The file was saved successfully.");
         }
         catch (IOException e) {
@@ -331,7 +310,7 @@ public class UIManager {
                 displayByQuantity(userIntegerInput);
                 break;
             case DISPLAYBYHISTOGRMOFPROPERTY:
-                displayByHistogrmOfProperty(userIntegerInput);
+                displayByHistogramOfProperty(userIntegerInput);
                 break;
         }
     }
@@ -347,30 +326,28 @@ public class UIManager {
         System.out.println("The final quantity of this entity : " + dtoEntityInfo.getFinalAmount());
     }
 
-    private void displayByHistogrmOfProperty(int userIntegerInput) {
-        WorldInstance worldInstance1 = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
-        Map<Object, Integer> valuesProperty = new HashMap<>();
-        EntityDefinition userEntityInput;
-        String propertyInput;
+    private void displayByHistogramOfProperty(int userIntegerInput) {
+        String chosenEntityName;
+        String chosenPropertyName;
+        Map<Object, Integer> valuesProperty;
         try {
             engineManager.checkIfThereIsEntity(userIntegerInput);
-            userEntityInput = chooseEntity(userIntegerInput);
-            propertyInput = chooseProperty(userEntityInput);
-            createPropertyValuesMap(valuesProperty, worldInstance1, userEntityInput, propertyInput);
-            printPropertiesValues(valuesProperty, propertyInput);
+            chosenEntityName = chooseEntity(userIntegerInput);
+            chosenPropertyName = chooseProperty(chosenEntityName, userIntegerInput);
+            valuesProperty = engineManager.createPropertyValuesMap(userIntegerInput, chosenEntityName, chosenPropertyName);
+            printPropertiesValues(valuesProperty, chosenPropertyName);
         }
         catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
 
-    private EntityDefinition chooseEntity(int userIntegerInput) {
+    private String chooseEntity(int userIntegerInput) {
         Map<Integer, String> entities = new HashMap<>();
-
         int index = engineManager.getEntitiesDefinitionSize(userIntegerInput);
         String message = getEntitiesMessage(userIntegerInput, entities);
         int userEntityInput = chooseInput(index, message);
-        return world.getWorldDefinition().getEntityDefinition().get(entities.get(userEntityInput));
+        return entities.get(userEntityInput);
     }
 
     private String getEntitiesMessage(int userIntegerInput, Map<Integer, String> entities)
@@ -387,47 +364,30 @@ public class UIManager {
         return stringBuilder.toString();
     }
 
-    private String chooseProperty(EntityDefinition userEntityInput) {
+    private String chooseProperty(String userEntityName, int userIntegerInput) {
         Map<Integer, String> properties = new HashMap<>();
-        int index = userEntityInput.getProps().size();
-        String message = printProperties(userEntityInput, properties);
+        int index = engineManager.getPropertiesSize(userEntityName, userIntegerInput);
+        String message = printProperties(userEntityName, properties, userIntegerInput);
         int userPropertyInput = chooseInput(index, message);
         return properties.get(userPropertyInput);
     }
 
-    private String printProperties(EntityDefinition userEntityInput, Map<Integer, String> properties) {
+    private String printProperties(String userEntityName, Map<Integer, String> properties, int userIntegerInput) {
         int index = 0;
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("Please select one of the given properties\n");
-        for(PropertyDefinition property: userEntityInput.getProps()){
+        for(String propertyName: engineManager.getPropertiesNamesList(userEntityName, userIntegerInput)){
             index += 1;
             stringBuilder.append(index + ".");
-            stringBuilder.append(property.getName() + "\n");
-            properties.put(index, property.getName());
+            stringBuilder.append(propertyName + "\n");
+            properties.put(index, propertyName);
         }
         return  stringBuilder.toString();
     }
 
-    private void createPropertyValuesMap(Map<Object, Integer> valuesProperty, WorldInstance worldInstance1, EntityDefinition userEntityInput, String propertyInput) {
-        for (EntityInstance entityInstance: worldInstance1.getEntityInstanceList()){
-            if (entityInstance.getName().equals(userEntityInput.getName())){
-                for (Property property: entityInstance.getAllProperty().values()){
-                    if (property.getName().equals(propertyInput)){
-                        if (!valuesProperty.containsKey(property.getValue())){
-                            valuesProperty.put(property.getValue(), 1);
-                        }
-                        else{
-                            valuesProperty.put(property.getValue(), valuesProperty.get(property.getValue()) + 1);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void printPropertiesValues(Map<Object, Integer> valuesProperty, String propertyInput) {
-        System.out.println("The histogram of the property " + propertyInput);
+    private void printPropertiesValues(Map<Object, Integer> valuesProperty, String propertyName) {
+        System.out.println("The histogram of the property " + propertyName);
         for(Object object: valuesProperty.keySet()){
             System.out.println("There are " + valuesProperty.get(object)+ " instances of the property " + propertyInput + " that is value is " + object);
         }

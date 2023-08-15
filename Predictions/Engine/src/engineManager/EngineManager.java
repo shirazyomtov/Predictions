@@ -25,7 +25,7 @@ import xml.XMLReader;
 import xml.XMLValidation;
 
 import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -418,11 +418,75 @@ public class EngineManager {
         return currentWorld.getWorldDefinition().getEntityDefinition().keySet().size();
     }
 
-    public DTOEntityInfo getChoosenEntityDTO(int userIntegerInput){
-        WorldInstance currentWorld = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
-        EntityDefinition entityDefinition = currentWorld.getWorldDefinition().getEntityDefinition().get(entities.get(userEntityInput));
-        for()
+    public int getPropertiesSize(String entityName, int userIntegerInput) {
+        return getPropertiesListFromSimulation(entityName, userIntegerInput).size();
     }
 
+    public List<String> getPropertiesNamesList(String entityName, int userIntegerInput){
+        List<String> propertiesNamesList = new ArrayList<>();
+        for(PropertyDefinition propertyDefinition: getPropertiesListFromSimulation(entityName, userIntegerInput)){
+            propertiesNamesList.add(propertyDefinition.getName());
+        }
+        return  propertiesNamesList;
+    }
+
+    private List<PropertyDefinition> getPropertiesListFromSimulation(String entityName, int userIntegerInput){
+        WorldInstance currentWorld = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
+        return currentWorld.getWorldDefinition().getEntityDefinition().get(entityName).getProps();
+
+    }
+
+    public Map<Object, Integer> createPropertyValuesMap(int userIntegerInput, String entityName, String propertyName) {
+        WorldInstance currentWorld = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
+        Map<Object, Integer> valuesProperty = new HashMap<>();
+        for (EntityInstance entityInstance : currentWorld.getEntityInstanceList()) {
+            if (entityInstance.getName().equals(entityName)) {
+                for (Property property : entityInstance.getAllProperty().values()) {
+                    if (property.getName().equals(propertyName)) {
+                        if (!valuesProperty.containsKey(property.getValue())) {
+                            valuesProperty.put(property.getValue(), 1);
+                        } else {
+                            valuesProperty.put(property.getValue(), valuesProperty.get(property.getValue()) + 1);
+                        }
+                    }
+                }
+            }
+        }
+
+        return valuesProperty;
+    }
+
+    public void loadFileAndSetHistory(String filePath) throws IOException, ClassNotFoundException{
+        filePath += ".txt";
+        try (ObjectInputStream in =
+                     new ObjectInputStream(
+                             new FileInputStream(filePath))) {
+            history = (History) in.readObject();
+            History.getInstance().setAllSimulations(history.getAllSimulations());
+            History.getInstance().setCurrentSimulationNumber(history.getCurrentSimulationNumber());
+            world = history.getSimulation().getWorldInstance().getWorldDefinition();
+            worldInstance = history.getSimulation().getWorldInstance();
+            numberOfTimesUserSelectSimulation = history.getCurrentSimulationNumber();
+        }
+        catch (FileNotFoundException e){
+            throw new FileNotFoundException("No such file exists in this " + filePath + " path");
+        }
+        catch (IOException e) {
+            throw new IOException("Something went wrong while loading the file");
+        }
+    }
+
+    public void saveFile(String filePath) throws IOException {
+        filePath += ".txt";
+        try (FileOutputStream fos = new FileOutputStream(filePath);
+             ObjectOutputStream out = new ObjectOutputStream(fos)) {
+            out.writeObject(history);
+            out.flush();
+            System.out.println("The file was saved successfully.");
+        }
+        catch (IOException e) {
+            throw new IOException("Something went wrong while loading the file");
+        }
+    }
 }
 

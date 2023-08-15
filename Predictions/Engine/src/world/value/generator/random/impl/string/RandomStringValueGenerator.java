@@ -2,9 +2,10 @@ package world.value.generator.random.impl.string;
 
 import world.value.generator.random.api.AbstractRandomValueGenerator;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class RandomStringValueGenerator extends AbstractRandomValueGenerator<String> {
+public class RandomStringValueGenerator extends AbstractRandomValueGenerator<String> implements Serializable {
     @Override
     public String generateValue() {
         String validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?,_-(). ";

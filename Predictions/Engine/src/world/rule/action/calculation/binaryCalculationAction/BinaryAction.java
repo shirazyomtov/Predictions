@@ -3,7 +3,9 @@ package world.rule.action.calculation.binaryCalculationAction;
 import world.rule.action.calculation.CalculationImpl;
 import world.rule.action.expression.ExpressionIml;
 
-public abstract class BinaryAction extends CalculationImpl {
+import java.io.Serializable;
+
+public abstract class BinaryAction extends CalculationImpl implements Serializable {
 
     private final ExpressionIml argument1;
     private final ExpressionIml argument2;

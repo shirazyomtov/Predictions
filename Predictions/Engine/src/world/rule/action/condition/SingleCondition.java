@@ -10,7 +10,9 @@ import world.propertyInstance.api.Property;
 import world.rule.action.expression.ExpressionIml;
 import world.worldInstance.WorldInstance;
 
-public class SingleCondition extends AbstractCondition{
+import java.io.Serializable;
+
+public class SingleCondition extends AbstractCondition implements Serializable {
     private String operator;
     private String value;
     private String propertyName;

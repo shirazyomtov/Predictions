@@ -5,7 +5,11 @@ public enum MenuOptions {
     SIMULATION_DETAILS("Displaying the simulation details", 2),
     SIMULATION("Running a simulation", 3),
     PAST_ACTIVATION("Displaying full details of past activation", 4),
-    EXIT("Exiting the system", 5);
+
+    LOAD_SIMULATIONS_FROM_FILE ("Load simulation from file", 5),
+
+    SAVE_SIMULATIONS_TO_FILE("Save simulation to file", 6),
+    EXIT("Exiting the system", 7);
 
     private final String message;
     final Integer optionNumber;

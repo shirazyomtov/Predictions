@@ -1,10 +1,11 @@
 package world.entity.definition;
 
 
+import java.io.Serializable;
 import java.util.List;
 
 
-public class EntityDefinitionImpl implements EntityDefinition {
+public class EntityDefinitionImpl implements EntityDefinition, Serializable {
     private final String name;
     private final Integer amountOfPopulation;
     private final List<PropertyDefinition> allProperties;

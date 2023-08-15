@@ -6,10 +6,11 @@ import world.environment.instance.EnvironmentInstance;
 import world.rule.RuleImpl;
 import world.termination.Termination;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public final class WorldDefinition {
+public final class WorldDefinition implements Serializable {
     private final Map<String, EntityDefinitionImpl> entityDefinition;
 
     private final List<RuleImpl> rules;

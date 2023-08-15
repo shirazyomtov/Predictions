@@ -5,9 +5,11 @@ import world.auxiliaryFunctions.AuxiliaryFunctionsImpl;
 import world.entity.instance.EntityInstance;
 import world.worldInstance.WorldInstance;
 
+import java.io.Serializable;
+
 import static world.enums.AuxiliaryFunction.*;
 
-public class ExpressionIml implements Expression {
+public class ExpressionIml implements Expression, Serializable {
     private final String expressionName;
 
     public ExpressionIml(String expressionName) {

@@ -12,10 +12,11 @@ import world.rule.action.Action;
 import world.rule.action.ActionFactory;
 import world.worldInstance.WorldInstance;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractCondition extends Action {
+public abstract class AbstractCondition extends Action implements Serializable {
 
     List<Action> thenActions;
     List<Action> elseActions = null;

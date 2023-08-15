@@ -5,7 +5,10 @@ import world.range.RangeImpl;
 import world.value.generator.api.ValueGenerator;
 import world.enums.Type;
 
-public abstract class AbstractPropertyInstance<T> implements Property {
+import javax.sql.rowset.serial.SerialArray;
+import java.io.Serializable;
+
+public abstract class AbstractPropertyInstance<T> implements Property, Serializable {
 
     private final String name;
     private final Type propertyType;

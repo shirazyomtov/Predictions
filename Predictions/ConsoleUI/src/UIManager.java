@@ -27,7 +27,7 @@ import xml.XMLReader;
 import xml.XMLValidation;
 
 import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -42,6 +42,8 @@ public class UIManager {
     private XMLValidation xmlValidation = null;
 
     private Integer numberOfTimesUserSelectSimulation = 0;
+
+    private String filePath = null;
 
     public void RunProgram() {
         int option = 0;
@@ -95,9 +97,58 @@ public class UIManager {
                 break;
             case PAST_ACTIVATION:
                 detailsOfPastRun();
-
+                break;
+            case LOAD_SIMULATIONS_FROM_FILE:
+                loadSimulationsFromFile();
+                break;
+            case SAVE_SIMULATIONS_TO_FILE:
+                saveSimulationsToFile();
+                break;
         }
     }
+
+    private void loadSimulationsFromFile() {
+        System.out.println("Please choose the full path including the name of the file (without the extension) that he wanted to load the system from");
+        Scanner scan = new Scanner(System.in);
+        String filePath = scan.nextLine();
+        filePath += ".txt";
+        History loadedHistory;
+        try (ObjectInputStream in =
+                     new ObjectInputStream(
+                             new FileInputStream(filePath))) {
+            history = (History) in.readObject();
+            History.getInstance().setAllSimulations(history.getAllSimulations());
+            History.getInstance().setCurrentSimulationNumber(history.getCurrentSimulationNumber());
+            world = history.getSimulation().getWorldInstance().getWorldDefinition();
+            worldInstance = history.getSimulation().getWorldInstance();
+            numberOfTimesUserSelectSimulation = history.getCurrentSimulationNumber();
+            System.out.println("The file was loaded successfully.");
+        }
+        catch (ClassNotFoundException e){
+            System.out.println("sssss");
+        }
+        catch (IOException e) {
+            System.out.println("lalalala");// problem
+        }
+
+    }
+
+    private void saveSimulationsToFile() {
+        System.out.println("Please choose the full path including the name of the file (without the extension) that he wanted to save the system to");
+        Scanner scanner = new Scanner(System.in);
+        filePath = scanner.nextLine();
+        filePath += ".txt";
+        try (FileOutputStream fos = new FileOutputStream(filePath);
+             ObjectOutputStream out = new ObjectOutputStream(fos)) {
+                out.writeObject(history);
+                out.flush();
+            System.out.println("The file was saved successfully.");
+        }
+        catch (IOException e) {
+            System.out.println("IOException");
+        }
+    }
+
 
     private void loadXML() {
         System.out.println("Enter the full path of the XML file");
@@ -110,6 +161,9 @@ public class UIManager {
             xmlValidation.checkValidationXmlFile();
             world = xmlReader.defineWorld();
             System.out.println("The XML file has been loaded successfully");
+            History.getInstance().getAllSimulations().clear();
+            history = null;
+            numberOfTimesUserSelectSimulation = 0;
         }
         catch (FileNotFoundException | JAXBException  e) {
             System.out.println("File has not been found in this path " + xmlPath + ".");
@@ -593,10 +647,12 @@ public class UIManager {
 
     private void displayByQuantity(int userIntegerInput) {
         int count = 0;
+        boolean flag = false;
         WorldInstance world = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
         Map<String , Integer> entity = new HashMap<>();
         System.out.println("The initial and final quantity of each entity: ");
         for (EntityInstance entityInstance1: world.getEntityInstanceList()) {
+            flag = true;
             if(!entity.containsKey(entityInstance1.getName())){
                 entity.put(entityInstance1.getName(), 1);
                 for (EntityInstance entityInstance2: world.getEntityInstanceList()) {
@@ -604,15 +660,23 @@ public class UIManager {
                         count++;
                     }
                 }
-                printInitAndFinalEntities(entityInstance1, world, count);
+                int amount = world.getWorldDefinition().getEntityDefinition().get(entityInstance1.getName()).getAmountOfPopulation();
+                String name = entityInstance1.getName();
+                printInitAndFinalEntities(name, amount, count);
                 count = 0;
+            }
+        }
+
+        if(!flag){
+            for(Map.Entry<String, EntityDefinitionImpl> entityDefinition : world.getWorldDefinition().getEntityDefinition().entrySet()){
+                printInitAndFinalEntities(entityDefinition.getKey(), entityDefinition.getValue().getAmountOfPopulation(), 0);
             }
         }
     }
 
-    private void printInitAndFinalEntities(EntityInstance entityInstance1,  WorldInstance world, int count){
-        System.out.println("Entity " + entityInstance1.getName());
-        System.out.println("The initial quantity of this entity : " + world.getWorldDefinition().getEntityDefinition().get(entityInstance1.getName()).getAmountOfPopulation());
+    private void printInitAndFinalEntities(String entityName,  int initialAmount, int count){
+        System.out.println("Entity " + entityName);
+        System.out.println("The initial quantity of this entity : " + initialAmount);
         System.out.println("The final quantity of this entity : " + count);
     }
 
@@ -621,15 +685,24 @@ public class UIManager {
         Map<Object, Integer> valuesProperty = new HashMap<>();
         EntityDefinition userEntityInput;
         String propertyInput;
-        userEntityInput = chooseEntity(userIntegerInput);
-        propertyInput = chooseProperty(userEntityInput);
-        createPropertyValuesMap(valuesProperty, worldInstance1, userEntityInput, propertyInput);
-        printPropertiesValues(valuesProperty, propertyInput);
+        try {
+            if(worldInstance1.getEntityInstanceList().size() == 0){
+                throw new Exception("All of the entities were killed during the simulation\n");
+            }
+            userEntityInput = chooseEntity(userIntegerInput);
+            propertyInput = chooseProperty(userEntityInput);
+            createPropertyValuesMap(valuesProperty, worldInstance1, userEntityInput, propertyInput);
+            printPropertiesValues(valuesProperty, propertyInput);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
     private EntityDefinition chooseEntity(int userIntegerInput) {
         Map<Integer, String> entities = new HashMap<>();
         WorldInstance world = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
+
         int index = world.getWorldDefinition().getEntityDefinition().keySet().size();
         String message = getEntitiesMessage(world, entities);
         int userEntityInput = chooseInput(index, message);

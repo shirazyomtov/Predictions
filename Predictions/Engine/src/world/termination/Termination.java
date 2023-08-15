@@ -3,7 +3,9 @@ package world.termination;
 import jaxb.schema.generated.PRDBySecond;
 import jaxb.schema.generated.PRDByTicks;
 
-public class Termination {
+import java.io.Serializable;
+
+public class Termination implements Serializable {
 
     private Integer ticks = null;
     private Integer second = null;

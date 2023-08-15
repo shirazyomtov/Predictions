@@ -6,7 +6,9 @@ import world.enums.Type;
 import world.propertyInstance.api.Property;
 import world.worldInstance.WorldInstance;
 
-public class Divide extends BinaryAction{
+import java.io.Serializable;
+
+public class Divide extends BinaryAction implements Serializable {
     public Divide(String entityName, String resultPropertyName, String argument1, String argument2) {
         super(entityName, resultPropertyName, argument1, argument2);
     }

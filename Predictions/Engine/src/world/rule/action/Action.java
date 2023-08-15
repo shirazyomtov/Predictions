@@ -6,9 +6,10 @@ import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 import world.worldInstance.WorldInstance;
 
+import java.io.Serializable;
 import java.util.WeakHashMap;
 
-public abstract class Action implements ActionOperation {
+public abstract class Action implements ActionOperation, Serializable {
 
     private final String entityName;
 

@@ -7,7 +7,9 @@ import world.enums.Type;
 import world.propertyInstance.api.Property;
 import world.worldInstance.WorldInstance;
 
-public class Kill extends Action {
+import java.io.Serializable;
+
+public class Kill extends Action implements Serializable {
     public Kill(String entityName)
     {
         super(entityName, ActionType.KILL);

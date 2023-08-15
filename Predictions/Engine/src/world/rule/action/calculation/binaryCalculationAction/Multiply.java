@@ -6,7 +6,9 @@ import world.enums.Type;
 import world.propertyInstance.api.Property;
 import world.worldInstance.WorldInstance;
 
-public class Multiply extends BinaryAction {
+import java.io.Serializable;
+
+public class Multiply extends BinaryAction implements Serializable {
 
 
     public Multiply(String entityName, String resultPropertyName, String argument1, String argument2) {

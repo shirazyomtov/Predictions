@@ -2,7 +2,9 @@ package world.value.generator.random.impl.numeric;
 
 import world.value.generator.random.api.AbstractRandomValueGenerator;
 
-public abstract class AbstractNumericRandomGenerator<T> extends AbstractRandomValueGenerator<T> {
+import java.io.Serializable;
+
+public abstract class AbstractNumericRandomGenerator<T> extends AbstractRandomValueGenerator<T> implements Serializable {
 
     protected final T from;
     protected final T to;

@@ -12,10 +12,11 @@ import world.rule.action.Action;
 import world.rule.action.ActionFactory;
 import world.worldInstance.WorldInstance;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultipleCondition extends AbstractCondition{
+public class MultipleCondition extends AbstractCondition implements Serializable {
 
     private List<AbstractCondition> conditions;
     private String logical;

@@ -5,6 +5,7 @@ import history.simulation.Simulation;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public final class History implements Serializable {
     private static final Object creationalLockContext = new Object();
@@ -45,6 +46,7 @@ public final class History implements Serializable {
 
     public void removeCurrentSimulation(){
         allSimulations.remove(currentSimulationNumber);
+        setCurrentSimulationNumber(currentSimulationNumber -1);
     }
 
     public void setAllSimulations(Map<Integer, Simulation> allSimulations) {
@@ -54,4 +56,9 @@ public final class History implements Serializable {
     public Integer getCurrentSimulationNumber() {
         return currentSimulationNumber;
     }
+
+    public TreeMap<Integer, Simulation> getSortMapOfSimulations() {
+        return new TreeMap<>(allSimulations);
+    }
+
 }

@@ -70,4 +70,5 @@ public class RuleImpl implements Rule, Serializable {
         }
         return stringBuilder.toString();
     }
+
 }

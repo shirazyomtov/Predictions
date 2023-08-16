@@ -1,10 +1,12 @@
 package world.worldInstance;
 
 import world.entity.instance.EntityInstance;
+import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
 import world.worldDefinition.WorldDefinition;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,5 +44,14 @@ public class WorldInstance implements Serializable {
 
     public WorldDefinition getWorldDefinition() {
         return worldDefinition;
+    }
+
+    public   List<String>  createListEnvironmentNamesAndValues() {
+        List<String> environmentNameAndValues = new ArrayList<>();
+        for (Map.Entry<String, EnvironmentInstance> environmentEntry : environmentInstanceMap.entrySet()) {
+            environmentNameAndValues.add(environmentEntry.getValue().toString());
+        }
+
+        return environmentNameAndValues;
     }
 }

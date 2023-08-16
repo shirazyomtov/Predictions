@@ -7,6 +7,7 @@ import world.rule.RuleImpl;
 import world.termination.Termination;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,4 +41,28 @@ public final class WorldDefinition implements Serializable {
         return environmentDefinition;
     }
 
+    public   List<String>  createListEnvironmentNames() {
+        List<String> environmentName = new ArrayList<>();
+        for (Map.Entry<String, EnvironmentDefinition> environmentEntry : environmentDefinition.entrySet()) {
+            environmentName.add(environmentEntry.getValue().getName());
+        }
+
+        return environmentName;
+    }
+
+    public List<String> entitiesDetails(){
+        List<String> entitiesDetails = new ArrayList<>();
+        for (Map.Entry<String, EntityDefinitionImpl> entry : entityDefinition.entrySet()) {
+            entitiesDetails.add(entry.getValue().toString());
+        }
+        return entitiesDetails;
+    }
+
+    public List<String> rulesDetails(){
+        List<String> rulesDetails = new ArrayList<>();
+        for (RuleImpl rule : rules){
+            rulesDetails.add(rule.toString());
+        }
+        return rulesDetails;
+    }
 }

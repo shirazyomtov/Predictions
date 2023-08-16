@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static world.enums.AuxiliaryFunction.checkOptionByFunctionName;
+import static world.enums.AuxiliaryFunction.extractFunctionName;
 
 public final class XMLValidation {
     private  PRDWorld world = null;
@@ -65,6 +66,7 @@ public final class XMLValidation {
                 findEntity(action.getPRDCondition().getEntity());
             }
             else{
+                findEntity(action.getEntity());
                 List<PRDCondition> conditions = action.getPRDCondition().getPRDCondition();
                 checkCondition("", conditions, true);
             }
@@ -202,11 +204,11 @@ public final class XMLValidation {
     private void checkTypeOfArg(String arg, String entityName, String actionType){
         if(checkOptionByFunctionName(arg)){
             String value = extractValueInParentheses(arg);
-            if (arg.equals("random") && !isNumberInt(value))
+            if (extractFunctionName(arg).equals("random") && !isNumber(value))
             {
                 throw new NumberFormatException("You provide a value that is not a Integer number, the value is " + value + " in the randomFunction " );
             }
-            else if(!checkTypeOfEnvironmentProperty(value) ){
+            else if(extractFunctionName(arg).equals("environment") && !checkTypeOfEnvironmentProperty(value) ){
                 throw new NumberFormatException("You provide a value that is not a number, the value is " + value + " in the action " + actionType);
             }
         }
@@ -214,15 +216,6 @@ public final class XMLValidation {
             if(!isNumber(arg) && !checkValueOfProperty(arg, entityName)){
                 throw new NumberFormatException("You provide a value that is not a number the value is " + arg + " in the action " + actionType);
             }
-        }
-    }
-
-    private boolean isNumberInt(String value) {
-        try {
-            Integer.parseInt(value);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
         }
     }
 

@@ -81,7 +81,7 @@ public class UIManager {
         Scanner scan = new Scanner(System.in);
         String filePath = scan.nextLine();
         try{
-            engineManager.loadFileAndSetHistory(filePath);
+            engineManager.loadFileAndSetHistory(filePath, engineManager);
             System.out.println("The file was loaded successfully.");
         }
         catch (Exception e) {
@@ -93,17 +93,13 @@ public class UIManager {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            engineManager.checkIfThereIsHistory();
             System.out.println("Please choose the full path including the name of the file (without the extension) that he wanted to save the system to");
             filePath = scanner.nextLine();
-            engineManager.saveFile(filePath);
+            engineManager.saveFile(filePath, engineManager);
             System.out.println("The file was saved successfully.");
         }
         catch (IOException e) {
             System.out.println("IOException");
-        }
-        catch (NullPointerException e){
-            System.out.println("You need to run at least one proper simulation before saving the state of the system");
         }
     }
 

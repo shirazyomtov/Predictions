@@ -27,4 +27,13 @@ public enum AuxiliaryFunction {
     public String getFunctionName() {
         return functionName;
     }
+
+    public static String extractFunctionName(String arg){
+        int index = arg.indexOf("(");
+        String name = null;
+        if (index != -1) {
+            name = arg.substring(0, index).trim();
+        }
+        return name;
+    }
 }

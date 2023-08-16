@@ -29,13 +29,8 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class EngineManager {
+public class EngineManager implements Serializable{
     private History history = null;
-
-    private XMLReader xmlReader = null;
-
-    private XMLValidation xmlValidation = null;
-
     private Integer numberOfTimesUserSelectSimulation = 0;
 
     private WorldDefinition world = null;
@@ -45,7 +40,8 @@ public class EngineManager {
 
     public void loadXMLAAndCheckValidation(String xmlPath) throws Exception {
         try {
-            xmlReader = new XMLReader(xmlPath);
+            XMLReader xmlReader = new XMLReader(xmlPath);
+            XMLValidation xmlValidation;
             checkValidationXMLPath(xmlPath);
             xmlValidation = xmlReader.openXmlAndGetData();
             xmlValidation.checkValidationXmlFile();
@@ -64,7 +60,7 @@ public class EngineManager {
 
     private void checkValidationXMLPath(String path) throws FilePathException {
         if (path.length() <= 4) {
-            throw new FilePathException(FilePathException.ErrorType.FILE_NAME_CONTAINS_LESS_THAN_4_CHARACTERS);
+            throw new FilePathException(FilePathException.ErrorType.FILE_NAME_CONTAINS_LESS_THAN_5_CHARACTERS);
         } else if (!path.endsWith(".xml")) {
             throw new FilePathException(FilePathException.ErrorType.NOT_ENDS_WITH_XML);
         }
@@ -111,7 +107,7 @@ public class EngineManager {
         Float userInput = Float.parseFloat(valueInput);
         checkIfInputInRange(userInput, environmentDefinition, false);
         environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((float)userInput), environmentDefinition.getRange()));
-        environmentValuesByUser.put(environmentInstance.getProperty().getName(), environmentInstance); // problem
+        environmentValuesByUser.put(environmentInstance.getProperty().getName(), environmentInstance);
     }
 
     public void checkValidationDecimalEnvironment(String valueInput, int userIntegerInput)throws NumberFormatException, IndexOutOfBoundsException {
@@ -456,42 +452,49 @@ public class EngineManager {
         return valuesProperty;
     }
 
-    public void loadFileAndSetHistory(String filePath) throws IOException, ClassNotFoundException{
+    public void loadFileAndSetHistory(String filePath, EngineManager engineManager) throws IOException, ClassNotFoundException{
         filePath += ".txt";
         try (ObjectInputStream in =
                      new ObjectInputStream(
                              new FileInputStream(filePath))) {
-            history = (History) in.readObject();
-            History.getInstance().setAllSimulations(history.getAllSimulations());
-            History.getInstance().setCurrentSimulationNumber(history.getCurrentSimulationNumber());
-            world = history.getSimulation().getWorldInstance().getWorldDefinition();
-            worldInstance = history.getSimulation().getWorldInstance();
-            numberOfTimesUserSelectSimulation = history.getCurrentSimulationNumber();
-        }
-        catch (NullPointerException e){
-            throw new NullPointerException("You need to upload a file that matches how it is saved by the this system");
+            engineManager = (EngineManager) in.readObject();
+            history = engineManager.getHistory();
+            if(history != null) {
+                History.getInstance().setAllSimulations(history.getAllSimulations());
+                History.getInstance().setCurrentSimulationNumber(history.getCurrentSimulationNumber());
+                world = history.getSimulation().getWorldInstance().getWorldDefinition();
+                worldInstance = history.getSimulation().getWorldInstance();
+                numberOfTimesUserSelectSimulation = history.getCurrentSimulationNumber();
+            }
+            else{
+                world = engineManager.getWorld();
+            }
         }
         catch (FileNotFoundException e){
-            throw new FileNotFoundException("No such file exists in this " + filePath + " path");
+            throw new FileNotFoundException("No such file exists in this path: " + filePath );
         }
         catch (IOException e) {
-            throw new IOException("Something went wrong while loading the file");
+            throw new IOException("The file empty");
         }
     }
 
-    public void saveFile(String filePath) throws IOException {
+    public void saveFile(String filePath, EngineManager engineManager) throws IOException {
         filePath += ".txt";
         try (FileOutputStream fos = new FileOutputStream(filePath);
              ObjectOutputStream out = new ObjectOutputStream(fos)) {
-            out.writeObject(history);
+            out.writeObject(engineManager);
             out.flush();
         }
         catch (IOException e) {
-            throw new IOException("Something went wrong while loading the file");
+            throw new IOException("Something went wrong while saving the file");
         }
     }
 
-    public void checkIfThereIsHistory() throws NullPointerException{
-        Objects.requireNonNull(history);
+    private History getHistory() {
+        return history;
+    }
+
+    private WorldDefinition getWorld() {
+        return world;
     }
 }

@@ -58,31 +58,36 @@ public class SingleCondition extends AbstractCondition implements Serializable {
 
     private boolean checkIfPropertyIsLessOrBiggerThanValue(Property property, String valueInCondition, ComparisonOperator operator) throws ClassCastException, OperationNotSupportedType {
         String stringValue;
-        switch (property.getType()) {
-            case DECIMAL:
-                Integer intValue = Integer.parseInt(valueInCondition);
-                Integer propertyValue = (Integer) property.getValue();
-                switch (operator) {
-                    case LESSTHAN:
-                        return propertyValue < intValue;
-                    case BIGGERTHAN:
-                        return propertyValue > intValue;
-                }
-                break;
-            case FLOAT:
-                Float floatValue = Float.parseFloat(valueInCondition);
-                Float propertyFloatValue = (Float) property.getValue();
-                switch (operator) {
-                    case LESSTHAN:
-                        return propertyFloatValue < floatValue;
-                    case BIGGERTHAN:
-                        return propertyFloatValue > floatValue;
-                }
-                break;
-            case BOOLEAN:
-                throw new OperationNotSupportedType("condition", "boolean");
-            case STRING:
-                throw new OperationNotSupportedType("condition", "string");
+        try {
+            switch (property.getType()) {
+                case DECIMAL:
+                    Integer intValue = Integer.parseInt(valueInCondition);
+                    Integer propertyValue = (Integer) property.getValue();
+                    switch (operator) {
+                        case LESSTHAN:
+                            return propertyValue < intValue;
+                        case BIGGERTHAN:
+                            return propertyValue > intValue;
+                    }
+                    break;
+                case FLOAT:
+                    Float floatValue = Float.parseFloat(valueInCondition);
+                    Float propertyFloatValue = (Float) property.getValue();
+                    switch (operator) {
+                        case LESSTHAN:
+                            return propertyFloatValue < floatValue;
+                        case BIGGERTHAN:
+                            return propertyFloatValue > floatValue;
+                    }
+                    break;
+                case BOOLEAN:
+                    throw new OperationNotSupportedType("condition", "boolean");
+                case STRING:
+                    throw new OperationNotSupportedType("condition", "string");
+            }
+        }
+        catch (NumberFormatException | ClassCastException e){
+            throw new ClassCastException("The value " + valueInCondition + " that you provide in the action " + getActionType() + " is not a " + property.getType());
         }
         return false;
     }
@@ -91,28 +96,39 @@ public class SingleCondition extends AbstractCondition implements Serializable {
         return !(checkIfPropertyIsEqualToValue(property, valueInCondition));
     }
 
-    private boolean checkIfPropertyIsEqualToValue(Property property, String valueInCondition) {
-        boolean flag = false;
-        switch (property.getType()) {
-            case DECIMAL:
-                Integer intValue = Integer.parseInt(valueInCondition);
-                Integer propertyValue = (Integer) property.getValue();
-                flag = propertyValue.equals(intValue);
-                break;
-            case FLOAT:
-                Float floatValue = Float.parseFloat(valueInCondition);
-                Float propertyFloatValue = (Float) property.getValue();
-                flag = propertyFloatValue.equals(floatValue);
-                break;
-            case BOOLEAN:
-                flag = property.getValue().toString().equals(valueInCondition);
-                break;
-            case STRING:
-                String propertyStringValue = (String) property.getValue();
-                flag = propertyStringValue.equals(valueInCondition);
-                break;
+    private boolean checkIfPropertyIsEqualToValue(Property property, String valueInCondition)throws ClassCastException {
+        try {
+            boolean flag = false;
+            switch (property.getType()) {
+                case DECIMAL:
+                    Integer intValue = Integer.parseInt(valueInCondition);
+                    Integer propertyValue = (Integer) property.getValue();
+                    flag = propertyValue.equals(intValue);
+                    break;
+                case FLOAT:
+                    Float floatValue = Float.parseFloat(valueInCondition);
+                    Float propertyFloatValue = (Float) property.getValue();
+                    flag = propertyFloatValue.equals(floatValue);
+                    break;
+                case BOOLEAN:
+                    if(valueInCondition.equals("true") || valueInCondition.equals("false")) {
+                        flag = property.getValue().toString().equals(valueInCondition);
+                    }
+                    else{
+                        throw new ClassCastException();
+                    }
+                    break;
+                case STRING:
+                    String propertyStringValue = (String) property.getValue();
+                    flag = propertyStringValue.equals(valueInCondition);
+                    break;
+            }
+
+            return flag;
         }
-        
-        return  flag;
+
+        catch (NumberFormatException | ClassCastException e){
+            throw new ClassCastException("The value " + valueInCondition + " that you provide in the action " + getActionType() + " is not a " + property.getType());
+        }
     }
 }

@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public  final class XMLReader {
+public  final class XMLReader implements  Serializable {
     private final  String JAXB_XML_GAME_PACKAGE_NAME = "jaxb.schema.generated";
     private  PRDWorld world = null;
     private String xmlPath ;
@@ -44,7 +44,6 @@ public  final class XMLReader {
 
     public WorldDefinition defineWorld()
     {
-
         Map<String, EntityDefinitionImpl> entityDefinition = defineEntities();
         List<RuleImpl> ruleIml = defineRules();
         Termination termination = defineTermination();

@@ -3,7 +3,7 @@ package exceptions;
 public class FilePathException extends Exception{
 
     public enum ErrorType{
-        FILE_NAME_CONTAINS_LESS_THAN_4_CHARACTERS("The file path contains less than 4 characters."),
+        FILE_NAME_CONTAINS_LESS_THAN_5_CHARACTERS("The file path contains less than 5 characters."),
         NOT_ENDS_WITH_XML("The path of the file does not contain an extension of .xml");
 
         private final String errorMessage;

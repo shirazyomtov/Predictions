@@ -87,6 +87,7 @@ public final class XMLValidation {
         if (action.getType().equals("condition")){
             if (action.getPRDCondition().getSingularity().equals("single")) {
                 findProperty(action.getPRDCondition().getProperty(), entityAction);
+                checkPropertyExpression(action.getPRDCondition().getValue(), action.getPRDCondition().getProperty(), entityAction);
             }
             else{
                 List<PRDCondition> conditions = action.getPRDCondition().getPRDCondition();
@@ -96,11 +97,24 @@ public final class XMLValidation {
         }
         else if(action.getType().equals("calculation")){
             findProperty(action.getResultProp(), entityAction);
+            if(action.getPRDMultiply() != null){
+                checkPropertyExpression(action.getPRDMultiply().getArg1(), action.getResultProp(), entityAction);
+                checkPropertyExpression(action.getPRDMultiply().getArg2(), action.getResultProp(), entityAction);
+            }
+            else if(action.getPRDDivide() != null) {
+                checkPropertyExpression(action.getPRDDivide().getArg1(),action.getResultProp(), entityAction);
+                checkPropertyExpression(action.getPRDDivide().getArg2(), action.getResultProp(), entityAction);
+            }
         }
         else if (action.getType().equals("kill")) {
         }
+        else if (action.getType().equals("set")){
+            findProperty(action.getProperty(), entityAction);
+            checkPropertyExpression(action.getValue(), action.getProperty(), entityAction);
+        }
         else{
             findProperty(action.getProperty(), entityAction);
+            checkPropertyExpression(action.getBy(), action.getProperty(), entityAction);
         }
     }
 
@@ -136,6 +150,7 @@ public final class XMLValidation {
                 }
                 else{
                     findProperty(condition.getProperty(), entityAction);
+                    checkPropertyExpression(condition.getValue(), condition.getProperty(), entityAction);
                 }
             }
         }
@@ -294,4 +309,47 @@ public final class XMLValidation {
 
         return flag;
     }
+
+    private boolean checkIfExpressionIsProperty(String arg,String entityName, String propertyName){
+        boolean flag = true;
+        if(checkOptionByFunctionName(arg) || checkIfFreeValue(arg, entityName, propertyName)){
+            flag = false;
+        }
+
+        return flag;
+    }
+
+    private boolean checkIfFreeValue(String arg,String entityName, String propertyName) {
+        boolean flag = false;
+        for (PRDEntity entity : world.getPRDEntities().getPRDEntity()) {
+            if (entity.getName().equals(entityName)) {
+                for(PRDProperty property: entity.getPRDProperties().getPRDProperty()) {
+                    if(property.getPRDName().equals(propertyName)) {
+                        if (property.getType().equals("decimal") || property.getType().equals("float")) {
+                            if(isNumber(arg)){
+                                flag = true;
+                            }
+                        }
+                        else if (property.getType().equals("boolean")) {
+                            if(arg.equals("true") || arg.equals("false")){
+                                flag = true;
+                            }
+                        }
+                        else if(property.getType().equals("string")) {
+                            flag = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return flag;
+    }
+
+    private void checkPropertyExpression(String value, String propertyName, String entityAction) throws ObjectNotExist {
+        if(checkIfExpressionIsProperty(value, entityAction, propertyName)){
+            findProperty(value, entityAction);
+        }
+    }
+
 }

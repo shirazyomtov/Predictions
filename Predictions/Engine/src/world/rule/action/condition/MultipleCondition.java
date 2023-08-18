@@ -1,6 +1,7 @@
 package world.rule.action.condition;
 
 import exceptions.ObjectNotExist;
+import exceptions.OperationNotCompatibleTypes;
 import exceptions.OperationNotSupportedType;
 import jaxb.schema.generated.PRDAction;
 import jaxb.schema.generated.PRDCondition;
@@ -44,7 +45,7 @@ public class MultipleCondition extends AbstractCondition implements Serializable
     }
 
     @Override
-    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
+    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes{
         boolean flag;
         boolean kill = false;
         flag = checkCondition(entity, conditions, logical, worldInstance);
@@ -52,7 +53,7 @@ public class MultipleCondition extends AbstractCondition implements Serializable
         return kill;
     }
 
-    private boolean checkCondition(EntityInstance entity, List<AbstractCondition> conditions, String logical, WorldInstance worldInstance) throws ObjectNotExist, OperationNotSupportedType {
+    private boolean checkCondition(EntityInstance entity, List<AbstractCondition> conditions, String logical, WorldInstance worldInstance) throws ObjectNotExist, OperationNotSupportedType, OperationNotCompatibleTypes {
         if (logical.equals("or")) {
             for (AbstractCondition condition : conditions) {
                 if (condition.getSingularity().equals("multiple")) {

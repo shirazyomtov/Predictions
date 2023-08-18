@@ -12,8 +12,8 @@ public abstract class BinaryAction extends CalculationImpl implements Serializab
 
     public BinaryAction(String entityName, String resultPropertyName, String argument1, String argument2) {
         super(entityName, resultPropertyName);
-        this.argument1 = new ExpressionIml(argument1);
-        this.argument2 = new ExpressionIml(argument2);
+        this.argument1 = new ExpressionIml(argument1, resultPropertyName);
+        this.argument2 = new ExpressionIml(argument2, resultPropertyName);
     }
 
     public ExpressionIml getArgument1() {

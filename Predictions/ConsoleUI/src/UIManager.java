@@ -3,6 +3,7 @@ import engineManager.EngineManager;
 import enums.DisplaySimulationOption;
 import enums.MenuOptions;
 import exceptions.ObjectNotExist;
+import exceptions.OperationNotCompatibleTypes;
 import exceptions.OperationNotSupportedType;
 
 import java.io.*;
@@ -263,7 +264,7 @@ public class UIManager {
         }
     }
 
-    private void runSimulationAndPrintTerminationReason() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
+    private void runSimulationAndPrintTerminationReason() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes {
         String message = engineManager.getRunSimulation();
         printIdAndTerminationReason(message);
     }

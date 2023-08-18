@@ -8,6 +8,6 @@ public abstract class UnaryAction extends CalculationImpl {
 
     public UnaryAction(String entityName, String resultPropertyName, String argument1) {
         super(entityName, resultPropertyName);
-        this.argument1 = new ExpressionIml(argument1);
+        this.argument1 = new ExpressionIml(argument1, resultPropertyName);
     }
 }

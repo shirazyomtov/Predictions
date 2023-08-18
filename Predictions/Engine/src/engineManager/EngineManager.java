@@ -3,6 +3,7 @@ package engineManager;
 import DTO.DTOEntityInfo;
 import exceptions.FilePathException;
 import exceptions.ObjectNotExist;
+import exceptions.OperationNotCompatibleTypes;
 import exceptions.OperationNotSupportedType;
 import history.History;
 import history.simulation.Simulation;
@@ -335,7 +336,7 @@ public class EngineManager implements Serializable{
         return worldInstance.createListEnvironmentNamesAndValues();
     }
 
-    public String getRunSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
+    public String getRunSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes {
         return history.getSimulation().runSimulation();
     }
 

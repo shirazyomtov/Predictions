@@ -1,6 +1,7 @@
 package world.rule.action;
 
 import exceptions.ObjectNotExist;
+import exceptions.OperationNotCompatibleTypes;
 import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 import world.enums.Type;
@@ -18,11 +19,11 @@ public class Increase extends Action implements Serializable {
     public Increase(String entityName, String propertyName, String expression) {
         super(entityName, ActionType.INCREASE);
         this.propertyName = propertyName;
-        this.expression = new ExpressionIml(expression);
+        this.expression = new ExpressionIml(expression, propertyName);
     }
 
     @Override
-    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException {
+    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException , OperationNotCompatibleTypes {
         String by = expression.decipher(entity, worldInstance);
         Property property = entity.getAllProperty().get(propertyName);
         Type type = property.getType();

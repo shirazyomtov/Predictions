@@ -1,6 +1,7 @@
 package world.rule.action.calculation.binaryCalculationAction;
 
 import exceptions.ObjectNotExist;
+import exceptions.OperationNotCompatibleTypes;
 import world.entity.instance.EntityInstance;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
@@ -14,7 +15,7 @@ public class Divide extends BinaryAction implements Serializable {
     }
 
     @Override
-    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException {
+    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotCompatibleTypes {
         String valueArg1 = this.getArgument1().decipher(entity, worldInstance);
         String valueArg2 = this.getArgument2().decipher(entity, worldInstance);
         Property resultProp = entity.getAllProperty().get(getResultPropertyName());

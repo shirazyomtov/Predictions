@@ -1,6 +1,7 @@
 package world.rule.action.condition;
 
 import exceptions.ObjectNotExist;
+import exceptions.OperationNotCompatibleTypes;
 import exceptions.OperationNotSupportedType;
 import history.History;
 import jaxb.schema.generated.PRDAction;
@@ -50,7 +51,7 @@ public abstract class AbstractCondition extends Action implements Serializable {
         return singularity;
     }
 
-    public boolean performThenOrElse(boolean flag, EntityInstance entityInstance, WorldInstance worldInstance) throws ObjectNotExist, OperationNotSupportedType {
+    public boolean performThenOrElse(boolean flag, EntityInstance entityInstance, WorldInstance worldInstance) throws ObjectNotExist, OperationNotSupportedType, OperationNotCompatibleTypes {
         if(flag){
             for(Action actionThen: thenActions){
                 if (!actionThen.getActionType().equals(ActionType.KILL)) {

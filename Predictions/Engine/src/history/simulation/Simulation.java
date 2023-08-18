@@ -1,6 +1,7 @@
 package history.simulation;
 
 import exceptions.ObjectNotExist;
+import exceptions.OperationNotCompatibleTypes;
 import exceptions.OperationNotSupportedType;
 import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
@@ -36,7 +37,7 @@ public  class Simulation implements Serializable {
         return this.formattedDateTime;
     }
 
-    public String runSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
+    public String runSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes {
         long startMillisSeconds = System.currentTimeMillis();
         String message = null;
         int seconds = 0;
@@ -64,7 +65,7 @@ public  class Simulation implements Serializable {
         return message;
     }
 
-    private void performOperation(Action action) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
+    private void performOperation(Action action) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes {
         boolean flag = false;
         String entityName = action.getEntityName();
         List<EntityInstance> entitiesToRemove = new ArrayList<>();

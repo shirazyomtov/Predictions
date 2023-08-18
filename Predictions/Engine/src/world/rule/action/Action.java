@@ -1,6 +1,7 @@
 package world.rule.action;
 
 import exceptions.ObjectNotExist;
+import exceptions.OperationNotCompatibleTypes;
 import exceptions.OperationNotSupportedType;
 import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
@@ -25,7 +26,7 @@ public abstract class Action implements ActionOperation, Serializable {
         return "    Action: " + "actionType = " + actionType;
     }
 
-    public abstract boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType;
+    public abstract boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes;
 
     public String getEntityName() {
         return entityName;

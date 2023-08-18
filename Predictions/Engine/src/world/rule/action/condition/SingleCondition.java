@@ -1,6 +1,7 @@
 package world.rule.action.condition;
 
 import exceptions.ObjectNotExist;
+import exceptions.OperationNotCompatibleTypes;
 import exceptions.OperationNotSupportedType;
 import jaxb.schema.generated.PRDElse;
 import jaxb.schema.generated.PRDThen;
@@ -11,6 +12,7 @@ import world.rule.action.expression.ExpressionIml;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class SingleCondition extends AbstractCondition implements Serializable {
     private String operator;
@@ -25,7 +27,7 @@ public class SingleCondition extends AbstractCondition implements Serializable {
     }
 
     @Override
-    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType {
+    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes {
         boolean flag = false;
         boolean kill = false;
         flag = checkIfConditionIsTrue(entity, worldInstance);
@@ -33,27 +35,27 @@ public class SingleCondition extends AbstractCondition implements Serializable {
         return kill;
     }
 
-    public boolean checkIfConditionIsTrue(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, ClassCastException, OperationNotSupportedType {
-        ExpressionIml expression = new ExpressionIml(value);
-        String valueInCondition = expression.decipher(entity, worldInstance);
-        Property property = entity.getAllProperty().get(propertyName);
-        boolean flag = false;
-        switch (operator){
-            case "=":
-                flag = checkIfPropertyIsEqualToValue(property, valueInCondition);
-                break;
-            case "!=":
-                flag = checkIfPropertyIsNotEqualToValue(property, valueInCondition);
-                break;
-            case "bt":
-                flag = checkIfPropertyIsLessOrBiggerThanValue(property, valueInCondition, ComparisonOperator.BIGGERTHAN);
-                break;
-            case "lt":
-                flag = checkIfPropertyIsLessOrBiggerThanValue(property, valueInCondition, ComparisonOperator.LESSTHAN);
-                break;
-        }
+    public boolean checkIfConditionIsTrue(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, ClassCastException, OperationNotSupportedType, OperationNotCompatibleTypes {
+            ExpressionIml expression = new ExpressionIml(value, propertyName);
+            String valueInCondition = expression.decipher(entity, worldInstance);
+            Property property = entity.getAllProperty().get(propertyName);
+            boolean flag = false;
+            switch (operator) {
+                case "=":
+                    flag = checkIfPropertyIsEqualToValue(property, valueInCondition);
+                    break;
+                case "!=":
+                    flag = checkIfPropertyIsNotEqualToValue(property, valueInCondition);
+                    break;
+                case "bt":
+                    flag = checkIfPropertyIsLessOrBiggerThanValue(property, valueInCondition, ComparisonOperator.BIGGERTHAN);
+                    break;
+                case "lt":
+                    flag = checkIfPropertyIsLessOrBiggerThanValue(property, valueInCondition, ComparisonOperator.LESSTHAN);
+                    break;
+            }
 
-        return flag;
+            return flag;
     }
 
     private boolean checkIfPropertyIsLessOrBiggerThanValue(Property property, String valueInCondition, ComparisonOperator operator) throws ClassCastException, OperationNotSupportedType {
@@ -61,23 +63,23 @@ public class SingleCondition extends AbstractCondition implements Serializable {
         try {
             switch (property.getType()) {
                 case DECIMAL:
-                    Integer intValue = Integer.parseInt(valueInCondition);
+                    Float floatValue = Float.parseFloat(valueInCondition);
                     Integer propertyValue = (Integer) property.getValue();
                     switch (operator) {
                         case LESSTHAN:
-                            return propertyValue < intValue;
+                            return (float)propertyValue < floatValue;
                         case BIGGERTHAN:
-                            return propertyValue > intValue;
+                            return (float)propertyValue > floatValue;
                     }
                     break;
                 case FLOAT:
-                    Float floatValue = Float.parseFloat(valueInCondition);
+                    Float floatValue2 = Float.parseFloat(valueInCondition);
                     Float propertyFloatValue = (Float) property.getValue();
                     switch (operator) {
                         case LESSTHAN:
-                            return propertyFloatValue < floatValue;
+                            return propertyFloatValue < floatValue2;
                         case BIGGERTHAN:
-                            return propertyFloatValue > floatValue;
+                            return propertyFloatValue > floatValue2;
                     }
                     break;
                 case BOOLEAN:
@@ -101,14 +103,14 @@ public class SingleCondition extends AbstractCondition implements Serializable {
             boolean flag = false;
             switch (property.getType()) {
                 case DECIMAL:
-                    Integer intValue = Integer.parseInt(valueInCondition);
+                    Float floatValue = Float.parseFloat(valueInCondition);
                     Integer propertyValue = (Integer) property.getValue();
-                    flag = propertyValue.equals(intValue);
+                    flag = Objects.equals((float) propertyValue, floatValue);
                     break;
                 case FLOAT:
-                    Float floatValue = Float.parseFloat(valueInCondition);
+                    Float floatValue2 = Float.parseFloat(valueInCondition);
                     Float propertyFloatValue = (Float) property.getValue();
-                    flag = propertyFloatValue.equals(floatValue);
+                    flag = propertyFloatValue.equals(floatValue2);
                     break;
                 case BOOLEAN:
                     if(valueInCondition.equals("true") || valueInCondition.equals("false")) {

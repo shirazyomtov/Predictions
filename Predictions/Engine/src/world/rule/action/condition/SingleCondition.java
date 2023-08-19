@@ -94,11 +94,11 @@ public class SingleCondition extends AbstractCondition implements Serializable {
         return false;
     }
 
-    private boolean checkIfPropertyIsNotEqualToValue(Property property, String valueInCondition) {
+    private boolean checkIfPropertyIsNotEqualToValue(Property property, String valueInCondition)throws OperationNotCompatibleTypes {
         return !(checkIfPropertyIsEqualToValue(property, valueInCondition));
     }
 
-    private boolean checkIfPropertyIsEqualToValue(Property property, String valueInCondition)throws ClassCastException {
+    private boolean checkIfPropertyIsEqualToValue(Property property, String valueInCondition)throws ClassCastException , OperationNotCompatibleTypes{
         try {
             boolean flag = false;
             switch (property.getType()) {
@@ -121,8 +121,13 @@ public class SingleCondition extends AbstractCondition implements Serializable {
                     }
                     break;
                 case STRING:
-                    String propertyStringValue = (String) property.getValue();
-                    flag = propertyStringValue.equals(valueInCondition);
+                    if(isNumber(valueInCondition)) {
+                        throw new OperationNotCompatibleTypes(Type.STRING.toString(), "Number");
+                    }
+                    else {
+                        String propertyStringValue = (String) property.getValue();
+                        flag = propertyStringValue.equals(valueInCondition);
+                    }
                     break;
             }
 
@@ -131,6 +136,15 @@ public class SingleCondition extends AbstractCondition implements Serializable {
 
         catch (NumberFormatException | ClassCastException e){
             throw new ClassCastException("The value " + valueInCondition + " that you provide in the action " + getActionType() + " is not a " + property.getType());
+        }
+    }
+
+    private boolean isNumber(String number){
+        try {
+            Float.parseFloat(number);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 }

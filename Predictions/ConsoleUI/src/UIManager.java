@@ -154,6 +154,7 @@ public class UIManager {
     private void simulation() {
         try {
             int userIntegerInput = 0;
+            engineManager.clearPastValues();
             while(userIntegerInput != engineManager.getAmountOfEnvironmentDefinition() + 1) {
                 userIntegerInput = chooseEnvironmentProperty();
                 if (userIntegerInput != engineManager.getAmountOfEnvironmentDefinition() + 1) {

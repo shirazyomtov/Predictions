@@ -24,12 +24,12 @@ public class Divide extends BinaryAction implements Serializable {
             if (type.equals(Type.FLOAT)) {
                 Float number = Float.parseFloat(valueArg1);
                 Float number2 = Float.parseFloat(valueArg2);
+                if(number2 == 0){
+                    throw new ArithmeticException("You can not divide by zero");
+                }
                 resultProp.setValue(number / number2);
             }
             return false;
-        }
-        catch (ArithmeticException e){
-            throw new ArithmeticException("You can not divide by zero");
         }
         catch (NumberFormatException | ClassCastException e){
             throw new NumberFormatException("At least one of the values  that you provide in the action " + getActionType() + " is not a " + type);

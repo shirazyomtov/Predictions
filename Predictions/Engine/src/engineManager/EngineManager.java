@@ -37,7 +37,7 @@ public class EngineManager implements Serializable{
     private WorldDefinition world = null;
 
     private WorldInstance worldInstance = null;
-    Map <String, EnvironmentInstance> environmentValuesByUser = new HashMap<>();//change
+    Map <String, EnvironmentInstance> environmentValuesByUser = new HashMap<>();
 
     public void loadXMLAAndCheckValidation(String xmlPath) throws Exception {
         try {
@@ -497,5 +497,9 @@ public class EngineManager implements Serializable{
 
     private WorldDefinition getWorld() {
         return world;
+    }
+
+    public void clearPastValues() {
+        environmentValuesByUser.clear();
     }
 }

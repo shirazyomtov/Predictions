@@ -19,25 +19,6 @@ public class Termination implements Serializable {
         }
     }
 
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder("    Termination: ");
-
-        if (ticks != null) {
-            stringBuilder.append("ticks = ").append(ticks);
-        }
-
-        if (ticks != null && second != null) {
-            stringBuilder.append(", ");
-        }
-
-        if (second != null) {
-            stringBuilder.append("seconds = ").append(second);
-        }
-
-        return stringBuilder.toString();
-    }
-
     public Integer getTicks() {
         return ticks;
     }

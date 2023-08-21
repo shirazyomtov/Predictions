@@ -1,7 +1,11 @@
 package world.entity.definition;
 
 
+import DTO.DTOPropertyInfo;
+import DTO.DTORangeInfo;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -18,19 +22,6 @@ public class EntityDefinitionImpl implements EntityDefinition, Serializable {
     }
 
     @Override
-    public String toString() {
-        StringBuilder entityDetails = new StringBuilder();
-        entityDetails.append("    Entity ").append(name).append(" details: ").append("\n");
-        entityDetails.append("        Name = '").append(name).append("',").append("\n");
-        entityDetails.append("        Amount of population = ").append(amountOfPopulation).append(",").append("\n");
-        entityDetails.append("        All properties: ").append("\n");
-        for (PropertyDefinition property : allProperties) {
-            entityDetails.append("    ").append(property).append("\n");
-        }
-        return entityDetails.toString();
-    }
-
-    @Override
     public String getName() {
         return this.name;
     }
@@ -43,5 +34,19 @@ public class EntityDefinitionImpl implements EntityDefinition, Serializable {
     @Override
     public List<PropertyDefinition> getProps() {
         return this.allProperties;
+    }
+
+    public List<DTOPropertyInfo> getDTOProperties() {
+        List<DTOPropertyInfo> propertyInfos = new ArrayList<>();
+        for(PropertyDefinition propertyDefinition: allProperties){
+            if(propertyDefinition.getRange() != null) {
+                propertyInfos.add(new DTOPropertyInfo(propertyDefinition.getName(), propertyDefinition.getType().toString(), propertyDefinition.isRandomInitialize(),
+                        new DTORangeInfo(propertyDefinition.getRange().getFrom().toString(), propertyDefinition.getRange().getTo().toString())));
+            }
+            else{
+                propertyInfos.add(new DTOPropertyInfo(propertyDefinition.getName(), propertyDefinition.getType().toString(), propertyDefinition.isRandomInitialize(),null));
+            }
+        }
+        return propertyInfos;
     }
 }

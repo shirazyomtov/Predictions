@@ -17,11 +17,4 @@ public class RangeImpl implements Serializable {
     public Float getTo() {
         return to;
     }
-
-    @Override
-    public String toString() {
-        return "from=" + from +
-                ", to=" + to ;
-    }
-
 }

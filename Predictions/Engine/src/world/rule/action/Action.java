@@ -21,11 +21,6 @@ public abstract class Action implements ActionOperation, Serializable {
         this.actionType = actionType;
     }
 
-    @Override
-    public String toString() {
-        return "    Action: " + "actionType = " + actionType;
-    }
-
     public abstract boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes;
 
     public String getEntityName() {

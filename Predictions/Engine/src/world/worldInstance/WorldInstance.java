@@ -1,5 +1,6 @@
 package world.worldInstance;
 
+import DTO.DTOEnvironmentInfo;
 import world.entity.instance.EntityInstance;
 import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
@@ -7,6 +8,7 @@ import world.worldDefinition.WorldDefinition;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -46,12 +48,13 @@ public class WorldInstance implements Serializable {
         return worldDefinition;
     }
 
-    public   List<String>  createListEnvironmentNamesAndValues() {
-        List<String> environmentNameAndValues = new ArrayList<>();
-        for (Map.Entry<String, EnvironmentInstance> environmentEntry : environmentInstanceMap.entrySet()) {
-            environmentNameAndValues.add(environmentEntry.getValue().toString());
+    public List<DTOEnvironmentInfo>  createListEnvironmentNamesAndValues() {
+        List<DTOEnvironmentInfo> dtoEnvironments = new ArrayList<>();
+        Collection<EnvironmentInstance> collectionOfEnvironment = environmentInstanceMap.values();
+        for (EnvironmentInstance environmentInstance: collectionOfEnvironment) {
+            dtoEnvironments.add(new DTOEnvironmentInfo(environmentInstance.getProperty().getName(), environmentInstance.getProperty().getValue().toString()));
         }
 
-        return environmentNameAndValues;
+        return dtoEnvironments;
     }
 }

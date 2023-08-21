@@ -29,21 +29,6 @@ public class PropertyDefinition implements Serializable {
         }
     }
 
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("        Property ").append(name).append(" details: ").append("\n");
-        stringBuilder.append("                Name = '").append(name).append("',").append("\n");
-        stringBuilder.append("                Type = ").append(type.name()).append(",").append("\n");
-        stringBuilder.append("                Is random initialize = ").append(isRandomInitialize);
-
-        if (range != null) {
-            stringBuilder.append(",").append("\n").append("                Range=").append(range);
-        }
-
-        return stringBuilder.toString();
-    }
-
     public String getName() {
         return name;
     }

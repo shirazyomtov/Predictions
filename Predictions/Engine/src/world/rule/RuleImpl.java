@@ -1,5 +1,7 @@
 package world.rule;
 
+import DTO.DTOActionInfo;
+import DTO.DTOActivationInfo;
 import jaxb.schema.generated.PRDAction;
 import jaxb.schema.generated.PRDRule;
 import world.enums.ActionType;
@@ -52,23 +54,21 @@ public class RuleImpl implements Rule, Serializable {
         return allAction;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("    Rule ").append(ruleName).append(" details: ").append("\n");
-        stringBuilder.append("        Rule Name: ").append(ruleName).append(",").append("\n");
-        stringBuilder.append("        Activation: ").append(activation).append(",").append("\n");
-        stringBuilder.append("        Amount of Actions: ").append(amountOfActions).append(",").append("\n");
-        stringBuilder.append("        All Actions:\n");
-        if (allAction != null) {
-            for (Action action : allAction) {
-                stringBuilder.append("        ");
-                stringBuilder.append(action).append("\n");
-            }
-        } else {
-            stringBuilder.append("    No actions defined.\n");
-        }
-        return stringBuilder.toString();
+    public Integer getAmountOfActions() {
+        return amountOfActions;
     }
 
+    public List<DTOActionInfo> getDTOActions(){
+        List<DTOActionInfo> allDTOAction = new ArrayList<>();
+        for(Action action: allAction){
+            allDTOAction.add(new DTOActionInfo(action.getActionType().toString()));
+
+        }
+
+        return allDTOAction;
+    }
+
+    public DTOActivationInfo getDTOActivation(){
+        return new DTOActivationInfo(activation.getTicks(), activation.getProbability());
+    }
 }

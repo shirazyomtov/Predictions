@@ -3,7 +3,6 @@ package world.rule.action.condition;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
 import exceptions.OperationNotSupportedType;
-import history.History;
 import jaxb.schema.generated.PRDAction;
 import jaxb.schema.generated.PRDElse;
 import jaxb.schema.generated.PRDThen;

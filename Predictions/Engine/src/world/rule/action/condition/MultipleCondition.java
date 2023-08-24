@@ -3,14 +3,10 @@ package world.rule.action.condition;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
 import exceptions.OperationNotSupportedType;
-import jaxb.schema.generated.PRDAction;
 import jaxb.schema.generated.PRDCondition;
 import jaxb.schema.generated.PRDElse;
 import jaxb.schema.generated.PRDThen;
 import world.entity.instance.EntityInstance;
-import world.enums.ActionType;
-import world.rule.action.Action;
-import world.rule.action.ActionFactory;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;

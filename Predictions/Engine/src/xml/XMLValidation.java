@@ -28,7 +28,7 @@ public final class XMLValidation {
 
     private void checkEnvironmentVariables() throws NameAlreadyExist {
         HashMap<String, Integer> map = new HashMap<>();
-        for (PRDEnvProperty prdEnvironment : world.getPRDEvironment().getPRDEnvProperty()) {
+        for (PRDEnvProperty prdEnvironment : world.getPRDEnvironment().getPRDEnvProperty()) {
             if (map.containsKey(prdEnvironment.getPRDName())) {
                 throw new NameAlreadyExist((prdEnvironment.getPRDName()), "environment");
             } else {
@@ -221,7 +221,7 @@ public final class XMLValidation {
 
     private boolean checkTypeOfEnvironmentProperty(String value) {
         boolean flag = false;
-        for (PRDEnvProperty envProperty : world.getPRDEvironment().getPRDEnvProperty()) {
+        for (PRDEnvProperty envProperty : world.getPRDEnvironment().getPRDEnvProperty()) {
             if (envProperty.getPRDName().equals(value)) {
                 if (envProperty.getType().equals("decimal") || envProperty.getType().equals("float")) {
                     flag = true;

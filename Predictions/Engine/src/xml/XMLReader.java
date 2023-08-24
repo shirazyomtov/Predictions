@@ -1,5 +1,6 @@
 package xml;
 
+
 import jaxb.schema.generated.*;
 import world.worldDefinition.WorldDefinition;
 import world.entity.definition.EntityDefinitionImpl;
@@ -53,7 +54,7 @@ public  final class XMLReader implements  Serializable {
 
     private  Map<String, EnvironmentDefinition> defineEnvironment() {
         Map<String, EnvironmentDefinition> environmentDefinition = new HashMap<>();
-        for(PRDEnvProperty environment: world.getPRDEvironment().getPRDEnvProperty()){
+        for(PRDEnvProperty environment: world.getPRDEnvironment().getPRDEnvProperty()){
             environmentDefinition.put(environment.getPRDName(), new EnvironmentDefinition(environment));
         }
 
@@ -64,7 +65,7 @@ public  final class XMLReader implements  Serializable {
     {
         PRDBySecond prdBySecond = null;
         PRDByTicks prdByTicks = null;
-        for (Object terminationParameter: world.getPRDTermination().getPRDByTicksOrPRDBySecond()){
+        for (Object terminationParameter: world.getPRDTermination().getPRDBySecondOrPRDByTicks()){
             if(terminationParameter.getClass().getSimpleName().equals("PRDByTicks")){
                 prdByTicks = (PRDByTicks) terminationParameter;
             }
@@ -89,7 +90,7 @@ public  final class XMLReader implements  Serializable {
         for (PRDEntity entity: world.getPRDEntities().getPRDEntity())
         {
             List<PropertyDefinition> allProperties = defineProperties(entity);
-            entityDefinition.put(entity.getName(), new EntityDefinitionImpl(entity.getName(), entity.getPRDPopulation(), allProperties));
+            entityDefinition.put(entity.getName(), new EntityDefinitionImpl(entity.getName(), 100, allProperties));
         }
 
         return entityDefinition;

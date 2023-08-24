@@ -4,12 +4,19 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:element name="PRD-world">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="PRD-evironment"/>
+			<xs:all>
+				<xs:element name="PRD-thread-count" type="xs:int"/>
+				<xs:element ref="PRD-environment"/>
+				<xs:element name="PRD-grid">
+					<xs:complexType>
+						<xs:attribute name="columns" type="xs:int" use="required"/>
+						<xs:attribute name="rows" type="xs:int" use="required"/>
+					</xs:complexType>
+				</xs:element>
 				<xs:element ref="PRD-entities"/>
 				<xs:element ref="PRD-rules"/>
 				<xs:element ref="PRD-termination"/>
-			</xs:sequence>
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="PRD-value">
@@ -27,9 +34,12 @@
 	</xs:element>
 	<xs:element name="PRD-termination">
 		<xs:complexType>
-			<xs:choice maxOccurs="2">
-				<xs:element ref="PRD-by-ticks"/>
-				<xs:element ref="PRD-by-second"/>
+			<xs:choice>
+				<xs:element name="PRD-by-user"/>
+				<xs:choice maxOccurs="2">
+					<xs:element ref="PRD-by-second"/>
+					<xs:element ref="PRD-by-ticks"/>
+				</xs:choice>
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
@@ -89,7 +99,7 @@
 			<xs:attribute name="arg1" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="PRD-evironment">
+	<xs:element name="PRD-environment">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="PRD-env-property" maxOccurs="unbounded"/>
@@ -117,7 +127,6 @@
 	<xs:element name="PRD-entity">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="PRD-population"/>
 				<xs:element ref="PRD-properties"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
@@ -204,15 +213,54 @@
 	</xs:element>
 	<xs:element name="PRD-action">
 		<xs:complexType>
-			<xs:choice minOccurs="0">
-				<xs:element ref="PRD-divide"/>
-				<xs:element ref="PRD-multiply"/>
-				<xs:sequence>
-					<xs:element ref="PRD-condition"/>
-					<xs:element ref="PRD-then"/>
-					<xs:element ref="PRD-else" minOccurs="0"/>
-				</xs:sequence>
-			</xs:choice>
+			<xs:sequence>
+				<xs:element name="PRD-secondary-entity" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="PRD-selection">
+								<xs:complexType>
+									<xs:choice>
+										<xs:element ref="PRD-condition" minOccurs="0"/>
+									</xs:choice>
+									<xs:attribute name="count" type="xs:string" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="entity" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:choice minOccurs="0">
+					<xs:element ref="PRD-divide"/>
+					<xs:element ref="PRD-multiply"/>
+					<xs:sequence>
+						<xs:element ref="PRD-condition"/>
+						<xs:element ref="PRD-then"/>
+						<xs:element ref="PRD-else" minOccurs="0"/>
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="PRD-between">
+							<xs:complexType>
+								<xs:attribute name="target-entity" type="xs:string"/>
+								<xs:attribute name="source-entity" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="PRD-env-depth">
+							<xs:complexType>
+								<xs:attribute name="of" type="xs:string" use="required"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element ref="PRD-actions"/>
+					</xs:sequence>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="mode">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="scratch"/>
+						<xs:enumeration value="derived"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
 			<xs:attribute name="value" type="xs:string"/>
 			<xs:attribute name="type" use="required">
 				<xs:simpleType>
@@ -223,13 +271,17 @@
 						<xs:enumeration value="increase"/>
 						<xs:enumeration value="kill"/>
 						<xs:enumeration value="set"/>
+						<xs:enumeration value="proximity"/>
+						<xs:enumeration value="replace"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="result-prop" type="xs:string"/>
 			<xs:attribute name="property" type="xs:string"/>
-			<xs:attribute name="entity" type="xs:string" use="required"/>
+			<xs:attribute name="entity" type="xs:string"/>
 			<xs:attribute name="by" type="xs:string"/>
+			<xs:attribute name="kill" type="xs:string"/>
+			<xs:attribute name="create" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

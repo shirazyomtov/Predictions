@@ -1,4 +1,5 @@
 import DTO.*;
+import DTO.DTOEntityInfo;
 import engineManager.EngineManager;
 import enums.DisplaySimulationOption;
 import enums.MenuOptions;

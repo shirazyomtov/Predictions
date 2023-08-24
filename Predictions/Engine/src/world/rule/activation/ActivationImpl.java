@@ -21,14 +21,6 @@ public class ActivationImpl implements Activation, Serializable {
         }
     }
 
-    @Override
-    public String toString() {
-        return "Activation{" +
-                "ticks=" + ticks +
-                ", probability=" + probability +
-                '}';
-    }
-
     public int getTicks() {
         return ticks;
     }

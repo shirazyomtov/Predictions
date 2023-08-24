@@ -1,5 +1,6 @@
 package world.worldDefinition;
 
+import DTO.*;
 import world.entity.definition.EntityDefinitionImpl;
 import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
@@ -8,6 +9,7 @@ import world.termination.Termination;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -41,28 +43,37 @@ public final class WorldDefinition implements Serializable {
         return environmentDefinition;
     }
 
-    public   List<String>  createListEnvironmentNames() {
-        List<String> environmentName = new ArrayList<>();
-        for (Map.Entry<String, EnvironmentDefinition> environmentEntry : environmentDefinition.entrySet()) {
-            environmentName.add(environmentEntry.getValue().getName());
+    public List<DTOEnvironmentInfo>  createListEnvironmentDetails() {
+        List<DTOEnvironmentInfo> environmentName = new ArrayList<>();
+        Collection<EnvironmentDefinition> collectionOfEnvironment = environmentDefinition.values();
+        for (EnvironmentDefinition environmentDefinition: collectionOfEnvironment) {
+            if (environmentDefinition.getRange() != null) {
+                environmentName.add(new DTOEnvironmentInfo(environmentDefinition.getName(), environmentDefinition.getType().toString(),
+                        new DTORangeInfo(environmentDefinition.getRange().getFrom().toString(), environmentDefinition.getRange().getTo().toString())));
+            }
+            else {
+                environmentName.add(new DTOEnvironmentInfo(environmentDefinition.getName(), environmentDefinition.getType().toString(), null));
+            }
         }
-
         return environmentName;
     }
 
-    public List<String> entitiesDetails(){
-        List<String> entitiesDetails = new ArrayList<>();
-        for (Map.Entry<String, EntityDefinitionImpl> entry : entityDefinition.entrySet()) {
-            entitiesDetails.add(entry.getValue().toString());
+    public List<DTOEntityInfo> entitiesDetails(){
+        List<DTOEntityInfo> entitiesDetails = new ArrayList<>();
+        Collection<EntityDefinitionImpl> collectionOfEntity = entityDefinition.values();
+        for (EntityDefinitionImpl entityDefinition: collectionOfEntity) {
+            DTOEntityInfo dtoEntity = new DTOEntityInfo(entityDefinition.getName(), entityDefinition.getAmountOfPopulation(), entityDefinition.getDTOProperties());
+            entitiesDetails.add(dtoEntity);
         }
         return entitiesDetails;
     }
 
-    public List<String> rulesDetails(){
-        List<String> rulesDetails = new ArrayList<>();
-        for (RuleImpl rule : rules){
-            rulesDetails.add(rule.toString());
+    public List<DTORuleInfo> rulesDetails(){
+        List<DTORuleInfo> dtoRuleInfos = new ArrayList<>();
+        for(RuleImpl rule : rules){
+            dtoRuleInfos.add(new DTORuleInfo(rule.getRuleName(), rule.getDTOActivation(), rule.getAmountOfActions(), rule.getDTOActions()));
         }
-        return rulesDetails;
+
+        return dtoRuleInfos;
     }
 }

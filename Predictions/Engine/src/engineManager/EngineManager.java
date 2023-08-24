@@ -1,6 +1,6 @@
 package engineManager;
 
-import DTO.DTOEntityInfo;
+import DTO.*;
 import exceptions.FilePathException;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
@@ -11,7 +11,6 @@ import world.entity.definition.EntityDefinition;
 import world.entity.definition.EntityDefinitionImpl;
 import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
-import world.enums.Type;
 import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
 import world.propertyInstance.api.Property;
@@ -71,38 +70,32 @@ public class EngineManager implements Serializable{
         Objects.requireNonNull(world);
     }
 
-    public List<String> getEntitiesDetails(){
-       return world.entitiesDetails();
+    public List<DTOEntityInfo> getEntitiesDetails(){
+        return world.entitiesDetails();
     }
 
-    public List<String> getRulesDetails(){
+    public List<DTORuleInfo> getRulesDetails(){
         return world.rulesDetails();
     }
 
-    public String getTerminationDetails(){
-        return world.getTermination().toString();
+    public DTOTerminationInfo getTerminationDetails(){
+        return new DTOTerminationInfo(world.getTermination().getTicks(), world.getTermination().getSecond());
     }
 
     public int getAmountOfEnvironmentDefinition() throws NullPointerException{
         return world.getEnvironmentDefinition().size();
     }
 
-    public List<String> getEnvironmentNamesList() {
-        return world.createListEnvironmentNames();
+    public List<DTOEnvironmentInfo> getEnvironmentNamesList() {
+        return world.createListEnvironmentDetails();
     }
 
-    public String getEnvironmentDetails(int userIntegerInput){
-        String environmentName = getEnvironmentNamesList().get(userIntegerInput -1);
-        return world.getEnvironmentDefinition().get(environmentName).toString();
-    }
-
-    public Type getEnvironmentType(int userIntegerInput){
-        String environmentName = getEnvironmentNamesList().get(userIntegerInput -1);
-        return world.getEnvironmentDefinition().get(environmentName).getType();
+    public DTOEnvironmentInfo getEnvironmentDetails(int userIntegerInput){
+        return getEnvironmentNamesList().get(userIntegerInput -1);
     }
 
     public void checkValidationFloatEnvironment(String valueInput, int userIntegerInput)throws NumberFormatException, IndexOutOfBoundsException{
-        String environmentName = getEnvironmentNamesList().get(userIntegerInput -1);
+        String environmentName = getEnvironmentDetails(userIntegerInput).getName();
         EnvironmentDefinition environmentDefinition = world.getEnvironmentDefinition().get(environmentName);
         EnvironmentInstance environmentInstance = null;
         Float userInput = Float.parseFloat(valueInput);
@@ -112,7 +105,7 @@ public class EngineManager implements Serializable{
     }
 
     public void checkValidationDecimalEnvironment(String valueInput, int userIntegerInput)throws NumberFormatException, IndexOutOfBoundsException {
-        String environmentName = getEnvironmentNamesList().get(userIntegerInput -1);
+        String environmentName = getEnvironmentDetails(userIntegerInput).getName();
         EnvironmentDefinition environmentDefinition = world.getEnvironmentDefinition().get(environmentName);
         EnvironmentInstance environmentInstance = null;
         Integer userInput = Integer.parseInt(valueInput);
@@ -136,7 +129,7 @@ public class EngineManager implements Serializable{
     }
 
     public void checkValidationBoolEnvironment(Integer userInput, int userIntegerInput)throws NumberFormatException, IndexOutOfBoundsException {
-        String environmentName = getEnvironmentNamesList().get(userIntegerInput -1);
+        String environmentName = getEnvironmentDetails(userIntegerInput).getName();
         EnvironmentDefinition environmentDefinition = world.getEnvironmentDefinition().get(environmentName);
         EnvironmentInstance environmentInstance = null;
         if(userInput == 1) {
@@ -149,7 +142,7 @@ public class EngineManager implements Serializable{
     }
 
     public void checkValidationStringEnvironment(String valueInput, int userIntegerInput)throws NumberFormatException, IndexOutOfBoundsException {
-        String environmentName = getEnvironmentNamesList().get(userIntegerInput -1);
+        String environmentName = getEnvironmentDetails(userIntegerInput).getName();
         EnvironmentDefinition environmentDefinition = world.getEnvironmentDefinition().get(environmentName);
         EnvironmentInstance environmentInstance = null;
         environmentInstance = new EnvironmentInstance(new StringPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((String) valueInput), environmentDefinition.getRange()));
@@ -332,7 +325,7 @@ public class EngineManager implements Serializable{
         return property;
     }
 
-    public List<String> getEnvironmentNamesAndValues(){
+    public List<DTOEnvironmentInfo> getEnvironmentNamesAndValues(){
         return worldInstance.createListEnvironmentNamesAndValues();
     }
 
@@ -354,14 +347,8 @@ public class EngineManager implements Serializable{
         }
     }
 
-    public StringBuilder getAllPastSimulation() {
-        int index = 0;
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<Integer, Simulation> entry : history.getSortMapOfSimulations().entrySet()) {
-            index++;
-            stringBuilder.append(index + ". Unique identifier of the simulation : " + entry.getKey() + ", Running date: " + entry.getValue().getFormattedDateTime() + "\n");
-        }
-        return stringBuilder;
+    public List<DTOSimulationInfo> getAllPastSimulation() {
+        return history.getDTOSimulations();
     }
 
     public int getSortedMapSize(){
@@ -405,9 +392,9 @@ public class EngineManager implements Serializable{
         }
     }
 
-    public Set<String> getEntitiesList(int userIntegerInput){
+    public List<DTOEntityInfo> getEntitiesList(int userIntegerInput){
         WorldInstance currentWorld = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
-        return currentWorld.getWorldDefinition().getEntityDefinition().keySet();
+        return currentWorld.getWorldDefinition().entitiesDetails();
     }
 
     public int getEntitiesDefinitionSize(int userIntegerInput){
@@ -419,17 +406,9 @@ public class EngineManager implements Serializable{
         return getPropertiesListFromSimulation(entityName, userIntegerInput).size();
     }
 
-    public List<String> getPropertiesNamesList(String entityName, int userIntegerInput){
-        List<String> propertiesNamesList = new ArrayList<>();
-        for(PropertyDefinition propertyDefinition: getPropertiesListFromSimulation(entityName, userIntegerInput)){
-            propertiesNamesList.add(propertyDefinition.getName());
-        }
-        return  propertiesNamesList;
-    }
-
-    private List<PropertyDefinition> getPropertiesListFromSimulation(String entityName, int userIntegerInput){
+    public List<DTOPropertyInfo> getPropertiesListFromSimulation(String entityName, int userIntegerInput){
         WorldInstance currentWorld = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
-        return currentWorld.getWorldDefinition().getEntityDefinition().get(entityName).getProps();
+        return currentWorld.getWorldDefinition().getEntityDefinition().get(entityName).getDTOProperties();
 
     }
 

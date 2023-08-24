@@ -22,20 +22,6 @@ public class EnvironmentDefinition implements Serializable {
         }
     }
 
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Environment ").append(name).append(" details: ").append("\n");
-        stringBuilder.append("    name: '").append(name).append("\n");
-        stringBuilder.append("    type: ").append(type).append("\n");
-
-        if (range != null) {
-            stringBuilder.append("    range: ").append(range).append("\n");
-        }
-
-        return stringBuilder.toString();
-    }
-
     public String getName() {
         return this.name;
     }

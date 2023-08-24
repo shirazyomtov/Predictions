@@ -15,9 +15,4 @@ public class EnvironmentInstance implements Serializable {
     public Property getProperty() {
         return property;
     }
-
-    @Override
-    public String toString() {
-        return "Name: " +  property.getName() + ", value: " + property.getValue();
-    }
 }

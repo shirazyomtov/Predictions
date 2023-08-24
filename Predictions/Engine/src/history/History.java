@@ -1,11 +1,10 @@
 package history;
 
+import DTO.DTOSimulationInfo;
 import history.simulation.Simulation;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public final class History implements Serializable {
     private static final Object creationalLockContext = new Object();
@@ -61,4 +60,17 @@ public final class History implements Serializable {
         return new TreeMap<>(allSimulations);
     }
 
+    public List<DTOSimulationInfo> getDTOSimulations(){
+        List<DTOSimulationInfo> dtoSimulations = new ArrayList<>();
+        TreeMap<Integer, Simulation> allSimulation = getSortMapOfSimulations();
+        for (Map.Entry<Integer, Simulation> entry : allSimulation.entrySet()) {
+            Integer simulationId = entry.getKey();
+            Simulation simulation = entry.getValue();
+            String formattedDateTime = simulation.getFormattedDateTime();
+
+            dtoSimulations.add(new DTOSimulationInfo(simulationId, formattedDateTime));
+        }
+
+        return dtoSimulations;
+    }
 }

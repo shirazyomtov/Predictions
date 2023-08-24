@@ -1,3 +1,4 @@
+import DTO.*;
 import DTO.DTOEntityInfo;
 import engineManager.EngineManager;
 import enums.DisplaySimulationOption;
@@ -133,22 +134,99 @@ public class UIManager {
 
     private void printEntitiesDetails() {
         System.out.println("1.Entities:");
-        List<String> entitiesDetails = engineManager.getEntitiesDetails();
-        for(String entityDetail: entitiesDetails){
-            System.out.println(entityDetail);
+        List<DTOEntityInfo> entitiesDetails = engineManager.getEntitiesDetails();
+        for(DTOEntityInfo entityDetail: entitiesDetails){
+            System.out.println(getEntityDetails(entityDetail));
         }
+    }
+
+    private String getEntityDetails(DTOEntityInfo dtoEntityInfo) {
+        StringBuilder entityDetails = new StringBuilder();
+        entityDetails.append("    Entity ").append(dtoEntityInfo.getEntityName()).append(" details: ").append("\n");
+        entityDetails.append("        Name = '").append(dtoEntityInfo.getEntityName()).append("',").append("\n");
+        entityDetails.append("        Amount of population = ").append(dtoEntityInfo.getInitialAmount()).append(",").append("\n");
+        entityDetails.append("        All properties: ").append("\n");
+        for (DTOPropertyInfo property : dtoEntityInfo.getProperties()) {
+            entityDetails.append("    ").append(getPropertyDetails(property)).append("\n");
+        }
+        return entityDetails.toString();
+    }
+
+    private String getPropertyDetails(DTOPropertyInfo dtoPropertyInfo){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("        Property ").append(dtoPropertyInfo.getName()).append(" details: ").append("\n");
+        stringBuilder.append("                Name = '").append(dtoPropertyInfo.getName()).append("',").append("\n");
+        stringBuilder.append("                Type = ").append(dtoPropertyInfo.getType()).append(",").append("\n");
+        stringBuilder.append("                Is random initialize = ").append(dtoPropertyInfo.getIsRandom());
+
+        stringBuilder.append(getRangeDetails(dtoPropertyInfo.getRange(), "                Range="));
+        return stringBuilder.toString();
+    }
+
+    private String getRangeDetails(DTORangeInfo dtoRangeInfo, String rangeMessage){
+        StringBuilder stringBuilder = new StringBuilder();
+        if (dtoRangeInfo != null) {
+            stringBuilder.append(",").append("\n").append(rangeMessage)
+                    .append("from=").append(dtoRangeInfo.getFrom())
+                    .append(", to=").append(dtoRangeInfo.getTo());
+        }
+        return stringBuilder.toString();
     }
 
     private void printRulesDetails() {
         System.out.println("2.Rules:");
-        for (String rule :  engineManager.getRulesDetails()) {
-            System.out.println(rule);
+        for (DTORuleInfo rule :  engineManager.getRulesDetails()) {
+            System.out.println(getRuleDetails(rule));
         }
+    }
+
+    private String getRuleDetails(DTORuleInfo rule){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("    Rule ").append(rule.getRuleName()).append(" details: ").append("\n");
+        stringBuilder.append("        Rule Name: ").append(rule.getRuleName()).append(",").append("\n");
+        stringBuilder.append("        Activation: ").append(getActivation(rule.getActivation())).append(",").append("\n");
+        stringBuilder.append("        Amount of Actions: ").append(rule.getAmountOfActions()).append(",").append("\n");
+        stringBuilder.append("        All Actions:\n");
+        if (rule.getAllAction() != null) {
+            for (DTOActionInfo action : rule.getAllAction()) {
+                stringBuilder.append("        ");
+                stringBuilder.append(getActionDetails(action)).append("\n");
+            }
+        } else {
+            stringBuilder.append("    No actions defined.\n");
+        }
+        return stringBuilder.toString();
+    }
+
+    private String getActivation(DTOActivationInfo dtoActivation){
+        return "{ticks=" + dtoActivation.getTicks() + ", probability=" + dtoActivation.getProbability() + '}';
+    }
+
+    private String getActionDetails(DTOActionInfo action){
+        return "    Action: " + "actionType = " + action.getActionName();
     }
 
     private void printTerminationDetails() {
         System.out.println("3.Termination:");
-        System.out.println(engineManager.getTerminationDetails());
+        System.out.println(getDTOTerminationInfo());
+    }
+
+    private String getDTOTerminationInfo(){
+        DTOTerminationInfo dtoTerminationInfo = engineManager.getTerminationDetails();
+        StringBuilder stringBuilder = new StringBuilder("    Termination: ");
+        if (dtoTerminationInfo.getTicks() != null) {
+            stringBuilder.append("ticks = ").append(dtoTerminationInfo.getTicks());
+        }
+
+        if (dtoTerminationInfo.getTicks() != null && dtoTerminationInfo.getSecond() != null) {
+            stringBuilder.append(", ");
+        }
+
+        if (dtoTerminationInfo.getSecond() != null) {
+            stringBuilder.append("seconds = ").append(dtoTerminationInfo.getSecond());
+        }
+
+        return stringBuilder.toString();
     }
 
     private void simulation() {
@@ -190,8 +268,9 @@ public class UIManager {
         do {
             try {
                 System.out.println("Please enter a value that stand in the required details of the this environment");
-                System.out.println(engineManager.getEnvironmentDetails(userIntegerInput));
-                checkValidationValue(userIntegerInput);
+                DTOEnvironmentInfo dtoEnvironmentInfo = engineManager.getEnvironmentDetails(userIntegerInput);
+                printEnvironmentDetails(dtoEnvironmentInfo);
+                checkValidationValue(dtoEnvironmentInfo, userIntegerInput);
                 validInput = true;
             }
             catch (NumberFormatException exception)
@@ -205,23 +284,32 @@ public class UIManager {
         }while(!validInput);
     }
 
-    private void checkValidationValue(int userIntegerInput) throws NumberFormatException, IndexOutOfBoundsException{
+    private void printEnvironmentDetails(DTOEnvironmentInfo dtoEnvironmentInfo){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Environment ").append(dtoEnvironmentInfo.getName()).append(" details: ").append("\n");
+        stringBuilder.append("    name: '").append(dtoEnvironmentInfo.getName()).append("\n");
+        stringBuilder.append("    type: ").append(dtoEnvironmentInfo.getType());
+        stringBuilder.append(getRangeDetails(dtoEnvironmentInfo.getRange(),"    Range="));
+        System.out.println(stringBuilder);
+    }
+
+    private void checkValidationValue(DTOEnvironmentInfo dtoEnvironmentInfo, int userIntegerInput) throws NumberFormatException, IndexOutOfBoundsException{
         Scanner scanner = new Scanner(System.in);
         String valueInput;
-        switch (engineManager.getEnvironmentType(userIntegerInput)) {
-            case FLOAT:
+        switch (dtoEnvironmentInfo.getType()) {
+            case "FLOAT":
                 valueInput = scanner.nextLine();
                 engineManager.checkValidationFloatEnvironment(valueInput, userIntegerInput);
                 break;
-            case DECIMAL:
+            case "DECIMAL":
                 valueInput = scanner.nextLine();
                 engineManager.checkValidationDecimalEnvironment(valueInput, userIntegerInput);
                 break;
-            case BOOLEAN:
+            case "BOOLEAN":
                 Integer userInput = chooseBooleanValue();
                 engineManager.checkValidationBoolEnvironment(userInput, userIntegerInput);
                 break;
-            case STRING:
+            case "STRING":
                 valueInput = scanner.nextLine();
                 engineManager.checkValidationStringEnvironment(valueInput, userIntegerInput);
                 break;
@@ -235,10 +323,10 @@ public class UIManager {
     private  String  printEnvironmentNames(){
         int index = 1;
         StringBuilder stringBuilder = new StringBuilder();
-        for (String environmentName : engineManager.getEnvironmentNamesList()) {
+        for (DTOEnvironmentInfo environment: engineManager.getEnvironmentNamesList()) {
             stringBuilder.append(index);
             stringBuilder.append(".");
-            stringBuilder.append(environmentName).append("\n");
+            stringBuilder.append(environment.getName()).append("\n");
             index += 1;
         }
         stringBuilder.append(index);
@@ -257,10 +345,10 @@ public class UIManager {
     private void printEnvironmentNamesAndValues() {
         int index = 1;
         System.out.println("All the environment properties name and value: ");
-        for (String environmentNameAndValue : engineManager.getEnvironmentNamesAndValues()) {
+        for (DTOEnvironmentInfo environment : engineManager.getEnvironmentNamesAndValues()) {
             System.out.print(index);
             System.out.print(".");
-            System.out.println(environmentNameAndValue);
+            System.out.println("Name: " +  environment.getName() + ", value: " + environment.getValue());
             index += 1;
         }
     }
@@ -296,8 +384,19 @@ public class UIManager {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("The list of all the runs performed by the system are:\n");
         stringBuilder.append("Please select the relevant run you want to see the results of\n");
-        stringBuilder.append(engineManager.getAllPastSimulation());
+        stringBuilder.append(getAllSimulationAsString());
         return chooseInput(engineManager.getSortedMapSize(), stringBuilder.toString());
+    }
+
+    private String getAllSimulationAsString(){
+        List<DTOSimulationInfo> dtoSimulations = engineManager.getAllPastSimulation();
+        int index = 0;
+        StringBuilder stringBuilder = new StringBuilder();
+        for(DTOSimulationInfo dtoSimulation : dtoSimulations){
+            index++;
+            stringBuilder.append(index + ". Unique identifier of the simulation : " + dtoSimulation.getSimulationId() + ", Running date: " + dtoSimulation.getSimulationDate() + "\n");
+        }
+        return stringBuilder.toString();
     }
 
     private int chooseTheDisplayMode() {
@@ -360,11 +459,11 @@ public class UIManager {
         StringBuilder stringBuilder = new StringBuilder();
         int index = 0;
         stringBuilder.append("Please select one of the given entities\n");
-        for(String name: engineManager.getEntitiesList(userIntegerInput)){
+        for(DTOEntityInfo dtoEntity: engineManager.getEntitiesList(userIntegerInput)){
             index += 1;
             stringBuilder.append(index + ".");
-            stringBuilder.append(name + "\n");
-            entities.put(index, name);
+            stringBuilder.append(dtoEntity.getEntityName() + "\n");
+            entities.put(index, dtoEntity.getEntityName());
         }
         return stringBuilder.toString();
     }
@@ -382,11 +481,11 @@ public class UIManager {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("Please select one of the given properties\n");
-        for(String propertyName: engineManager.getPropertiesNamesList(userEntityName, userIntegerInput)){
+        for(DTOPropertyInfo property: engineManager.getPropertiesListFromSimulation(userEntityName, userIntegerInput)){
             index += 1;
             stringBuilder.append(index + ".");
-            stringBuilder.append(propertyName + "\n");
-            properties.put(index, propertyName);
+            stringBuilder.append(property.getName() + "\n");
+            properties.put(index, property.getName());
         }
         return  stringBuilder.toString();
     }

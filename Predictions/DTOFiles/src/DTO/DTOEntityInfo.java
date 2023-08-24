@@ -14,7 +14,6 @@ public class DTOEntityInfo {
 
     public DTOEntityInfo(String entityName, int initialAmount, List<DTOPropertyInfo> properties) {
         this.initialAmount = initialAmount;
-//        this.finalAmount = finalAmount;
         this.entityName = entityName;
         this.properties = properties;
     }

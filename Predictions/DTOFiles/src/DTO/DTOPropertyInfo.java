@@ -3,8 +3,6 @@ package DTO;
 public class DTOPropertyInfo {
     private String name;
 
-//    private String value;
-
     private String type;
 
     private boolean isRandom;
@@ -13,7 +11,6 @@ public class DTOPropertyInfo {
 
     public DTOPropertyInfo(String name, String type, boolean isRandom, DTORangeInfo range) {
         this.name = name;
-//        this.value = value;
         this.type = type;
         this.isRandom = isRandom;
         this.range = range;
@@ -22,10 +19,6 @@ public class DTOPropertyInfo {
     public String getName() {
         return name;
     }
-
-//    public String getValue() {
-//        return value;
-//    }
 
     public String getType() {
         return type;

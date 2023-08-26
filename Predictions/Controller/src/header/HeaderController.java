@@ -82,7 +82,7 @@ public class HeaderController {
         try {
             String filePath = mainController.loadXML(); // status = -1 if user close dialog without choosing file
             if (!filePath.isEmpty())
-                setSuccessMessage("File loaded successfully.", filePath);
+                setSuccessMessage();
         }
         catch(Exception e){
             setErrorMessage(e.getMessage());
@@ -94,8 +94,8 @@ public class HeaderController {
 
     }
 
-    private void setSuccessMessage(String message, String filePath) {
-        messageLabel.setText(message);
+    private void setSuccessMessage() {
+        messageLabel.setText("File loaded successfully.");
     }
 
     public void setMainController(AppController mainController) {

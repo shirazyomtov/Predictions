@@ -73,16 +73,16 @@ public class AppController {
         this.primaryStage = primaryStage;
     }
 
-    public int loadXML() throws Exception {
+    public String loadXML() throws Exception {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Machine File");
+        fileChooser.setTitle("Open XML File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
         File f = fileChooser.showOpenDialog(primaryStage);
 
         if (f == null) // user closed file choosing dialog
-            return -1;
+            return "";
         engineManager.loadXMLAAndCheckValidation(f.getPath());
 
-        return 0;
+        return f.getPath();
     }
 }

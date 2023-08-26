@@ -78,9 +78,9 @@ public class HeaderController {
     @FXML
     void loadFileButtonClicked(ActionEvent event) {
         try {
-            int status = mainController.loadXML(); // status = -1 if user close dialog without choosing file
-            if (status != -1)
-                setSuccessMessage("File loaded successfully.");
+            String filePath = mainController.loadXML(); // status = -1 if user close dialog without choosing file
+            if (!filePath.isEmpty())
+                setSuccessMessage("File loaded successfully.", filePath);
         }
         catch(Exception e){
             setErrorMessage(e.getMessage());
@@ -89,10 +89,12 @@ public class HeaderController {
 
     private void setErrorMessage(String message) {
         messageLabel.setText(message);
+
     }
 
-    private void setSuccessMessage(String message) {
+    private void setSuccessMessage(String message, String filePath) {
         messageLabel.setText(message);
+        XMLFileTextField.setText(filePath);
     }
 
 

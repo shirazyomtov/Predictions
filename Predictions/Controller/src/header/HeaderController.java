@@ -95,6 +95,7 @@ public class HeaderController {
     private void setSuccessMessage(String message, String filePath) {
         messageLabel.setText(message);
         XMLFileTextField.setText(filePath);
+        detailsToggleButton.setDisable(false);
     }
 
 

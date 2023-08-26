@@ -1,6 +1,8 @@
 package header;
 
 import app.AppController;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -94,15 +96,25 @@ public class HeaderController {
 
     private void setSuccessMessage(String message, String filePath) {
         messageLabel.setText(message);
-        XMLFileTextField.setText(filePath);
-        detailsToggleButton.setDisable(false);
     }
-
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
     }
 
+    public void bindToIsFXMLLoaded(){
+        SimpleBooleanProperty isFileLoaded = mainController.getIsFileLoadedProperty();
+        detailsToggleButton.disableProperty().bind(isFileLoaded.not());
+    }
+
+    public void bindXmlPathToTextField(SimpleStringProperty path){
+        XMLFileTextField.textProperty().bind(path);
+    }
+
+    public void bindComponents(SimpleStringProperty path) {
+        bindToIsFXMLLoaded();
+        bindXmlPathToTextField(path);
+    }
 }
 
 

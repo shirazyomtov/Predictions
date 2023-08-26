@@ -3,6 +3,8 @@ package app;
 import engineManager.EngineManager;
 import firstPage.FirstPageController;
 import header.HeaderController;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ScrollPane;
@@ -24,6 +26,10 @@ public class AppController {
 
     private Stage primaryStage;
 
+    private SimpleBooleanProperty isFileLoaded;
+
+    private SimpleStringProperty xmlPathProperty;
+
     private EngineManager engineManager = new EngineManager();
 
     @FXML
@@ -35,12 +41,18 @@ public class AppController {
     @FXML
     private FirstPageController firstPageController;
 
+    public AppController(){
+        isFileLoaded = new SimpleBooleanProperty(false);
+        xmlPathProperty = new SimpleStringProperty();
+    }
+
     @FXML
     public void initialize() throws Exception {
         loadResources();
         if(headerController != null && firstPageController != null){
             headerController.setMainController(this);
             firstPageController.setMainController(this);
+            headerController.bindComponents(xmlPathProperty);
         }
     }
 
@@ -73,6 +85,10 @@ public class AppController {
         this.primaryStage = primaryStage;
     }
 
+    public SimpleBooleanProperty getIsFileLoadedProperty() {
+        return isFileLoaded;
+    }
+
     public String loadXML() throws Exception {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open XML File");
@@ -81,7 +97,9 @@ public class AppController {
 
         if (f == null) // user closed file choosing dialog
             return "";
-        engineManager.loadXMLAAndCheckValidation(f.getPath());
+        isFileLoaded.set(true);
+        xmlPathProperty.set(f.getAbsolutePath());
+        engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
 
         return f.getPath();
     }

@@ -89,13 +89,19 @@ public class HeaderController {
         }
     }
 
+    @FXML
+    void detailsButtonClicked(ActionEvent event) {
+        mainController.setIsDetailsClickedProperty(true);
+    }
+
     private void setErrorMessage(String message) {
         messageLabel.setText(message);
-
+        messageLabel.setStyle("-fx-background-color: #fc6060; -fx-font-size: 14px; -fx-text-fill: white");
     }
 
     private void setSuccessMessage() {
         messageLabel.setText("File loaded successfully.");
+        messageLabel.setStyle("-fx-background-color: #D3EBCD; -fx-font-size: 14px; -fx-text-fill: black");
     }
 
     public void setMainController(AppController mainController) {

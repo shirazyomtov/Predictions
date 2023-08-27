@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<ScrollPane id="headerBox" fitToHeight="true" fitToWidth="true" prefHeight="168.0" prefWidth="545.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="header.HeaderController">
+<ScrollPane id="headerBox" fitToHeight="true" fitToWidth="true" prefHeight="168.0" prefWidth="545.0" stylesheets="@header.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="header.HeaderController">
    <content>
       <GridPane id="gridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="166.0" prefWidth="542.0">
          <columnConstraints>
@@ -34,7 +34,7 @@
          <children>
             <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
                <children>
-                  <Label id="EnigmaTitle" fx:id="predictionsLabel" alignment="CENTER" contentDisplay="CENTER" text="Predictions" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                  <Label id="EnigmaTitle" fx:id="predictionsLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="predictions-label" text="Predictions" textAlignment="CENTER" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets left="20.0" />
                      </HBox.margin></Label>
@@ -51,7 +51,7 @@
             </HBox>
             <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="5.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3">
                <children>
-                  <ToggleButton fx:id="detailsToggleButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" selected="true" styleClass="menuBtn" text="Details" HBox.hgrow="ALWAYS">
+                  <ToggleButton fx:id="detailsToggleButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#detailsButtonClicked" selected="true" styleClass="menuBtn" text="Details" HBox.hgrow="ALWAYS">
                      <toggleGroup>
                         <ToggleGroup fx:id="MenuBarBtn" />
                      </toggleGroup>
@@ -104,7 +104,7 @@
                   <Insets left="5.0" />
                </GridPane.margin>
             </HBox>
-            <Label fx:id="messageLabel" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label fx:id="messageLabel" alignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="4" />
          </children>
       </GridPane>
    </content>

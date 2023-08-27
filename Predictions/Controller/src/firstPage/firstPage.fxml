@@ -10,7 +10,7 @@
 
 <GridPane prefHeight="402.0" prefWidth="545.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="firstPage.FirstPageController">
    <columnConstraints>
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="99.0" />
@@ -27,11 +27,7 @@
    <children>
       <SplitPane fx:id="smallSplitPane" dividerPositions="0.5" prefHeight="222.0" prefWidth="409.0" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.rowIndex="1" GridPane.rowSpan="3">
          <items>
-            <ScrollPane fitToHeight="true" fitToWidth="true">
-               <content>
-                  <BorderPane fx:id="codeCalibrationComponent" minWidth="500.0" styleClass="contentBoxes" />
-               </content>
-            </ScrollPane>
+            <fx:include fx:id="detailsComponent" source="detailsOfSystem/detailsOfSystem.fxml" />
             <ScrollPane fitToHeight="true" fitToWidth="true">
                <content>
                   <BorderPane fx:id="codeConfigComponent" styleClass="contentBoxes" />

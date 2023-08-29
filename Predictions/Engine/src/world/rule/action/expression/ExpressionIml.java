@@ -1,12 +1,11 @@
 package world.rule.action.expression;
 
+import exceptions.FormatException;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
-import exceptions.OperationNotSupportedType;
 import world.auxiliaryFunctions.AuxiliaryFunctionsImpl;
 import world.entity.instance.EntityInstance;
 import world.enums.Type;
-import world.environment.instance.EnvironmentInstance;
 import world.propertyInstance.api.Property;
 import world.worldInstance.WorldInstance;
 
@@ -25,17 +24,26 @@ public class ExpressionIml implements Expression, Serializable {
     }
 
     @Override
-    public String decipher(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes {
+    public String decipher(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes, FormatException {
         String object = null ;
         if (checkOptionByFunctionName(expressionName)) {
             int index = expressionName.indexOf("(");
             String functionName = expressionName.substring(0, index).trim();
             String value = expressionName.substring(index + 1, expressionName.length() - 1).trim();
             if (functionName.equals(ENVIRONMENT.getFunctionName())) {
-                object = AuxiliaryFunctionsImpl.environment(value, worldInstance,  getTypeOfProperty(entity, propertyName)).toString();
+                object = AuxiliaryFunctionsImpl.environment(value, worldInstance, getTypeOfProperty(entity, propertyName)).toString();
             }
             else if (functionName.equals(RANDOM.getFunctionName())) {
                 object = AuxiliaryFunctionsImpl.random(value).toString();
+            }
+            else if (functionName.equals(EVALUATE.getFunctionName())) {
+                object = AuxiliaryFunctionsImpl.evaluate(value, worldInstance, getTypeOfProperty(entity, propertyName)).toString();
+            }
+            else if (functionName.equals(PERCENT.getFunctionName())) {
+                object = AuxiliaryFunctionsImpl.percent(value, entity, worldInstance, propertyName).toString();
+            }
+            else if (functionName.equals(TICKS.getFunctionName())) {
+                object = AuxiliaryFunctionsImpl.ticks(value, worldInstance).toString();
             }
         }
         else if (checkIfValueIsProperty(entity) != null) {
@@ -72,10 +80,7 @@ public class ExpressionIml implements Expression, Serializable {
 
 
     private Object checkIfValueIsProperty(EntityInstance entity) {
-        if(entity.getAllProperty().containsKey(expressionName)){
-            return entity.getAllProperty().get(expressionName).getValue();
-        }
-        return null;
+        return entity.getPropertyValue(expressionName, true);
     }
 
 }

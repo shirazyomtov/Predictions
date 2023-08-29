@@ -1,13 +1,14 @@
 package world.rule.action.condition;
 
-import exceptions.ObjectNotExist;
-import exceptions.OperationNotCompatibleTypes;
-import exceptions.OperationNotSupportedType;
+import exceptions.*;
+import jaxb.schema.generated.PRDAction;
+import jaxb.schema.generated.PRDCondition;
 import jaxb.schema.generated.PRDElse;
 import jaxb.schema.generated.PRDThen;
 import world.entity.instance.EntityInstance;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
+import world.rule.action.Action;
 import world.rule.action.expression.ExpressionIml;
 import world.worldInstance.WorldInstance;
 
@@ -15,30 +16,32 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class SingleCondition extends AbstractCondition implements Serializable {
-    private String operator;
-    private String value;
-    private String propertyName;
+    private final String operator;
+    private final String value;
+    private final String propertyName;
 
-    public SingleCondition(PRDThen prdThen, PRDElse prdElse, String operatorType, String value, String entityName, String propertyName) {
-        super(prdThen, prdElse, entityName, "single");
-        this.operator = operatorType;
-        this.value = value;
-        this.propertyName = propertyName;
+
+    public SingleCondition(PRDThen prdThen, PRDElse prdElse, PRDCondition prdCondition, PRDAction.PRDSecondaryEntity prdSecondaryEntity)  {
+        super(prdThen, prdElse, prdCondition.getEntity(), "single", prdSecondaryEntity);
+        this.operator = prdCondition.getOperator();
+        this.value = prdCondition.getValue();
+        this.propertyName = prdCondition.getProperty();
     }
 
     @Override
-    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes {
+    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         boolean flag = false;
-        boolean kill = false;
-        flag = checkIfConditionIsTrue(entity, worldInstance);
-        kill = performThenOrElse(flag, entity, worldInstance);
-        return kill;
+        Action killOrReplace = null;
+        flag = checkIfConditionIsTrue(entity, worldInstance, secondaryEntity);
+        killOrReplace = performThenOrElse(flag, entity, worldInstance, secondaryEntity);
+        return killOrReplace;
     }
 
-    public boolean checkIfConditionIsTrue(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, ClassCastException, OperationNotSupportedType, OperationNotCompatibleTypes {
-            ExpressionIml expression = new ExpressionIml(value, propertyName);
-            String valueInCondition = expression.decipher(entity, worldInstance);
-            Property property = entity.getAllProperty().get(propertyName);
+    public boolean checkIfConditionIsTrue(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, ClassCastException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity);
+        ExpressionIml expression = new ExpressionIml(value, propertyName);
+            String valueInCondition = expression.decipher(entityInstance, worldInstance);
+            Property property = entityInstance.getAllProperty().get(propertyName);
             boolean flag = false;
             switch (operator) {
                 case "=":

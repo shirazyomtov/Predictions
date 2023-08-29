@@ -3,8 +3,11 @@ package xml;
 import exceptions.NameAlreadyExist;
 import exceptions.ObjectNotExist;
 import jaxb.schema.generated.*;
+import sun.nio.ch.SelectorImpl;
+
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,10 +23,19 @@ public final class XMLValidation {
 
     public void checkValidationXmlFile() throws NameAlreadyExist, ObjectNotExist, NumberFormatException {
         checkEnvironmentVariables();
-        checkPropertyVariablesOfSpecificEntity(world.getPRDEntities().getPRDEntity().get(0));
+        checkPropertyVariablesOfSpecificEntity();
         checkRuleActions(true);
         checkRuleActions(false);
         checkArgumentThatGivenToCalculationIncreaseDecrease();
+        CheckingTheSizeOfRowsAndColumns();
+    }
+
+    private void CheckingTheSizeOfRowsAndColumns() throws IndexOutOfBoundsException{
+        int column = world.getPRDGrid().getColumns();
+        int rows = world.getPRDGrid().getRows();
+        if( column > 100 || column < 10 || rows > 100 || rows < 10){
+            throw new IndexOutOfBoundsException("The size of the rows and columns should be between 10 and 100 (inclusive).");
+        }
     }
 
     private void checkEnvironmentVariables() throws NameAlreadyExist {
@@ -37,14 +49,17 @@ public final class XMLValidation {
         }
     }
 
-    private void checkPropertyVariablesOfSpecificEntity(PRDEntity prdEntity) throws NameAlreadyExist {
-        HashMap<String, Integer> map = new HashMap<>();
-        for (PRDProperty prdProperty : prdEntity.getPRDProperties().getPRDProperty()) {
-            if (map.containsKey(prdProperty.getPRDName())) {
-                throw new NameAlreadyExist((prdProperty.getPRDName()), "property");
-            } else {
-                map.put(prdProperty.getPRDName(), 1);
+    private void checkPropertyVariablesOfSpecificEntity() throws NameAlreadyExist {
+        Map<String, Integer> map = new HashMap<>();
+        for(PRDEntity prdEntity:world.getPRDEntities().getPRDEntity()) {
+            for (PRDProperty prdProperty : prdEntity.getPRDProperties().getPRDProperty()) {
+                if (map.containsKey(prdProperty.getPRDName())) {
+                    throw new NameAlreadyExist((prdProperty.getPRDName()), "property");
+                } else {
+                    map.put(prdProperty.getPRDName(), 1);
+                }
             }
+            map.clear();
         }
     }
 
@@ -73,6 +88,17 @@ public final class XMLValidation {
             checkConditionPropertyThenAndElse(action, true);
 
         }
+        else if (action.getType().equals("replace")) {
+            findEntity(action.getCreate());
+            findEntity(action.getKill());
+        }
+        else if (action.getType().equals("proximity")) {
+            findEntity(action.getPRDBetween().getSourceEntity());
+            findEntity(action.getPRDBetween().getTargetEntity());
+            for(PRDAction actionProximity: action.getPRDActions().getPRDAction()){
+                checkActionEntity(actionProximity);
+            }
+        }
         else {
             findEntity(action.getEntity());
         }
@@ -97,7 +123,13 @@ public final class XMLValidation {
         else if(action.getType().equals("calculation")){
             findProperty(action.getResultProp(), entityAction);
         }
-        else if (action.getType().equals("kill")) {
+        else if (action.getType().equals("kill") || action.getType().equals("replace") ) {
+        }
+        else if (action.getType().equals("proximity")) {
+            for(PRDAction actionProximity: action.getPRDActions().getPRDAction()){
+                checkActionProperty(actionProximity);
+            }
+
         }
         else{
             findProperty(action.getProperty(), entityAction);
@@ -198,6 +230,15 @@ public final class XMLValidation {
         }
         else if(action.getType().equals("condition")){
             checkTypeOfArgCondition(action);
+        }
+        else if (action.getType().equals("proximity")) {
+            checkTypeOfArgProximity(action);
+        }
+    }
+
+    private void checkTypeOfArgProximity(PRDAction action) {
+        for(PRDAction actionSub: action.getPRDActions().getPRDAction()){
+            checkArgument(actionSub);
         }
     }
 

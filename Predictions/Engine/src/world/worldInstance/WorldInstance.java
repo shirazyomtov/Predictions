@@ -57,4 +57,19 @@ public class WorldInstance implements Serializable {
 
         return dtoEnvironments;
     }
+
+    public EntityInstance isEntityExists(String entityName){
+        for(EntityInstance entityInstance: entityInstanceList){
+            if(entityInstance.getName().equals(entityName)){
+                return entityInstance;
+            }
+        }
+
+        return null;
+    }
+
+    public void addEntityInstanceToEntityInstanceList(EntityInstance entityInstance){
+        entityInstanceList.add(entityInstance);
+    }
+
 }

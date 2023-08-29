@@ -1,10 +1,7 @@
 package engineManager;
 
 import DTO.*;
-import exceptions.FilePathException;
-import exceptions.ObjectNotExist;
-import exceptions.OperationNotCompatibleTypes;
-import exceptions.OperationNotSupportedType;
+import exceptions.*;
 import history.History;
 import history.simulation.Simulation;
 import world.entity.definition.EntityDefinition;
@@ -36,6 +33,7 @@ public class EngineManager implements Serializable{
     private WorldDefinition world = null;
 
     private WorldInstance worldInstance = null;
+
     Map <String, EnvironmentInstance> environmentValuesByUser = new HashMap<>();
 
     public void loadXMLAAndCheckValidation(String xmlPath) throws Exception {
@@ -215,7 +213,8 @@ public class EngineManager implements Serializable{
 
     private void setSimulationDetailsAndAddToHistory(Map<String, EnvironmentInstance> environmentInstanceMap) {
         numberOfTimesUserSelectSimulation++;
-        worldInstance =new WorldInstance(environmentInstanceMap, initEntities(), world);
+        List<EntityInstance> entityInstanceList = initEntities();
+        worldInstance =new WorldInstance(environmentInstanceMap, entityInstanceList, world);
         Simulation simulation = new Simulation(worldInstance, LocalDateTime.now());
         history = History.getInstance();
         history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
@@ -230,14 +229,15 @@ public class EngineManager implements Serializable{
                 for(PropertyDefinition propertyDefinition: entityDefinition.getProps()){
                     allProperty.put(propertyDefinition.getName(), initProperty(propertyDefinition));
                 }
-                entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty));
+                entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty, world.getTwoDimensionalGrid().createNewLocation()));
             }
         }
 
         return entityInstanceList;
     }
 
-    private Property initProperty(PropertyDefinition propertyDefinition) {
+
+    public static Property initProperty(PropertyDefinition propertyDefinition) {
         Property property = null;
 
         switch (propertyDefinition.getType()) {
@@ -258,7 +258,7 @@ public class EngineManager implements Serializable{
         return property;
     }
 
-    private Property createPropertyFloat(PropertyDefinition propertyDefinition) {
+    private static Property createPropertyFloat(PropertyDefinition propertyDefinition) {
         FloatPropertyInstance property;
         if(propertyDefinition.isRandomInitialize()) {
             if (propertyDefinition.getRange() != null) {
@@ -271,14 +271,15 @@ public class EngineManager implements Serializable{
             }
         }
         else{
+            String stringValue = (String) propertyDefinition.getInit();
             property = new FloatPropertyInstance(propertyDefinition.getName(),
-                    ValueGeneratorFactory.createFixed((float)propertyDefinition.getInit()), propertyDefinition.getRange());
+                    ValueGeneratorFactory.createFixed(Float.parseFloat(stringValue)), propertyDefinition.getRange());
         }
 
         return property;
     }
 
-    private Property createPropertyDecimal(PropertyDefinition propertyDefinition) {
+    private static Property createPropertyDecimal(PropertyDefinition propertyDefinition) {
         String stringValue;
         IntegerPropertyInstance property;
         if(propertyDefinition.isRandomInitialize()) {
@@ -299,7 +300,7 @@ public class EngineManager implements Serializable{
         return property;
     }
 
-    private Property createPropertyBoolean(PropertyDefinition propertyDefinition) {
+    private static Property createPropertyBoolean(PropertyDefinition propertyDefinition) {
         BooleanPropertyInstance property;
         if(propertyDefinition.isRandomInitialize()) {
             property = new BooleanPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomBoolean(), propertyDefinition.getRange());
@@ -312,7 +313,7 @@ public class EngineManager implements Serializable{
         return property;
     }
 
-    private Property createPropertyString(PropertyDefinition propertyDefinition) {
+    private static Property createPropertyString(PropertyDefinition propertyDefinition) {
         StringPropertyInstance property;
         if(propertyDefinition.isRandomInitialize()) {
             property = new StringPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomString(), propertyDefinition.getRange());
@@ -329,7 +330,7 @@ public class EngineManager implements Serializable{
         return worldInstance.createListEnvironmentNamesAndValues();
     }
 
-    public String getRunSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes {
+    public String getRunSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         return history.getSimulation().runSimulation();
     }
 

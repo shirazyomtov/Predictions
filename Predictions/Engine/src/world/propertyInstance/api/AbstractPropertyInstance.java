@@ -1,11 +1,9 @@
 package world.propertyInstance.api;
 
-import org.w3c.dom.ranges.Range;
 import world.range.RangeImpl;
 import world.value.generator.api.ValueGenerator;
 import world.enums.Type;
 
-import javax.sql.rowset.serial.SerialArray;
 import java.io.Serializable;
 
 public abstract class AbstractPropertyInstance<T> implements Property, Serializable {
@@ -17,6 +15,9 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
     private  ValueGenerator<T> valueGenerator;
 
     private Object value;
+
+    private Integer timeTheValueDosentChange = 0;
+    private boolean valueUpdate = false;
 
     public AbstractPropertyInstance(String name, Type propertyType, ValueGenerator<T> value, RangeImpl range) {
         this.name = name;
@@ -60,7 +61,11 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
                 }
             }
         }
-        this.value = value;
+        if(value != this.value){
+            this.value = value;
+            setTimeTheValueDosentChange(0);
+            setValueUpdate(true);
+        }
     }
 
     @Override
@@ -71,4 +76,23 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
                 '}';
     }
 
+    @Override
+    public Integer getTimeTheValueDosentChange() {
+        return timeTheValueDosentChange;
+    }
+
+    @Override
+    public void setTimeTheValueDosentChange(Integer timeTheValueDosentChange) {
+        this.timeTheValueDosentChange = timeTheValueDosentChange;
+    }
+
+    @Override
+    public boolean isValueUpdate() {
+        return valueUpdate;
+    }
+
+    @Override
+    public void setValueUpdate(boolean valueUpdate) {
+        this.valueUpdate = valueUpdate;
+    }
 }

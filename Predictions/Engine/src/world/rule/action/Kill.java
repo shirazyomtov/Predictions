@@ -1,30 +1,31 @@
 package world.rule.action;
 
-import history.History;
+import exceptions.EntityNotDefine;
+import jaxb.schema.generated.PRDAction;
 import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
-import world.enums.Type;
-import world.propertyInstance.api.Property;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
 
 public class Kill extends Action implements Serializable {
-    public Kill(String entityName)
+    public Kill(String entityName, PRDAction.PRDSecondaryEntity prdSecondaryEntity)
     {
-        super(entityName, ActionType.KILL);
+        super(entityName, ActionType.KILL, prdSecondaryEntity);
     }
     @Override
-    public boolean operation(EntityInstance entity, WorldInstance worldInstance) {
+    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws EntityNotDefine {
+        EntityInstance entityPrimary = checkAndGetAppropriateInstance(entity, secondaryEntity);
         EntityInstance entityToRemove = null;
         for (EntityInstance entityInstance: worldInstance.getEntityInstanceList()){
-            if(entityInstance == entity){
+            if(entityInstance == entityPrimary){
                 entityToRemove = entityInstance;
             }
         }
         if (entityToRemove != null) {
+            worldInstance.getWorldDefinition().getTwoDimensionalGrid().setTwoD_arr(entityToRemove.getLocation().getRow(),entityToRemove.getLocation().getCol(),false);
             worldInstance.getEntityInstanceList().remove(entityToRemove);
         }
-        return false;
+        return null;
     }
 }

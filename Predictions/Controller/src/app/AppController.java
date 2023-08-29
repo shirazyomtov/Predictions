@@ -101,6 +101,7 @@ public class AppController {
         }
         catch (Exception e){
             isDetailsClicked.set(false);
+            firstPageController.resetAllComponent();
             throw e;
         }
     }
@@ -119,5 +120,9 @@ public class AppController {
 
     public void setIsDetailsClickedProperty(boolean state) {
         isDetailsClicked.set(state);
+    }
+
+    public void setMessageInHeader(String message) {
+        headerComponentController.setErrorMessage(message);
     }
 }

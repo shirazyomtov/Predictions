@@ -3,6 +3,7 @@ package firstPage.presentDetails.presentTermination;
 import DTO.DTOTerminationInfo;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -24,7 +25,11 @@ public class PresentTermination {
     @FXML
     private TextField secondsTextField;
 
-    public void setTerminationDetails(DTOTerminationInfo terminationDetails) {
+    @FXML
+    private Label terminationLabel;
+
+    public void setTerminationDetailsPage(DTOTerminationInfo terminationDetails) {
+        terminationLabel.setVisible(true);
         if(terminationDetails.getTicks() != null) {
             ticksHbox.setVisible(true);
             ticksTextField.setText(terminationDetails.getTicks().toString());
@@ -32,6 +37,10 @@ public class PresentTermination {
         if(terminationDetails.getSecond() != null) {
             secondHbox.setVisible(true);
             secondsTextField.setText(terminationDetails.getSecond().toString());
+        }
+        //todo: when we will have in the engine the user termination we will add a text for it
+        if(terminationDetails.getTicks() == null && terminationDetails.getSecond() == null){
+            terminationLabel.setText("");
         }
     }
 

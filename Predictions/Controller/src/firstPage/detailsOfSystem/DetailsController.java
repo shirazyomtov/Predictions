@@ -93,7 +93,12 @@ public class DetailsController {
     @FXML
     void showEntitiesButtonClicked(ActionEvent event) throws IOException {
         String entityName = entitiesComboBox.getValue();
-        firstPageController.setEntitiesDetails(getAllPropertiesOfEntity(entityName), entityName);
+        if(entityName != null) {
+            firstPageController.setEntitiesDetails(getAllPropertiesOfEntity(entityName), entityName);
+        }
+        else{
+            firstPageController.setMessageForUser("You need to chose a entity before pressing the show button");
+        }
     //todo:
     }
 
@@ -109,7 +114,58 @@ public class DetailsController {
     }
 
     @FXML
+    void rulesShowButtonClicked(ActionEvent event) {
+        String ruleName = rulesComboBox.getValue();
+        if(ruleName != null) {
+            firstPageController.setRulesDetails(getSpecificRule(ruleName));
+        }
+        else{
+            firstPageController.setMessageForUser("You need to chose a rule before pressing the show button");
+            //todo: add enum for the error message
+        }
+    }
+
+    private DTORuleInfo getSpecificRule(String ruleName)
+    {
+        DTORuleInfo ruleInfo = null;
+        for(DTORuleInfo dtoRuleInfo: firstPageController.getRulesDetails()){
+            if(dtoRuleInfo.getRuleName().equals(ruleName)){
+                ruleInfo = dtoRuleInfo;
+            }
+        }
+        return ruleInfo;
+    }
+
+    @FXML
     void terminationShowButtonClicked(ActionEvent event) throws IOException {
         firstPageController.SetTerminationDetails();
+    }
+
+    @FXML
+    void gridShowButtonClicked(ActionEvent event) {
+        firstPageController.setGridDetails();
+    }
+
+
+    @FXML
+    void environmentShowButtonClicked(ActionEvent event) {
+        String environmentName = environmentComboBox.getValue();
+        if(environmentName != null) {
+            firstPageController.setEnvironmentDetails(getSpecificEnvironment(environmentName));
+        }
+        else{
+            firstPageController.setMessageForUser("You need to chose a environment before pressing the show button");
+        }
+    }
+
+    private DTOEnvironmentInfo getSpecificEnvironment(String environmentName)
+    {
+        DTOEnvironmentInfo environmentInfo = null;
+        for(DTOEnvironmentInfo dtoEnvironmentInfo: firstPageController.getEnvironmentDetails()){
+            if(dtoEnvironmentInfo.getName().equals(environmentName)){
+                environmentInfo = dtoEnvironmentInfo;
+            }
+        }
+        return environmentInfo;
     }
 }

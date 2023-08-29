@@ -29,7 +29,7 @@ public class Main extends Application {
         appController.setPrimaryStage(primaryStage);
 
         primaryStage.setTitle("Predictions");
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 900, 700);
         primaryStage.setScene(scene);
         primaryStage.show();
 

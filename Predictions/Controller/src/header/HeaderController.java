@@ -94,14 +94,16 @@ public class HeaderController {
         mainController.setIsDetailsClickedProperty(true);
     }
 
-    private void setErrorMessage(String message) {
+    public void setErrorMessage(String message) {
         messageLabel.setText(message);
         messageLabel.setStyle("-fx-background-color: #fc6060; -fx-font-size: 14px; -fx-text-fill: white");
+        //todo: add a period of time that the message appear in the screen
     }
 
     private void setSuccessMessage() {
         messageLabel.setText("File loaded successfully.");
         messageLabel.setStyle("-fx-background-color: #D3EBCD; -fx-font-size: 14px; -fx-text-fill: black");
+        //todo: add a period of time that the message appear in the screen
     }
 
     public void setMainController(AppController mainController) {

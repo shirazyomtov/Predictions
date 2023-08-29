@@ -1,9 +1,8 @@
 package world.rule.action.condition;
 
-import exceptions.ObjectNotExist;
-import exceptions.OperationNotCompatibleTypes;
-import exceptions.OperationNotSupportedType;
+import exceptions.*;
 import jaxb.schema.generated.PRDAction;
+import jaxb.schema.generated.PRDCondition;
 import jaxb.schema.generated.PRDElse;
 import jaxb.schema.generated.PRDThen;
 import world.entity.instance.EntityInstance;
@@ -23,56 +22,58 @@ public abstract class AbstractCondition extends Action implements Serializable {
 
     String singularity;
 
-    public AbstractCondition(PRDThen prdThen, PRDElse prdElse, String entityName, String singularity){
-        super(entityName, ActionType.CONDITION);
+    public AbstractCondition(PRDThen prdThen, PRDElse prdElse, String entityName, String singularity, PRDAction.PRDSecondaryEntity prdSecondaryEntity){
+        super(entityName, ActionType.CONDITION, prdSecondaryEntity);
         this.singularity = singularity;
         if (prdThen != null) {
-            thenActions = createListActions(prdThen.getPRDAction());
+            thenActions = ActionFactory.createListActions(prdThen.getPRDAction());
         }
         if(prdElse != null) {
-            elseActions = createListActions(prdElse.getPRDAction());
+            elseActions = ActionFactory.createListActions(prdElse.getPRDAction());
         }
-    }
-
-    private List<Action> createListActions(List<PRDAction> prdActions) {
-        List<Action> actions = new ArrayList<>();
-        for(PRDAction prdAction: prdActions){
-            actions.add(ActionFactory.createAction(Enum.valueOf(ActionType.class, prdAction.getType().toUpperCase()),
-                    prdAction.getEntity(), prdAction.getProperty(), prdAction.getBy(),
-                    prdAction.getValue(), prdAction.getPRDMultiply(), prdAction.getPRDDivide(),
-                    prdAction.getResultProp(), prdAction.getPRDCondition(), prdAction.getPRDThen(), prdAction.getPRDElse()));
-        }
-
-        return actions;
     }
 
     public String getSingularity() {
         return singularity;
     }
 
-    public boolean performThenOrElse(boolean flag, EntityInstance entityInstance, WorldInstance worldInstance) throws ObjectNotExist, OperationNotSupportedType, OperationNotCompatibleTypes {
+    public Action performThenOrElse(boolean flag, EntityInstance entityInstance, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         if(flag){
-            for(Action actionThen: thenActions){
-                if (!actionThen.getActionType().equals(ActionType.KILL)) {
-                    actionThen.operation(entityInstance, worldInstance);
-                }
-                else {
-                    return true;
+            if(thenActions != null) {
+                for (Action actionThen : thenActions) {
+                    if (!actionThen.getActionType().equals(ActionType.KILL) && !actionThen.getActionType().equals(ActionType.REPLACE)) {
+                        actionThen.operation(entityInstance, worldInstance, secondaryEntity);
+                    } else {
+                        return actionThen;
+                    }
                 }
             }
         }
         else{
             if(elseActions != null){
                 for(Action actionElse: elseActions){
-                    if (!actionElse.getActionType().equals(ActionType.KILL)) {
-                        actionElse.operation(entityInstance, worldInstance);
+                    if (!actionElse.getActionType().equals(ActionType.KILL) && !actionElse.getActionType().equals(ActionType.REPLACE)) {
+                        actionElse.operation(entityInstance, worldInstance, secondaryEntity);
                     }
                     else {
-                       return true;
+                        return actionElse;
                     }
                 }
             }
         }
-        return false;
+        return null;
+    }
+
+    public static AbstractCondition createCondition(PRDCondition prdCondition, String entityName){
+        AbstractCondition selectedAction = null;
+
+        if(prdCondition.getSingularity().equals("single")) {
+            selectedAction = new SingleCondition(null, null, prdCondition, null);
+        }
+        else if(prdCondition.getSingularity().equals("multiple")){
+            selectedAction = new MultipleCondition(null, null, prdCondition, null, entityName);
+        }
+
+        return selectedAction;
     }
 }

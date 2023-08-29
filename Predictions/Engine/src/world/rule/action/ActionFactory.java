@@ -6,48 +6,61 @@ import world.rule.action.calculation.binaryCalculationAction.BinaryCalculationAc
 import world.rule.action.condition.MultipleCondition;
 import world.rule.action.condition.SingleCondition;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static world.enums.CalculationBinaryTypeAction.DIVIDE;
 import static world.enums.CalculationBinaryTypeAction.MULTIPLY;
 
 
 public final class ActionFactory {
 
-    public static Action createAction(ActionType type, String entityName, String propertyName, String by, String value,
-                                      PRDMultiply multiply, PRDDivide divide, String resultPropertyName, PRDCondition condition,
-                                      PRDThen prdThen, PRDElse prdElse)
+    public static Action createAction(PRDAction prdAction)
     {
         Action selectedAction = null;
-        switch (type) {
+        switch (Enum.valueOf(ActionType.class, prdAction.getType().toUpperCase())) {
             case INCREASE:
-                selectedAction = new Increase(entityName, propertyName, by);
+                selectedAction = new Increase(prdAction);
                 break;
             case DECREASE:
-                selectedAction = new Decrease(entityName, propertyName, by);
+                selectedAction = new Decrease(prdAction);
                 break;
             case CALCULATION:
-                if(multiply != null) {
-                    selectedAction = BinaryCalculationActionFactory.createBinaryAction(MULTIPLY,entityName, resultPropertyName, multiply.getArg1(), multiply.getArg2());
+                if(prdAction.getPRDMultiply() != null) {
+                    selectedAction = BinaryCalculationActionFactory.createBinaryAction(MULTIPLY, prdAction);
                 }
-                else if (divide != null) {
-                    selectedAction = BinaryCalculationActionFactory.createBinaryAction(DIVIDE ,entityName, resultPropertyName, divide.getArg1(), divide.getArg2());
+                else if (prdAction.getPRDDivide() != null) {
+                    selectedAction = BinaryCalculationActionFactory.createBinaryAction(DIVIDE , prdAction);
                 }
                 break;
             case CONDITION:
-                if(condition.getSingularity().equals("single")) {
-                    selectedAction = new SingleCondition(prdThen, prdElse, condition.getOperator(),condition.getValue(), condition.getEntity(), condition.getProperty());
+                if(prdAction.getPRDCondition().getSingularity().equals("single")) {
+                    selectedAction = new SingleCondition(prdAction.getPRDThen(), prdAction.getPRDElse(), prdAction.getPRDCondition(), prdAction.getPRDSecondaryEntity());
                 }
-                else if(condition.getSingularity().equals("multiple")){
-                    selectedAction = new MultipleCondition(prdThen, prdElse, entityName, condition.getPRDCondition(), condition.getLogical());
+                else if(prdAction.getPRDCondition().getSingularity().equals("multiple")){
+                    selectedAction = new MultipleCondition(prdAction.getPRDThen(), prdAction.getPRDElse(), prdAction.getPRDCondition(), prdAction.getPRDSecondaryEntity(), prdAction.getEntity());
                 }
                 break;
             case SET:
-                selectedAction = new Set(entityName, propertyName, value);
+                selectedAction = new Set(prdAction);
                 break;
             case KILL:
-                selectedAction = new Kill(entityName);
+                selectedAction = new Kill(prdAction.getEntity(), prdAction.getPRDSecondaryEntity());
                 break;
+            case REPLACE:
+                selectedAction = new Replace(prdAction.getKill(), prdAction.getCreate(), prdAction.getMode(), prdAction.getPRDSecondaryEntity());
+                break;
+            case PROXIMITY:
+                selectedAction = new Proximity(prdAction);
         }
 
         return selectedAction;
+    }
+    public static List<Action> createListActions(List<PRDAction> prdActions) {
+        List<Action> actions = new ArrayList<>();
+        for(PRDAction prdAction: prdActions){
+            actions.add(ActionFactory.createAction(prdAction));
+        }
+        return actions;
     }
 }

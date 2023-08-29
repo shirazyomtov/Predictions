@@ -1,5 +1,6 @@
 package world.rule.action.calculation.binaryCalculationAction;
 
+import jaxb.schema.generated.PRDAction;
 import world.rule.action.calculation.CalculationImpl;
 import world.rule.action.expression.ExpressionIml;
 
@@ -10,8 +11,8 @@ public abstract class BinaryAction extends CalculationImpl implements Serializab
     private final ExpressionIml argument1;
     private final ExpressionIml argument2;
 
-    public BinaryAction(String entityName, String resultPropertyName, String argument1, String argument2) {
-        super(entityName, resultPropertyName);
+    public BinaryAction(String entityName, String resultPropertyName, String argument1, String argument2, PRDAction.PRDSecondaryEntity prdSecondaryEntity) {
+        super(entityName, resultPropertyName, prdSecondaryEntity);
         this.argument1 = new ExpressionIml(argument1, resultPropertyName);
         this.argument2 = new ExpressionIml(argument2, resultPropertyName);
     }

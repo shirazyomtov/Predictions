@@ -6,6 +6,7 @@ import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
 import world.rule.RuleImpl;
 import world.termination.Termination;
+import world.twoDimensionalGrid.TwoDimensionalGrid;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,12 +24,16 @@ public final class WorldDefinition implements Serializable {
 
     private final Map<String, EnvironmentDefinition> environmentDefinition;
 
-    public WorldDefinition(Map<String, EntityDefinitionImpl> entityDefinition, List<RuleImpl> rules, Termination termination, Map<String, EnvironmentDefinition> environmentDefinition)
+    private TwoDimensionalGrid twoDimensionalGrid;
+
+    public WorldDefinition(Map<String, EntityDefinitionImpl> entityDefinition, List<RuleImpl> rules, Termination termination,
+                           Map<String, EnvironmentDefinition> environmentDefinition, int rows, int columns)
     {
         this.entityDefinition = entityDefinition;
         this.rules = rules;
         this.termination = termination;
         this.environmentDefinition = environmentDefinition;
+        this.twoDimensionalGrid = new TwoDimensionalGrid(rows,columns);
     }
 
     public Map<String, EntityDefinitionImpl> getEntityDefinition() {
@@ -75,5 +80,9 @@ public final class WorldDefinition implements Serializable {
         }
 
         return dtoRuleInfos;
+    }
+
+    public TwoDimensionalGrid getTwoDimensionalGrid() {
+        return twoDimensionalGrid;
     }
 }

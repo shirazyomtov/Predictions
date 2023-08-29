@@ -49,7 +49,7 @@ public  final class XMLReader implements  Serializable {
         List<RuleImpl> ruleIml = defineRules();
         Termination termination = defineTermination();
         Map <String, EnvironmentDefinition> environmentDefinition = defineEnvironment();
-        return new WorldDefinition(entityDefinition, ruleIml, termination, environmentDefinition);
+        return new WorldDefinition(entityDefinition, ruleIml, termination, environmentDefinition,world.getPRDGrid().getRows(), world.getPRDGrid().getColumns());
     }
 
     private  Map<String, EnvironmentDefinition> defineEnvironment() {
@@ -90,7 +90,7 @@ public  final class XMLReader implements  Serializable {
         for (PRDEntity entity: world.getPRDEntities().getPRDEntity())
         {
             List<PropertyDefinition> allProperties = defineProperties(entity);
-            entityDefinition.put(entity.getName(), new EntityDefinitionImpl(entity.getName(), 100, allProperties));
+            entityDefinition.put(entity.getName(), new EntityDefinitionImpl(entity.getName(), 3, allProperties));
         }
 
         return entityDefinition;

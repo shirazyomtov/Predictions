@@ -3,9 +3,7 @@ import DTO.DTOEntityInfo;
 import engineManager.EngineManager;
 import enums.DisplaySimulationOption;
 import enums.MenuOptions;
-import exceptions.ObjectNotExist;
-import exceptions.OperationNotCompatibleTypes;
-import exceptions.OperationNotSupportedType;
+import exceptions.*;
 
 import java.io.*;
 import java.util.*;
@@ -353,7 +351,7 @@ public class UIManager {
         }
     }
 
-    private void runSimulationAndPrintTerminationReason() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes {
+    private void runSimulationAndPrintTerminationReason() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         String message = engineManager.getRunSimulation();
         printIdAndTerminationReason(message);
     }

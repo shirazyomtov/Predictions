@@ -19,9 +19,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class AppController {
-
-//    public static final String HEADER_fXML_RESOURCE = "/header/header.fxml";
-
     public static final String FIRST_PAGE_FXML_LIGHT_RESOURCE = "/firstPage/firstPage.fxml";
 
     private Stage primaryStage;

@@ -50,6 +50,6 @@
             </TextField>
          </children>
       </HBox>
-      <Label alignment="CENTER" prefHeight="21.0" prefWidth="337.0" text="Termination :" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Label alignment="CENTER" prefHeight="21.0" prefWidth="337.0" text="Termination :" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
    </children>
 </GridPane>

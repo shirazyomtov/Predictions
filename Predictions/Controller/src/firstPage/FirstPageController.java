@@ -38,7 +38,7 @@ public class FirstPageController {
     private ScrollPane scrollPaneDetails;
 
 
-//
+    //
 //    @FXML
 //    private SplitPane smallSplitPane;
 //

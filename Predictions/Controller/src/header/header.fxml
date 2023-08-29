@@ -16,96 +16,96 @@
 <?import javafx.scene.layout.RowConstraints?>
 
 <ScrollPane id="headerBox" fitToHeight="true" fitToWidth="true" prefHeight="168.0" prefWidth="545.0" stylesheets="@header.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="header.HeaderController">
-   <content>
-      <GridPane id="gridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="166.0" prefWidth="542.0">
-         <columnConstraints>
-            <ColumnConstraints hgrow="NEVER" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" />
-            <ColumnConstraints hgrow="ALWAYS" />
-            <ColumnConstraints hgrow="ALWAYS" maxWidth="164.0" minWidth="141.39998779296877" prefWidth="158.0" />
-            <ColumnConstraints hgrow="NEVER" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints maxHeight="31.200018310546874" minHeight="10.0" prefHeight="31.200018310546874" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="27.599981689453124" minHeight="10.0" prefHeight="23.599981689453124" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="63.19998779296874" minHeight="10.0" prefHeight="47.399993896484375" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="61.399987792968744" minHeight="10.0" prefHeight="50.600006103515625" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="22.20001831054688" minHeight="10.0" prefHeight="22.20001831054688" vgrow="SOMETIMES" />
-         </rowConstraints>
-         <children>
-            <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
-               <children>
-                  <Label id="EnigmaTitle" fx:id="predictionsLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="predictions-label" text="Predictions" textAlignment="CENTER" HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin></Label>
-               </children>
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </HBox>
-            <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-               <children>
-                  <Button id="LoadFileBtn" fx:id="loadFileButton" mnemonicParsing="false" onAction="#loadFileButtonClicked" prefHeight="25.0" prefWidth="107.0" styleClass="loadFile-button" text="Load File" HBox.hgrow="ALWAYS" />
-                  <TextField id="xmlField" fx:id="XMLFileTextField" editable="false" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="5.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3">
-               <children>
-                  <ToggleButton fx:id="detailsToggleButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#detailsButtonClicked" prefHeight="50.0" prefWidth="85.0" selected="true" styleClass="header-buttons" text="Details" HBox.hgrow="ALWAYS">
-                     <toggleGroup>
-                        <ToggleGroup fx:id="MenuBarBtn" />
-                     </toggleGroup>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </padding>
-                  </ToggleButton>
-                  <ToggleButton fx:id="newExecutionToggleButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" prefWidth="158.0" styleClass="header-buttons" text="New Execution" toggleGroup="$MenuBarBtn" HBox.hgrow="ALWAYS">
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </padding>
-                  </ToggleButton>
-                  <ToggleButton fx:id="resultsToggleButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" prefWidth="92.0" styleClass="header-buttons" text="Results" toggleGroup="$MenuBarBtn" HBox.hgrow="ALWAYS">
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </padding>
-                  </ToggleButton>
-               </children>
-               <GridPane.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </GridPane.margin>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </HBox>
-            <MenuBar minHeight="20.0" GridPane.columnSpan="4" GridPane.valignment="TOP">
-               <menus>
-                  <Menu fx:id="skinsMenu" mnemonicParsing="false" text="Skins">
-                     <items>
-                        <MenuItem fx:id="defaultMenuItem" mnemonicParsing="false" onAction="#defaultMenuItemClicked" text="Default" />
-                        <MenuItem fx:id="peachMenuItem" mnemonicParsing="false" onAction="#peachMenuItemClicked" text="Peach" />
-                        <MenuItem fx:id="cookieMenuItem" mnemonicParsing="false" onAction="#cookieMenuItemClicked" text="Cookie Monster" />
-                        <MenuItem fx:id="lionMenuItem" mnemonicParsing="false" onAction="#lionMenuItemClicked" text="Lion King" />
-                     </items>
-                  </Menu>
-               </menus>
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </MenuBar>
-            <HBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="2">
-               <children>
-                  <Button fx:id="queueManagementButton" alignment="CENTER" disable="true" mnemonicParsing="false" prefHeight="46.0" prefWidth="158.0" text="Queue Management">
-                     <opaqueInsets>
-                        <Insets right="20.0" />
-                     </opaqueInsets>
-                  </Button>
-               </children>
-               <GridPane.margin>
-                  <Insets left="5.0" />
-               </GridPane.margin>
-            </HBox>
-            <Label fx:id="messageLabel" alignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="4" />
-         </children>
-      </GridPane>
-   </content>
+    <content>
+        <GridPane id="gridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="166.0" prefWidth="542.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" />
+                <ColumnConstraints hgrow="ALWAYS" />
+                <ColumnConstraints hgrow="ALWAYS" maxWidth="164.0" minWidth="141.39998779296877" prefWidth="158.0" />
+                <ColumnConstraints hgrow="NEVER" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="31.200018310546874" minHeight="10.0" prefHeight="31.200018310546874" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="27.599981689453124" minHeight="10.0" prefHeight="23.599981689453124" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="63.19998779296874" minHeight="10.0" prefHeight="47.399993896484375" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="61.399987792968744" minHeight="10.0" prefHeight="50.600006103515625" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="22.20001831054688" minHeight="10.0" prefHeight="22.20001831054688" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                    <children>
+                        <Label id="EnigmaTitle" fx:id="predictionsLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="predictions-label" text="Predictions" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                            <HBox.margin>
+                                <Insets left="20.0" />
+                            </HBox.margin></Label>
+                    </children>
+                    <GridPane.margin>
+                        <Insets />
+                    </GridPane.margin>
+                </HBox>
+                <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <children>
+                        <Button id="LoadFileBtn" fx:id="loadFileButton" mnemonicParsing="false" onAction="#loadFileButtonClicked" prefHeight="25.0" prefWidth="107.0" styleClass="loadFile-button" text="Load File" HBox.hgrow="ALWAYS" />
+                        <TextField id="xmlField" fx:id="XMLFileTextField" editable="false" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="5.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3">
+                    <children>
+                        <ToggleButton fx:id="detailsToggleButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#detailsButtonClicked" prefHeight="50.0" prefWidth="85.0" selected="true" styleClass="header-buttons" text="Details" HBox.hgrow="ALWAYS">
+                            <toggleGroup>
+                                <ToggleGroup fx:id="MenuBarBtn" />
+                            </toggleGroup>
+                            <padding>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                            </padding>
+                        </ToggleButton>
+                        <ToggleButton fx:id="newExecutionToggleButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" prefWidth="158.0" styleClass="header-buttons" text="New Execution" toggleGroup="$MenuBarBtn" HBox.hgrow="ALWAYS">
+                            <padding>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                            </padding>
+                        </ToggleButton>
+                        <ToggleButton fx:id="resultsToggleButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" prefWidth="92.0" styleClass="header-buttons" text="Results" toggleGroup="$MenuBarBtn" HBox.hgrow="ALWAYS">
+                            <padding>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                            </padding>
+                        </ToggleButton>
+                    </children>
+                    <GridPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    </GridPane.margin>
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    </padding>
+                </HBox>
+                <MenuBar minHeight="20.0" GridPane.columnSpan="4" GridPane.valignment="TOP">
+                    <menus>
+                        <Menu fx:id="skinsMenu" mnemonicParsing="false" text="Skins">
+                            <items>
+                                <MenuItem fx:id="defaultMenuItem" mnemonicParsing="false" onAction="#defaultMenuItemClicked" text="Default" />
+                                <MenuItem fx:id="peachMenuItem" mnemonicParsing="false" onAction="#peachMenuItemClicked" text="Peach" />
+                                <MenuItem fx:id="cookieMenuItem" mnemonicParsing="false" onAction="#cookieMenuItemClicked" text="Cookie Monster" />
+                                <MenuItem fx:id="lionMenuItem" mnemonicParsing="false" onAction="#lionMenuItemClicked" text="Lion King" />
+                            </items>
+                        </Menu>
+                    </menus>
+                    <GridPane.margin>
+                        <Insets />
+                    </GridPane.margin>
+                </MenuBar>
+                <HBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                    <children>
+                        <Button fx:id="queueManagementButton" alignment="CENTER" disable="true" mnemonicParsing="false" prefHeight="46.0" prefWidth="158.0" text="Queue Management">
+                            <opaqueInsets>
+                                <Insets right="20.0" />
+                            </opaqueInsets>
+                        </Button>
+                    </children>
+                    <GridPane.margin>
+                        <Insets left="5.0" />
+                    </GridPane.margin>
+                </HBox>
+                <Label fx:id="messageLabel" alignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="4" />
+            </children>
+        </GridPane>
+    </content>
 </ScrollPane>

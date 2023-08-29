@@ -1,0 +1,13 @@
+.predictions-label{
+    -fx-font-size: 20px;
+    -fx-text-fill: #216cd2;
+}
+
+.loadFile-button{
+    -fx-font-size: 20px;
+    -fx-text-fill: #3161a4;
+}
+
+.header-buttons{
+    -fx-text-fill: #cc3c56;
+}

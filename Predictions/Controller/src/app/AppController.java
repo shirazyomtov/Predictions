@@ -19,9 +19,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class AppController {
-
-    public static final String HEADER_fXML_RESOURCE = "/header/header.fxml";
-
     public static final String FIRST_PAGE_FXML_LIGHT_RESOURCE = "/firstPage/firstPage.fxml";
 
     private Stage primaryStage;
@@ -30,13 +27,18 @@ public class AppController {
 
     private SimpleStringProperty xmlPathProperty;
 
+    private SimpleBooleanProperty isDetailsClicked;
+
     private EngineManager engineManager = new EngineManager();
 
     @FXML
     private BorderPane borderPaneComponent;
 
     @FXML
-    private HeaderController headerController;
+    private HeaderController headerComponentController;
+
+    @FXML
+    private ScrollPane headerComponent;
 
     @FXML
     private FirstPageController firstPageController;
@@ -44,31 +46,21 @@ public class AppController {
     public AppController(){
         isFileLoaded = new SimpleBooleanProperty(false);
         xmlPathProperty = new SimpleStringProperty();
+        isDetailsClicked = new SimpleBooleanProperty(false);
     }
 
     @FXML
     public void initialize() throws Exception {
         loadResources();
-        if(headerController != null && firstPageController != null){
-            headerController.setMainController(this);
-            firstPageController.setMainController(this);
-            headerController.bindComponents(xmlPathProperty);
+        if(headerComponentController != null && firstPageController != null){
+            headerComponentController.setMainController(this);
+            firstPageController.setControllers(this, engineManager);
+            headerComponentController.bindComponents(xmlPathProperty);
         }
     }
 
     private void loadResources() throws Exception {
-        loadResourcesHeader();
         loadResourcesFirstPage();
-
-    }
-
-    private void loadResourcesHeader() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        URL url = getClass().getResource(HEADER_fXML_RESOURCE);
-        fxmlLoader.setLocation(url);
-        ScrollPane headerPane = fxmlLoader.load(url.openStream());
-        headerController = fxmlLoader.getController();
-        borderPaneComponent.setTop(headerPane);
     }
 
     private void loadResourcesFirstPage() throws IOException {
@@ -90,17 +82,42 @@ public class AppController {
     }
 
     public String loadXML() throws Exception {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open XML File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
-        File f = fileChooser.showOpenDialog(primaryStage);
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open XML File");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
+            File f = fileChooser.showOpenDialog(primaryStage);
 
-        if (f == null) // user closed file choosing dialog
-            return "";
-        isFileLoaded.set(true);
-        xmlPathProperty.set(f.getAbsolutePath());
-        engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
+            if (f == null) // user closed file choosing dialog
+                return "";
 
-        return f.getPath();
+            engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
+            firstPageController.setWorldDetailsFromEngine();
+            firstPageController.resetAllComponent();
+            isFileLoaded.set(true);
+            isDetailsClicked.set(false);
+            xmlPathProperty.set(f.getAbsolutePath());
+            return f.getPath();
+        }
+        catch (Exception e){
+            isDetailsClicked.set(false);
+            throw e;
+        }
+    }
+
+//    private void resetAllProperties(){
+//        isFileLoaded.set(false);
+//        isDetailsClicked.set(false);
+//        xmlPathProperty.set("");
+//        //to change to general function
+//        //todo:reset all pages
+//    }
+
+    public SimpleBooleanProperty getIsDetailsClickedProperty() {
+        return isDetailsClicked;
+    }
+
+    public void setIsDetailsClickedProperty(boolean state) {
+        isDetailsClicked.set(state);
     }
 }

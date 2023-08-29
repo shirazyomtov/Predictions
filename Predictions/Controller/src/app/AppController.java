@@ -96,24 +96,25 @@ public class AppController {
 
             engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
             firstPageController.setWorldDetailsFromEngine();
+            firstPageController.resetAllComponent();
             isFileLoaded.set(true);
             isDetailsClicked.set(false);
             xmlPathProperty.set(f.getAbsolutePath());
             return f.getPath();
         }
         catch (Exception e){
-            resetAllProperties();
+            isDetailsClicked.set(false);
             throw e;
         }
     }
 
-    private void resetAllProperties(){
-        isFileLoaded.set(false);
-        isDetailsClicked.set(false);
-        xmlPathProperty.set("");
-        //to change to general function
-        //todo
-    }
+//    private void resetAllProperties(){
+//        isFileLoaded.set(false);
+//        isDetailsClicked.set(false);
+//        xmlPathProperty.set("");
+//        //to change to general function
+//        //todo:reset all pages
+//    }
 
     public SimpleBooleanProperty getIsDetailsClickedProperty() {
         return isDetailsClicked;

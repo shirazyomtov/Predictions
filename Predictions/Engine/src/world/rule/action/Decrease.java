@@ -43,5 +43,13 @@ public class Decrease extends Action implements Serializable {
             throw new NumberFormatException("The value " + by + " that you provide in the action " + getActionType() + " is not a " + type);
         }
     }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public String getExpression() {
+        return expression.getExpressionName();
+    }
 }
 

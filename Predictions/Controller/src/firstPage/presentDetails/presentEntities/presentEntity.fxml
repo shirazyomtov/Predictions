@@ -44,15 +44,15 @@
       </Label>
       <TableView fx:id="entitiesTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
         <columns>
-          <TableColumn fx:id="nameColumn" prefWidth="75.0" text="Name" />
-          <TableColumn fx:id="typeColumn" prefWidth="87.0" text="Type" />
-            <TableColumn fx:id="rangeColumn" prefWidth="121.0" text="Range">
+          <TableColumn fx:id="nameColumn" prefWidth="119.0" text="Name" />
+          <TableColumn fx:id="typeColumn" prefWidth="79.0" text="Type" />
+            <TableColumn fx:id="rangeColumn" prefWidth="103.0" text="Range">
                <columns>
                   <TableColumn fx:id="fromColumn" prefWidth="58.0" text="From" />
                   <TableColumn fx:id="toColumn" prefWidth="64.0" text="To" />
                </columns>
             </TableColumn>
-            <TableColumn fx:id="isRandomInitColumn" prefWidth="136.0" text="IsRandomInit" />
+            <TableColumn fx:id="isRandomInitColumn" prefWidth="98.0" text="RandomInit" />
         </columns>
       </TableView>
    </children>

@@ -4,10 +4,10 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
@@ -55,39 +55,10 @@
             <ListView fx:id="actionListView" onMouseClicked="#showActionClicked" prefHeight="312.0" prefWidth="139.0" />
          </children>
       </VBox>
-      <GridPane prefHeight="331.0" prefWidth="307.0" GridPane.columnIndex="3" GridPane.rowIndex="6">
-        <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="10.0" prefWidth="95.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="180.0" prefWidth="180.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="218.0" minHeight="10.0" prefHeight="218.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2">
-               <children>
-                  <Label prefHeight="30.0" prefWidth="150.0" text="Action type :" />
-                  <TextField fx:id="actionTypeTextField" editable="false" prefHeight="31.0" prefWidth="160.0" />
-               </children>
-            </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
-               <children>
-                  <Label prefHeight="30.0" prefWidth="150.0" text="Prim entity name :" />
-                  <TextField fx:id="primEntityNameTextField" editable="false" prefHeight="31.0" prefWidth="162.0" />
-               </children>
-            </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
-               <children>
-                  <Label prefHeight="30.0" prefWidth="150.0" text="Second entity name :" />
-                  <TextField fx:id="secondEntityNameTextField" editable="false" prefHeight="31.0" prefWidth="159.0" />
-               </children>
-            </HBox>
-            <Pane fx:id="screenActionPane" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3" />
-         </children>
-      </GridPane>
+      <TreeView fx:id="actionDetailsTreeView" prefHeight="322.0" prefWidth="320.0" GridPane.columnIndex="3" GridPane.rowIndex="6">
+         <GridPane.margin>
+            <Insets left="5.0" top="20.0" />
+         </GridPane.margin>
+      </TreeView>
    </children>
 </GridPane>

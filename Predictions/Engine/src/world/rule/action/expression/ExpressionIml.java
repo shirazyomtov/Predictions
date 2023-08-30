@@ -78,4 +78,7 @@ public class ExpressionIml implements Expression, Serializable {
         return null;
     }
 
+    public String getExpressionName() {
+        return expressionName;
+    }
 }

@@ -1,14 +1,23 @@
 package firstPage.presentDetails.presentRules;
 
-import DTO.DTOActionInfo;
+import DTO.DTOActions.DTOActionInfo;
+import DTO.DTOActions.DTOCalculation;
+import DTO.DTOActions.DTOCondition.DTOCondition;
+import DTO.DTOActions.DTOCondition.DTOConditionMultiple;
+import DTO.DTOActions.DTOCondition.DTOConditionSingle;
+import DTO.DTOActions.DTOIncreaseAndDecrease;
+import DTO.DTOActions.DTOSet;
 import DTO.DTORuleInfo;
+import firstPage.FirstPageController;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,48 +35,132 @@ public class PresentRule {
     private TextField probabilityTextField;
 
     @FXML
-    private TextField actionTypeTextField;
-
-    @FXML
-    private TextField primEntityNameTextField;
-
-    @FXML
-    private TextField secondEntityNameTextField;
+    private TreeView<String> actionDetailsTreeView;
 
     @FXML
     private ListView<String> actionListView;
 
     private List<DTOActionInfo> actionInfoList;
 
+    private FirstPageController firstPageController;
+
     @FXML
-    void showActionClicked(MouseEvent event) {
+    void showActionClicked(MouseEvent event) throws IOException {
         int selectedIndex = actionListView.getSelectionModel().getSelectedIndex();
 
         if (selectedIndex >= 0) {
             DTOActionInfo selectedAction = actionInfoList.get(selectedIndex);
-            resetActionDetails();
-            setActionDetails(selectedAction);
+            setActionDetailsInTreeView(selectedAction);
         }
         else{
             //todo: add message that the user need to chose one of the action it actions name
         }
     }
 
-    private void resetActionDetails() {
-        actionTypeTextField.clear();
-        primEntityNameTextField.clear();
-        secondEntityNameTextField.clear();
-        //todo: when I have the screen I will make the screen invisible
+    private void setActionDetailsInTreeView(DTOActionInfo selectedAction) {
+        //todo:clear tree view
+        TreeItem<String> rootAction = new TreeItem<>(selectedAction.getActionName());
+        TreeItem<String> branchPrimEntity = addBranch("Prim entity", selectedAction.getEntityName());
+        TreeItem<String> branchSecondEntity = new TreeItem<>("Second entity");
+        //todo: when we move to the new schema add second entity
+
+        rootAction.getChildren().addAll(branchPrimEntity, branchSecondEntity);
+        actionDetailsTreeView.setRoot(rootAction);
+        setSpecificActionDetails(selectedAction);
     }
 
-    private void setActionDetails(DTOActionInfo selectedAction) {
-        actionTypeTextField.setText(selectedAction.getActionName());
-        primEntityNameTextField.setText(selectedAction.getEntityName());
-        //todo: edit after we have new schema
-//        if(selectedAction.getSecondEntity() != null) {
-//            secondEntityNameTextField.setText(selectedAction.getSecondEntity());
-//        }
+    private void setSpecificActionDetails(DTOActionInfo selectedAction) {
+        switch(selectedAction.getActionName()){
+            case "INCREASE":
+            case "DECREASE":
+                setIncreaseAndDecreasePage(selectedAction);
+                break;
+            case "CALCULATION":
+                setCalculationPage(selectedAction);
+                break;
+            case "CONDITION":
+                setCondition(selectedAction);
+                break;
+            case "SET":
+                setActionSet(selectedAction);
+                break;
+            case "KILL":
+                break;
+            //todo: add the new functions after adding the new schema
+        }
+    }
 
+    private void setIncreaseAndDecreasePage(DTOActionInfo selectedAction) {
+        DTOIncreaseAndDecrease dtoIncreaseAndDecrease = (DTOIncreaseAndDecrease)selectedAction;
+        TreeItem<String> branchProperty = addBranch("Property", dtoIncreaseAndDecrease.getPropertyName());
+        TreeItem<String> branchBy = addBranch("By", dtoIncreaseAndDecrease.getBy());
+
+        actionDetailsTreeView.getRoot().getChildren().addAll(branchProperty, branchBy);
+    }
+
+    private void setCalculationPage(DTOActionInfo selectedAction) {
+        DTOCalculation dtoCalculation = (DTOCalculation) selectedAction;
+        TreeItem<String> branchCalculationType = addBranch("CalculationType", dtoCalculation.getTypeOfCalculation());
+        TreeItem<String> branchResultProp = addBranch("ResultProp", dtoCalculation.getResultProp());
+        TreeItem<String> branchArgsProp = new TreeItem<>("Args");
+        TreeItem<String> leafFirstArgProp = new TreeItem<>(dtoCalculation.getArg1());
+        TreeItem<String> leafSecondArgProp = new TreeItem<>(dtoCalculation.getArg2());
+
+        branchArgsProp.getChildren().addAll(leafFirstArgProp, leafSecondArgProp);
+        actionDetailsTreeView.getRoot().getChildren().addAll(branchCalculationType, branchResultProp, branchArgsProp);
+    }
+
+    private void setCondition(DTOActionInfo selectedAction) {
+        DTOCondition dtoCondition = (DTOCondition)selectedAction;
+        setGeneralDetailsCondition(dtoCondition);
+        if(dtoCondition.getConditionType().equals("multiple")){
+            setMultipleCondition(selectedAction);
+        }
+        else{
+            setSingleCondition(selectedAction);
+        }
+    }
+
+    private void setGeneralDetailsCondition(DTOCondition dtoCondition) {
+        TreeItem<String> branchConditionType = addBranch("ConditionType", dtoCondition.getConditionType());
+        TreeItem<String> branchAmountOfThenActions = addBranch("Amount of actions in then", dtoCondition.getAmountOfActionThen());
+        actionDetailsTreeView.getRoot().getChildren().addAll(branchConditionType, branchAmountOfThenActions);
+        if(!(dtoCondition.getAmountOfActionElse().isEmpty())){
+            TreeItem<String> branchAmountOfElseActions = addBranch("Amount of actions in else", dtoCondition.getAmountOfActionElse());
+            actionDetailsTreeView.getRoot().getChildren().add(branchAmountOfElseActions);
+        }
+    }
+
+    private void setMultipleCondition(DTOActionInfo selectedAction) {
+        DTOConditionMultiple dtoConditionMultiple = (DTOConditionMultiple)selectedAction;
+        TreeItem<String> branchLogicalType = addBranch("LogicalType", dtoConditionMultiple.getLogical());
+        TreeItem<String> branchAmountOfConditions = addBranch("AmountOfConditions", dtoConditionMultiple.getAmountOfConditions());
+
+        actionDetailsTreeView.getRoot().getChildren().addAll(branchLogicalType, branchAmountOfConditions);
+    }
+
+    private void setSingleCondition(DTOActionInfo selectedAction) {
+        DTOConditionSingle dtoConditionSingle = (DTOConditionSingle)selectedAction;
+        TreeItem<String> branchPropertyName = addBranch("PropertyName", dtoConditionSingle.getPropertyName());
+        TreeItem<String> branchOperator = addBranch("Operator", dtoConditionSingle.getOperator());
+        TreeItem<String> branchValue = addBranch("Value", dtoConditionSingle.getValue());
+
+        actionDetailsTreeView.getRoot().getChildren().addAll(branchPropertyName, branchOperator, branchValue);
+    }
+
+    private void setActionSet(DTOActionInfo selectedAction) {
+        DTOSet dtoSet = (DTOSet)selectedAction;
+        TreeItem<String> branchProperty = addBranch("Property", dtoSet.getPropertyName());
+        TreeItem<String> branchBy = addBranch("Value", dtoSet.getValue());
+
+        actionDetailsTreeView.getRoot().getChildren().addAll(branchProperty, branchBy);
+    }
+
+    private TreeItem<String> addBranch(String valueName, String value){
+        TreeItem<String> branch = new TreeItem<>(valueName);
+        TreeItem<String> leaf = new TreeItem<>(value);
+        branch.getChildren().add(leaf);
+        return  branch;
     }
 
     public void setVisibleEntitiesPage(boolean state) {
@@ -89,6 +182,7 @@ public class PresentRule {
     private void setAllActionNames(){
         List<String> rulesNames = createListActionNames();
         actionListView.getItems().clear();
+        actionDetailsTreeView.setRoot(null);
         actionListView.getItems().addAll(rulesNames);
     }
 

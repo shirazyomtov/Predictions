@@ -1,17 +1,14 @@
 package header;
 
 import app.AppController;
+import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.util.Duration;
+
 public class HeaderController {
 
     private AppController mainController;
@@ -97,13 +94,33 @@ public class HeaderController {
     public void setErrorMessage(String message) {
         messageLabel.setText(message);
         messageLabel.setStyle("-fx-background-color: #fc6060; -fx-font-size: 14px; -fx-text-fill: white");
-        //todo: add a period of time that the message appear in the screen
+        pauseTransitionMessage();
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(messageLabel.getText());
+
+        // Show the alert and wait for user interaction
+        alert.showAndWait();
     }
 
     private void setSuccessMessage() {
         messageLabel.setText("File loaded successfully.");
         messageLabel.setStyle("-fx-background-color: #D3EBCD; -fx-font-size: 14px; -fx-text-fill: black");
-        //todo: add a period of time that the message appear in the screen
+        pauseTransitionMessage();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText(null);
+        alert.setContentText(messageLabel.getText());
+
+        // Show the alert and wait for user interaction
+        alert.showAndWait();
+    }
+
+    private void pauseTransitionMessage(){
+        PauseTransition pause = new PauseTransition(Duration.seconds(3));
+        pause.setOnFinished(event -> {messageLabel.setText("");});
+        pause.play();
     }
 
     public void setMainController(AppController mainController) {

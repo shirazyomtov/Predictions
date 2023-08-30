@@ -75,4 +75,17 @@ public abstract class AbstractCondition extends Action implements Serializable {
         }
         return false;
     }
+
+    public String getAmountOfThenActions() {
+        return String.valueOf(thenActions.size());
+    }
+
+    public String getAmountOfElseActions() {
+        if(elseActions != null) {
+            return String.valueOf(elseActions.size());
+        }
+        else {
+            return "";
+        }
+    }
 }

@@ -25,7 +25,7 @@ public class FirstPageController {
     //todo: check the path that there will not be a problem in the jar
     private static final String ENTITIES_DETAILS_PAGE = "/firstPage/presentDetails/presentEntities/presentEntity.fxml";
 
-    private static final String RULES_DETAILS_PAGE = "/firstPage/presentDetails/presentRules/presentRules.fxml";
+    private static final String RULES_DETAILS_PAGE = "/firstPage/presentDetails/presentRules/presentRule.fxml";
 
     private static final String ENVIRONMENT_DETAILS_PAGE = "/firstPage/presentDetails/presentEnvironment/presentEnvironment.fxml";
 
@@ -139,7 +139,7 @@ public class FirstPageController {
         presentTermination = fxmlLoader.getController();
     }
 
-    private FXMLLoader loadResourced(String path) throws IOException {
+    public FXMLLoader loadResourced(String path) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL url = getClass().getResource(path);
         fxmlLoader.setLocation(url);
@@ -188,10 +188,10 @@ public class FirstPageController {
 
     public void resetAllComponent() {
         presentEntities.setVisibleEntitiesPage(false);
+        presentRule.setVisibleEntitiesPage(false);
         presentTermination.setVisibleTerminationPage(false);
         presentEnvironment.setVisibleEnvironmentPage(false);
 //        presentGrid.setVisibleGridPage(false);
     }
-
 
 }

@@ -3,6 +3,7 @@ package world.rule.action.calculation.binaryCalculationAction;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
 import world.entity.instance.EntityInstance;
+import world.enums.CalculationBinaryTypeAction;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
 import world.worldInstance.WorldInstance;
@@ -12,8 +13,8 @@ import java.io.Serializable;
 public class Multiply extends BinaryAction implements Serializable {
 
 
-    public Multiply(String entityName, String resultPropertyName, String argument1, String argument2) {
-        super(entityName, resultPropertyName, argument1, argument2);
+    public Multiply(String entityName, CalculationBinaryTypeAction typeOfCalculation, String resultPropertyName, String argument1, String argument2) {
+        super(entityName, typeOfCalculation, resultPropertyName, argument1, argument2);
     }
 
     @Override

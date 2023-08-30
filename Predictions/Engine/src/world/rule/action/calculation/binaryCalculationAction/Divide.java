@@ -3,6 +3,7 @@ package world.rule.action.calculation.binaryCalculationAction;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
 import world.entity.instance.EntityInstance;
+import world.enums.CalculationBinaryTypeAction;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
 import world.worldInstance.WorldInstance;
@@ -10,8 +11,8 @@ import world.worldInstance.WorldInstance;
 import java.io.Serializable;
 
 public class Divide extends BinaryAction implements Serializable {
-    public Divide(String entityName, String resultPropertyName, String argument1, String argument2) {
-        super(entityName, resultPropertyName, argument1, argument2);
+    public Divide(String entityName, CalculationBinaryTypeAction typeOfCalculation, String resultPropertyName, String argument1, String argument2) {
+        super(entityName, typeOfCalculation, resultPropertyName, argument1, argument2);
     }
 
     @Override

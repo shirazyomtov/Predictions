@@ -31,7 +31,7 @@
                   <Insets />
                </HBox.margin>
             </Label>
-            <TextField fx:id="nameTextField" alignment="CENTER" editable="false" prefHeight="31.0" prefWidth="204.0">
+            <TextField fx:id="nameTextField" editable="false" prefHeight="31.0" prefWidth="260.0">
                <HBox.margin>
                   <Insets />
                </HBox.margin>
@@ -45,7 +45,7 @@
                   <Insets />
                </HBox.margin>
             </Label>
-            <TextField fx:id="typeTextField" alignment="CENTER" editable="false" prefHeight="31.0" prefWidth="206.0">
+            <TextField fx:id="typeTextField" editable="false" prefHeight="31.0" prefWidth="259.0">
                <HBox.margin>
                   <Insets />
                </HBox.margin>

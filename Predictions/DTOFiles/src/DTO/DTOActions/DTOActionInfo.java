@@ -1,4 +1,4 @@
-package DTO;
+package DTO.DTOActions;
 
 
 public class DTOActionInfo {

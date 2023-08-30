@@ -1,25 +1,30 @@
 package world.rule.action.calculation.binaryCalculationAction;
 
+import exceptions.EntityNotDefine;
+import exceptions.FormatException;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
+import jaxb.schema.generated.PRDAction;
 import world.entity.instance.EntityInstance;
 import world.enums.CalculationBinaryTypeAction;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
+import world.rule.action.Action;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
 
 public class Divide extends BinaryAction implements Serializable {
-    public Divide(String entityName, CalculationBinaryTypeAction typeOfCalculation, String resultPropertyName, String argument1, String argument2) {
-        super(entityName, typeOfCalculation, resultPropertyName, argument1, argument2);
+    public Divide(PRDAction prdAction, CalculationBinaryTypeAction typeOfCalculation) {
+        super(prdAction.getEntity(), typeOfCalculation, prdAction.getResultProp(), prdAction.getPRDDivide().getArg1(), prdAction.getPRDDivide().getArg2(), prdAction.getPRDSecondaryEntity());
     }
 
     @Override
-    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotCompatibleTypes {
-        String valueArg1 = this.getArgument1().decipher(entity, worldInstance);
-        String valueArg2 = this.getArgument2().decipher(entity, worldInstance);
-        Property resultProp = entity.getAllProperty().get(getResultPropertyName());
+    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity);
+        String valueArg1 = this.getArgument1().decipher(entityInstance, worldInstance);
+        String valueArg2 = this.getArgument2().decipher(entityInstance, worldInstance);
+        Property resultProp = entityInstance.getAllProperty().get(getResultPropertyName());
         Type type = resultProp.getType();
         try {
             if (type.equals(Type.FLOAT)) {
@@ -30,7 +35,7 @@ public class Divide extends BinaryAction implements Serializable {
                 }
                 resultProp.setValue(number / number2);
             }
-            return false;
+            return null;
         }
         catch (NumberFormatException | ClassCastException e){
             throw new NumberFormatException("At least one of the values  that you provide in the action " + getActionType() + " is not a " + type);

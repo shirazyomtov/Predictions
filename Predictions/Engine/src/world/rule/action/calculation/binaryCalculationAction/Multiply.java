@@ -1,27 +1,32 @@
 package world.rule.action.calculation.binaryCalculationAction;
 
+import exceptions.EntityNotDefine;
+import exceptions.FormatException;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
+import jaxb.schema.generated.PRDAction;
 import world.entity.instance.EntityInstance;
 import world.enums.CalculationBinaryTypeAction;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
+import world.rule.action.Action;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
 
 public class Multiply extends BinaryAction implements Serializable {
 
-
-    public Multiply(String entityName, CalculationBinaryTypeAction typeOfCalculation, String resultPropertyName, String argument1, String argument2) {
-        super(entityName, typeOfCalculation, resultPropertyName, argument1, argument2);
+    public Multiply(PRDAction prdAction, CalculationBinaryTypeAction typeOfCalculation) {
+        super(prdAction.getEntity(), typeOfCalculation, prdAction.getResultProp(), prdAction.getPRDMultiply().getArg1(), prdAction.getPRDMultiply().getArg2(), prdAction.getPRDSecondaryEntity());
     }
 
+
     @Override
-    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes {
-        String valueArg1 = this.getArgument1().decipher(entity, worldInstance);
-        String valueArg2 = this.getArgument2().decipher(entity, worldInstance);
-        Property resultProp = entity.getAllProperty().get(getResultPropertyName());
+    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity);
+        String valueArg1 = this.getArgument1().decipher(entityInstance, worldInstance);
+        String valueArg2 = this.getArgument2().decipher(entityInstance, worldInstance);
+        Property resultProp = entityInstance.getAllProperty().get(getResultPropertyName());
         Type type = resultProp.getType();
         try {
             if (type.equals(Type.DECIMAL)){
@@ -34,7 +39,7 @@ public class Multiply extends BinaryAction implements Serializable {
                 Float number2 = Float.parseFloat(valueArg2);
                 resultProp.setValue(number * number2);
             }
-            return false;
+            return null;
         }
         catch (NumberFormatException | ClassCastException e){
             throw new NumberFormatException("At least one of the values  that you provide in the action " + getActionType() + " is not a " + type);

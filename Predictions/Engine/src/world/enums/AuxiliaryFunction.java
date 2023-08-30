@@ -3,7 +3,11 @@ package world.enums;
 public enum AuxiliaryFunction {
     ENVIRONMENT("environment"),
 
-    RANDOM("random");
+    RANDOM("random"),
+
+    EVALUATE("evaluate"),
+    PERCENT("percent"),
+    TICKS("ticks");
 
     private final String functionName;
 

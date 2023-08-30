@@ -11,4 +11,8 @@ public interface Property extends Serializable {
     Object getValue();
     void setValue(Object val);
     Object generateValue();
+    Integer getTimeTheValueDosentChange();
+    void setTimeTheValueDosentChange(Integer timeTheValueDosentChange);
+    boolean isValueUpdate();
+    void setValueUpdate(boolean valueUpdate);
 }

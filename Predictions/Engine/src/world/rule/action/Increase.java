@@ -1,7 +1,10 @@
 package world.rule.action;
 
+import exceptions.EntityNotDefine;
+import exceptions.FormatException;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
+import jaxb.schema.generated.PRDAction;
 import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 import world.enums.Type;
@@ -16,16 +19,18 @@ public class Increase extends Action implements Serializable {
     private final String propertyName;
     private final ExpressionIml expression;
 
-    public Increase(String entityName, String propertyName, String expression) {
-        super(entityName, ActionType.INCREASE);
-        this.propertyName = propertyName;
-        this.expression = new ExpressionIml(expression, propertyName);
+        public Increase(PRDAction prdAction) {
+        super(prdAction.getEntity(), ActionType.INCREASE, prdAction.getPRDSecondaryEntity());
+        this.propertyName = prdAction.getProperty();
+        this.expression = new ExpressionIml(prdAction.getBy(), propertyName);
     }
 
+
     @Override
-    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, ClassCastException , OperationNotCompatibleTypes {
-        String by = expression.decipher(entity, worldInstance);
-        Property property = entity.getAllProperty().get(propertyName);
+    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity);
+        String by = expression.decipher(entityInstance, worldInstance);
+        Property property = entityInstance.getAllProperty().get(propertyName);
         Type type = property.getType();
         try {
             if(type.equals(Type.DECIMAL)) {
@@ -36,7 +41,7 @@ public class Increase extends Action implements Serializable {
                 Float number = Float.parseFloat(by);
                 property.setValue(number + (Float) property.getValue());
             }
-            return false;
+            return null;
         }
 
         catch (NumberFormatException | ClassCastException e){

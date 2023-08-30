@@ -43,10 +43,14 @@ public class RuleImpl implements Rule, Serializable {
     }
 
     private Action createAction(PRDAction prdAction) {
-       return ActionFactory.createAction(Enum.valueOf(ActionType.class, prdAction.getType().toUpperCase()),
-                                         prdAction.getEntity(), prdAction.getProperty(), prdAction.getBy(),
-                                         prdAction.getValue(), prdAction.getPRDMultiply(), prdAction.getPRDDivide(),
-                                         prdAction.getResultProp(), prdAction.getPRDCondition(), prdAction.getPRDThen(), prdAction.getPRDElse());
+        return ActionFactory.createAction(prdAction);
+//       return ActionFactory.createAction(Enum.valueOf(ActionType.class, prdAction.getType().toUpperCase()),
+//                                         prdAction.getEntity(), prdAction.getProperty(), prdAction.getBy(),
+//                                         prdAction.getValue(), prdAction.getPRDMultiply(), prdAction.getPRDDivide(),
+//                                         prdAction.getResultProp(), prdAction.getPRDCondition(), prdAction.getPRDThen(), prdAction.getPRDElse(),
+//                                         prdAction.getKill(), prdAction.getCreate(), prdAction.getMode(),
+//                                         prdAction.getPRDBetween().getSourceEntity(), prdAction.getPRDBetween().getTargetEntity(),
+//                                         prdAction.getPRDEnvDepth().getOf(), prdAction.getPRDActions());
     }
 
     @Override

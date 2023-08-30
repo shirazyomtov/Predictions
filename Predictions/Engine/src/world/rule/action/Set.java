@@ -1,7 +1,10 @@
 package world.rule.action;
 
+import exceptions.EntityNotDefine;
+import exceptions.FormatException;
 import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
+import jaxb.schema.generated.PRDAction;
 import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 import world.enums.Type;
@@ -15,16 +18,18 @@ public class Set extends Action implements Serializable {
     private final String propertyName;
     private final ExpressionIml expression;
 
-    public Set(String entityName, String propertyName, String expression) {
-        super(entityName, ActionType.SET);
-        this.propertyName = propertyName;
-        this.expression = new ExpressionIml(expression, propertyName);
+        public Set(PRDAction prdAction) {
+        super(prdAction.getEntity(), ActionType.SET, prdAction.getPRDSecondaryEntity());
+        this.propertyName = prdAction.getProperty();
+        this.expression = new ExpressionIml(prdAction.getValue(), propertyName);
     }
 
+
     @Override
-    public boolean operation(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes {
-          String value = expression.decipher(entity, worldInstance);
-          Property property = entity.getAllProperty().get(propertyName);
+    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+            EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity);
+          String value = expression.decipher(entityInstance, worldInstance);
+          Property property = entityInstance.getAllProperty().get(propertyName);
           Type type = property.getType();
         try {
             if(type.equals(Type.DECIMAL)) {
@@ -50,7 +55,7 @@ public class Set extends Action implements Serializable {
         catch (NumberFormatException e){
             throw new NumberFormatException("The value: " + value + " that you provide in the action " + getActionType() + " is not a " + type);
         }
-        return false;
+        return null;
     }
 
     public String getPropertyName() {

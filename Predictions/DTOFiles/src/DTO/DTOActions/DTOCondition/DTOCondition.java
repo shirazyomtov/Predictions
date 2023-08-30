@@ -7,8 +7,8 @@ public class DTOCondition extends DTOActionInfo {
     private String amountOfActionThen;
     private String amountOfActionElse;
 
-    public DTOCondition(String actionName, String entityName, String conditionType, String amountOfActionThen, String amountOfActionElse) {
-        super(actionName, entityName);
+    public DTOCondition(String actionName, String entityName, String secondEntityName, String conditionType, String amountOfActionThen, String amountOfActionElse) {
+        super(actionName, entityName, secondEntityName);
         this.conditionType = conditionType;
         this.amountOfActionThen = amountOfActionThen;
         this.amountOfActionElse = amountOfActionElse;

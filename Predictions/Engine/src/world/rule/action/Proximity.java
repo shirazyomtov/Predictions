@@ -87,4 +87,16 @@ public class Proximity extends  Action implements Serializable {
         } //todo
         return false;
     }
+
+    public String getTargetEntity() {
+        return targetEntity;
+    }
+
+    public String getOf() {
+        return of;
+    }
+
+    public List<Action> getActions() {
+        return actions;
+    }
 }

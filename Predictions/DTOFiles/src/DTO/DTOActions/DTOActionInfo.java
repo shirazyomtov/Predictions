@@ -7,9 +7,12 @@ public class DTOActionInfo {
 
     private final String entityName;
 
-    public DTOActionInfo(String actionName, String entityName) {
+    private final String secondEntityName;
+
+    public DTOActionInfo(String actionName, String entityName, String secondEntityName) {
         this.actionName = actionName;
         this.entityName = entityName;
+        this.secondEntityName = secondEntityName;
     }
 
     public String getActionName() {
@@ -18,5 +21,9 @@ public class DTOActionInfo {
 
     public String getEntityName() {
         return entityName;
+    }
+
+    public String getSecondEntityName() {
+        return secondEntityName;
     }
 }

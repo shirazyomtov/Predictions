@@ -1,19 +1,13 @@
 package world.rule;
 
-import DTO.DTOActions.DTOActionInfo;
-import DTO.DTOActions.DTOCalculation;
+import DTO.DTOActions.*;
 import DTO.DTOActions.DTOCondition.DTOConditionMultiple;
 import DTO.DTOActions.DTOCondition.DTOConditionSingle;
-import DTO.DTOActions.DTOSet;
 import DTO.DTOActivationInfo;
-import DTO.DTOActions.DTOIncreaseAndDecrease;
 import jaxb.schema.generated.PRDAction;
 import jaxb.schema.generated.PRDRule;
-import world.enums.ActionType;
-import world.enums.CalculationBinaryTypeAction;
 import world.rule.action.*;
 import world.rule.action.calculation.binaryCalculationAction.BinaryAction;
-import world.rule.action.condition.AbstractCondition;
 import world.rule.action.condition.MultipleCondition;
 import world.rule.action.condition.SingleCondition;
 import world.rule.activation.ActivationImpl;
@@ -21,7 +15,6 @@ import world.rule.activation.ActivationImpl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.Condition;
 
 public class RuleImpl implements Rule, Serializable {
     private final String ruleName;
@@ -86,35 +79,44 @@ public class RuleImpl implements Rule, Serializable {
         switch (action.getActionType()){
             case INCREASE:
                 Increase increaseAction = (Increase)action;
-                dtoActionInfo = new DTOIncreaseAndDecrease(increaseAction.getActionType().toString(), increaseAction.getEntityName(), increaseAction.getPropertyName(), increaseAction.getExpression());
+                dtoActionInfo = new DTOIncreaseAndDecrease(increaseAction.getActionType().toString(), increaseAction.getEntityName(), action.getSecondaryEntityAsString(), increaseAction.getPropertyName(), increaseAction.getExpression());
                 break;
             case DECREASE:
                 Decrease decreaseAction = (Decrease)action;
-                dtoActionInfo = new DTOIncreaseAndDecrease(decreaseAction.getActionType().toString(), decreaseAction.getEntityName(), decreaseAction.getPropertyName(), decreaseAction.getExpression());
+                dtoActionInfo = new DTOIncreaseAndDecrease(decreaseAction.getActionType().toString(), decreaseAction.getEntityName(), action.getSecondaryEntityAsString(), decreaseAction.getPropertyName(), decreaseAction.getExpression());
                 break;
             case CALCULATION:
                 BinaryAction binaryAction = (BinaryAction)action;
-                dtoActionInfo = new DTOCalculation(binaryAction.getActionType().toString(), binaryAction.getEntityName(), binaryAction.getTypeOfCalculation().toString(), binaryAction.getResultPropertyName(),
+                dtoActionInfo = new DTOCalculation(binaryAction.getActionType().toString(), binaryAction.getEntityName(), action.getSecondaryEntityAsString(), binaryAction.getTypeOfCalculation().toString(), binaryAction.getResultPropertyName(),
                                                     binaryAction.getArgument1().getExpressionName(), binaryAction.getArgument2().getExpressionName());
                 break;
             case CONDITION:
                 if(action instanceof MultipleCondition){
                     MultipleCondition multipleCondition = (MultipleCondition)action;
-                    dtoActionInfo = new DTOConditionMultiple(multipleCondition.getActionType().toString(), multipleCondition.getEntityName(), "multiple", multipleCondition.getAmountOfThenActions(), multipleCondition.getAmountOfElseActions(),
+                    dtoActionInfo = new DTOConditionMultiple(multipleCondition.getActionType().toString(), multipleCondition.getEntityName(), action.getSecondaryEntityAsString(), "multiple", multipleCondition.getAmountOfThenActions(), multipleCondition.getAmountOfElseActions(),
                                                             multipleCondition.getLogical(), multipleCondition.getConditions().size());
                 }
                 else{
                     SingleCondition singleCondition = (SingleCondition)action;
-                    dtoActionInfo = new DTOConditionSingle(singleCondition.getActionType().toString(), singleCondition.getEntityName(), "single", singleCondition.getAmountOfThenActions(), singleCondition.getAmountOfElseActions(),
+                    dtoActionInfo = new DTOConditionSingle(singleCondition.getActionType().toString(), singleCondition.getEntityName(), action.getSecondaryEntityAsString(), "single", singleCondition.getAmountOfThenActions(), singleCondition.getAmountOfElseActions(),
                                                             singleCondition.getPropertyName(), singleCondition.getOperator(), singleCondition.getValue());
                 }
                 break;
             case SET:
                 Set set = (Set)action;
-                dtoActionInfo = new DTOSet(set.getActionType().toString(), set.getEntityName(), set.getPropertyName(), set.getExpression());
+                dtoActionInfo = new DTOSet(set.getActionType().toString(), set.getEntityName(), action.getSecondaryEntityAsString(), set.getPropertyName(), set.getExpression());
                 break;
             case KILL:
-                dtoActionInfo = new DTOActionInfo(action.getActionType().toString(), action.getEntityName());
+                dtoActionInfo = new DTOActionInfo(action.getActionType().toString(), action.getEntityName(), action.getSecondaryEntityAsString());
+                break;
+            case REPLACE:
+                Replace replace = (Replace)action;
+                dtoActionInfo = new DTOReplace(replace.getActionType().toString(), replace.getEntityName(), replace.getSecondaryEntityAsString(), replace.getCreateEntityName(), replace.getMode());
+                break;
+            case PROXIMITY:
+                Proximity proximity = (Proximity)action;
+                dtoActionInfo = new DTOProximity(proximity.getActionType().toString(), proximity.getEntityName(), proximity.getSecondaryEntityAsString(), proximity.getTargetEntity(), proximity.getOf(), proximity.getActions().size());
+                break;
         }
 
         return dtoActionInfo;

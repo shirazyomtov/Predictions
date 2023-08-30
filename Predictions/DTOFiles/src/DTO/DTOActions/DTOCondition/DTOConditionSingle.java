@@ -6,8 +6,8 @@ public class DTOConditionSingle extends DTOCondition {
     private String operator;
     private String value;
 
-    public DTOConditionSingle(String actionName, String entityName, String conditionType, String amountOfActionThen, String amountOfActionElse, String propertyName, String operator, String value) {
-        super(actionName, entityName,conditionType, amountOfActionThen, amountOfActionElse);
+    public DTOConditionSingle(String actionName, String entityName, String secondEntityName, String conditionType, String amountOfActionThen, String amountOfActionElse, String propertyName, String operator, String value) {
+        super(actionName, entityName, secondEntityName, conditionType, amountOfActionThen, amountOfActionElse);
         this.propertyName = propertyName;
         this.operator = operator;
         this.value = value;

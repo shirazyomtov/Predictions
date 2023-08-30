@@ -1,12 +1,9 @@
 package firstPage.presentDetails.presentRules;
 
-import DTO.DTOActions.DTOActionInfo;
-import DTO.DTOActions.DTOCalculation;
+import DTO.DTOActions.*;
 import DTO.DTOActions.DTOCondition.DTOCondition;
 import DTO.DTOActions.DTOCondition.DTOConditionMultiple;
 import DTO.DTOActions.DTOCondition.DTOConditionSingle;
-import DTO.DTOActions.DTOIncreaseAndDecrease;
-import DTO.DTOActions.DTOSet;
 import DTO.DTORuleInfo;
 import firstPage.FirstPageController;
 import javafx.fxml.FXML;
@@ -58,13 +55,23 @@ public class PresentRule {
     }
 
     private void setActionDetailsInTreeView(DTOActionInfo selectedAction) {
-        //todo:clear tree view
         TreeItem<String> rootAction = new TreeItem<>(selectedAction.getActionName());
-        TreeItem<String> branchPrimEntity = addBranch("Prim entity", selectedAction.getEntityName());
-        TreeItem<String> branchSecondEntity = new TreeItem<>("Second entity");
-        //todo: when we move to the new schema add second entity
+        String valueName;
+        if(selectedAction.getActionName().equals("REPLACE")){
+            valueName = "Kill entity";
+        }
+        else if (selectedAction.getActionName().equals("PROXIMITY")) {
+            valueName = "Source entity";
+        } else{
+            valueName = "Prim entity";
+        }
+        TreeItem<String> branchPrimEntity = addBranch(valueName, selectedAction.getEntityName());
+        rootAction.getChildren().add(branchPrimEntity);
+        if(!(selectedAction.getSecondEntityName().isEmpty())) {
+            TreeItem<String> branchSecondEntity = addBranch("Second entity", selectedAction.getSecondEntityName());
+            rootAction.getChildren().add(branchSecondEntity);
+        }
 
-        rootAction.getChildren().addAll(branchPrimEntity, branchSecondEntity);
         actionDetailsTreeView.setRoot(rootAction);
         setSpecificActionDetails(selectedAction);
     }
@@ -86,9 +93,16 @@ public class PresentRule {
                 break;
             case "KILL":
                 break;
+            case "REPLACE":
+                setActionReplace(selectedAction);
+                break;
+            case "PROXIMITY":
+                setActionProximity(selectedAction);
+                break;
             //todo: add the new functions after adding the new schema
         }
     }
+
 
     private void setIncreaseAndDecreasePage(DTOActionInfo selectedAction) {
         DTOIncreaseAndDecrease dtoIncreaseAndDecrease = (DTOIncreaseAndDecrease)selectedAction;
@@ -154,6 +168,24 @@ public class PresentRule {
         TreeItem<String> branchBy = addBranch("Value", dtoSet.getValue());
 
         actionDetailsTreeView.getRoot().getChildren().addAll(branchProperty, branchBy);
+    }
+
+
+    private void setActionReplace(DTOActionInfo selectedAction) {
+        DTOReplace dtoReplace = (DTOReplace)selectedAction;
+        TreeItem<String> branchCreateEntity = addBranch("Create entity", dtoReplace.getCreateEntityName());
+        TreeItem<String> branchMode = addBranch("Mode", dtoReplace.getMode());
+
+        actionDetailsTreeView.getRoot().getChildren().addAll(branchCreateEntity, branchMode);
+    }
+
+    private void setActionProximity(DTOActionInfo selectedAction) {
+        DTOProximity dtoProximity = (DTOProximity)selectedAction;
+        TreeItem<String> branchTargetEntity = addBranch("Target entity", dtoProximity.getTargetEntity());
+        TreeItem<String> branchEnvDepth = addBranch("Env depth", dtoProximity.getOf());
+        TreeItem<String> branchAmountOfActions = addBranch("Amount of actions", dtoProximity.getAmountOfActions());
+
+        actionDetailsTreeView.getRoot().getChildren().addAll(branchTargetEntity, branchEnvDepth, branchAmountOfActions);
     }
 
     private TreeItem<String> addBranch(String valueName, String value){

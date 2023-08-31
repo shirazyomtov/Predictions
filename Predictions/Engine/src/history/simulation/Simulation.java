@@ -46,10 +46,12 @@ public  class Simulation implements Serializable {
     public String runSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         long startMillisSeconds = System.currentTimeMillis();
         String message = null;
-        int count = 0;
         int seconds = 0;
         List<Action> activationAction ;
         List<EntityInstance> secondaryEntities = null;
+        List<EntityInstance> entitiesToRemove = new ArrayList<>();
+        List<Pair<EntityInstance,Action>> replaceActions = new ArrayList<>();
+
         while ((worldInstance.getWorldDefinition().getTermination().getSecond() == null || seconds <= worldInstance.getWorldDefinition().getTermination().getSecond()) &&
                 (worldInstance.getWorldDefinition().getTermination().getTicks() == null || worldInstance.getCurrentTick() <= worldInstance.getWorldDefinition().getTermination().getTicks())) {
             moveEntities();
@@ -58,19 +60,31 @@ public  class Simulation implements Serializable {
                 for (Action activeAction: activationAction){
                     if (activeAction.getEntityName().equals(entityInstance.getName())){
                         if(activeAction.getSecondaryEntity() == null){
-                            performOperation(activeAction, entityInstance, null); //check
+                            performOperation(activeAction, entityInstance, null, entitiesToRemove, replaceActions); //check
                         }
                         else {
                             secondaryEntities = calculateTotalNumberOfSecondaryInstances(activeAction);
                             for (EntityInstance secondaryEntity: secondaryEntities){
-                                performOperation(activeAction, entityInstance, secondaryEntity);
-                                count++;
+                                performOperation(activeAction, entityInstance, secondaryEntity, entitiesToRemove, replaceActions);
                             }
                         }
                     }
                 }
             }
 
+            for (EntityInstance entityInstanceToRemove : entitiesToRemove) {
+                Kill killAction = new Kill(entityInstanceToRemove.getName(), null);
+                killAction.operation(entityInstanceToRemove, worldInstance, null);
+            }
+            for (Pair<EntityInstance, Action> tuple : replaceActions) {
+                if(tuple.getValue() instanceof Replace) {
+                    Replace replaceAction = new Replace(tuple.getKey().getName(), ((Replace) tuple.getValue()).getCreateEntityName(), ((Replace) tuple.getValue()).getMode(), null);
+                    replaceAction.operation(tuple.getKey(), worldInstance, null);
+                }
+            }
+
+            entitiesToRemove.clear();
+            replaceActions.clear();
             updateTickProperty();
             worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
             long currentMilliSeconds = System.currentTimeMillis();
@@ -84,6 +98,7 @@ public  class Simulation implements Serializable {
         }
 
         return message;
+        // todo: functions
     }
 
     private List<EntityInstance> calculateTotalNumberOfSecondaryInstances(Action activeAction) throws ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException, EntityNotDefine {
@@ -191,10 +206,8 @@ public  class Simulation implements Serializable {
         }
     }
 
-    private void performOperation(Action action, EntityInstance entityInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    private void performOperation(Action action, EntityInstance entityInstance, EntityInstance secondaryEntity, List<EntityInstance> entitiesToRemove,  List<Pair<EntityInstance,Action>> replaceActions) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         Action action1;
-        List<EntityInstance> entitiesToRemove = new ArrayList<>();
-        List<Pair<EntityInstance,Action>> replaceActions = new ArrayList<>();
         if (!action.getActionType().equals(ActionType.KILL) && !action.getActionType().equals(ActionType.REPLACE)) {
             action1 = action.operation(entityInstance, worldInstance, secondaryEntity);
             if(action1 != null) {
@@ -210,17 +223,6 @@ public  class Simulation implements Serializable {
         }
         else {
             entitiesToRemove.add(entityInstance);
-        }
-
-        for (EntityInstance entityInstanceToRemove : entitiesToRemove) {
-            Kill killAction = new Kill(entityInstanceToRemove.getName(), null);
-            killAction.operation(entityInstanceToRemove, worldInstance, null);
-        }
-        for (Pair<EntityInstance, Action> tuple : replaceActions) {
-            if(tuple.getValue() instanceof Replace) {
-                Replace replaceAction = new Replace(tuple.getKey().getName(), ((Replace) tuple.getValue()).getCreateEntityName(), ((Replace) tuple.getValue()).getMode(), null);
-                replaceAction.operation(tuple.getKey(), worldInstance, null);
-            }
         }
     }
 

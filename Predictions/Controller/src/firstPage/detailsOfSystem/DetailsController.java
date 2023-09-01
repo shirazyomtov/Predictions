@@ -51,9 +51,8 @@ public class DetailsController {
         this.firstPageController = firstPageController;
     }
 
-    public void bindShowDetails(SimpleBooleanProperty isFileLoaded){
-        presentDetailsGridPane.visibleProperty().bind(isFileLoaded);
-
+    public void bindShowDetails(SimpleBooleanProperty isDetailsClicked){
+        presentDetailsGridPane.visibleProperty().bind(isDetailsClicked);
     }
 
     public void setComboBoxes() {
@@ -99,7 +98,6 @@ public class DetailsController {
         else{
             firstPageController.setMessageForUser("You need to chose a entity before pressing the show button");
         }
-    //todo:
     }
 
     private List<DTOPropertyInfo> getAllPropertiesOfEntity(String entityName)

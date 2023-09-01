@@ -99,7 +99,6 @@ public class PresentRule {
             case "PROXIMITY":
                 setActionProximity(selectedAction);
                 break;
-            //todo: add the new functions after adding the new schema
         }
     }
 

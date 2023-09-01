@@ -85,4 +85,8 @@ public final class WorldDefinition implements Serializable {
     public TwoDimensionalGrid getTwoDimensionalGrid() {
         return twoDimensionalGrid;
     }
+
+    public DTOGrid createDTOGridDetails(){
+        return new DTOGrid(twoDimensionalGrid.getRows().toString(), twoDimensionalGrid.getCols().toString());
+    }
 }

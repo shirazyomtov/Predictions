@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane fx:id="secondPageGridPane" prefHeight="550.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="secondPage.SecondPageController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="385.0" minWidth="10.0" prefWidth="210.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="430.0" minWidth="10.0" prefWidth="430.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="442.0" minHeight="10.0" prefHeight="253.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="442.0" minHeight="10.0" prefHeight="233.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="240.0" minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <SplitPane dividerPositions="0.5494367959949937" prefHeight="500.0" prefWidth="680.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.rowSpan="2">
+         <items>
+            <GridPane prefHeight="461.0" prefWidth="345.0">
+              <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="147.0" minWidth="10.0" prefWidth="101.40001220703125" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="34.99998779296875" minWidth="0.0" prefWidth="18.400004577636707" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="288.39996337890625" minWidth="10.0" prefWidth="215.19997558593752" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="29.600012207031227" minWidth="10.0" prefWidth="24.800024414062477" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <VBox prefHeight="450.0" prefWidth="130.0" spacing="20.0" GridPane.columnIndex="1">
+                     <children>
+                        <Label alignment="CENTER" prefHeight="78.0" prefWidth="123.0" text="Select entity name" wrapText="true">
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </Label>
+                        <ListView fx:id="entitiesNamesListView" onMouseClicked="#entitiesNamesListViewClicked" prefHeight="450.0" prefWidth="130.0" />
+                     </children>
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                  </VBox>
+                  <VBox fx:id="choseValueVbox" prefHeight="445.0" prefWidth="228.0" spacing="20.0" visible="false" GridPane.columnIndex="3">
+                     <children>
+                        <Label prefHeight="112.0" prefWidth="217.0" text="Enter the number of entity instance that you want to have in the simulation" wrapText="true">
+                           <VBox.margin>
+                              <Insets top="50.0" />
+                           </VBox.margin>
+                        </Label>
+                        <HBox alignment="CENTER" prefHeight="60.0" prefWidth="221.0">
+                           <children>
+                              <Label prefHeight="50.0" prefWidth="100.0" text="Entity name :" />
+                              <TextField fx:id="entityNameTextField" editable="false" prefHeight="40.0" prefWidth="120.0" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="60.0" prefWidth="214.0">
+                           <children>
+                              <Label prefHeight="50.0" prefWidth="100.0" text="Choose value :" />
+                              <TextField fx:id="valueTextField" prefHeight="40.0" prefWidth="120.0" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="64.0" prefWidth="158.0">
+                           <children>
+                              <Button fx:id="saveValueButton" mnemonicParsing="false" onAction="#saveValueButtonClicked" prefHeight="31.0" prefWidth="74.0" text="Save" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </GridPane>
+            <GridPane prefHeight="461.0" prefWidth="274.0">
+              <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <children>
+                        <Label alignment="CENTER" prefHeight="21.0" prefWidth="413.0" text="Select a environment name to set a value :" />
+                        <ListView fx:id="environmentListView" onMouseClicked="#environmentNamesListViewClicked" prefHeight="139.0" prefWidth="264.0" />
+                        <VBox fx:id="choseEnvironmentVbox" visible="false">
+                           <children>
+                              <HBox alignment="CENTER" prefHeight="60.0" prefWidth="221.0">
+                                 <children>
+                                    <Label prefHeight="50.0" prefWidth="133.0" text="Evironment name :" />
+                                    <TextField fx:id="environmentNameTextField" editable="false" prefHeight="40.0" prefWidth="147.0" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="60.0" prefWidth="214.0">
+                                 <children>
+                                    <Label prefHeight="50.0" prefWidth="129.0" text="Choose value :" />
+                                    <TextField fx:id="valueEnvironmentTextField" prefHeight="40.0" prefWidth="146.0" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="64.0" prefWidth="158.0">
+                                 <children>
+                                    <Button fx:id="saveEnvironmentValueButton" mnemonicParsing="false" onAction="#saveEnvironmentValueButtonClicked" prefHeight="31.0" prefWidth="74.0" text="Save" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </VBox>
+               </children>
+            </GridPane>
+         </items>
+      </SplitPane>
+      <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clearButtonClicked" prefHeight="54.0" prefWidth="150.0" text="Clear" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <Button fx:id="startButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#startButtonClicked" prefHeight="50.0" prefWidth="150.0" text="Start !" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+   </children>
+</GridPane>

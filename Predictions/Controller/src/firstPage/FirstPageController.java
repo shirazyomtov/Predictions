@@ -30,6 +30,7 @@ public class FirstPageController {
     private static final String ENVIRONMENT_DETAILS_PAGE = "/firstPage/presentDetails/presentEnvironment/presentEnvironment.fxml";
 
     private static final String TERMINATION_DETAILS_PAGE = "/firstPage/presentDetails/presentTermination/presentTermination.fxml";
+    private static final String GRID_DETAILS_PAGE = "/firstPage/presentDetails/presentGrid/presentGrid.fxml";
 
 
     private AppController mainController;
@@ -37,6 +38,8 @@ public class FirstPageController {
     @FXML
     private DetailsController detailsComponentController;
 
+    @FXML
+    private GridPane firstPageGridPane;
     @FXML
     private GridPane detailsComponent;
 
@@ -55,6 +58,8 @@ public class FirstPageController {
     private List<DTOEnvironmentInfo> environmentDetails;
 
     private DTOTerminationInfo terminationDetails;
+
+    private DTOGrid gridDetails;
 
     private PresentEntities presentEntities;
 
@@ -87,14 +92,14 @@ public class FirstPageController {
         rulesDetails = engineManager.getRulesDetails();
         environmentDetails = engineManager.getEnvironmentNamesList();
         terminationDetails = engineManager.getTerminationDetails();
-        //grid - when we move to other schema
-        //todo: add grid after we add the new schema
+        gridDetails =  engineManager.getDTOGridDetails();
         detailsComponentController.setComboBoxes();
     }
 
     public void bindToIsDetailsClicked() throws IOException {
-        SimpleBooleanProperty isFileLoaded = mainController.getIsDetailsClickedProperty();
-        detailsComponentController.bindShowDetails(isFileLoaded);
+        SimpleBooleanProperty isDetailsClicked = mainController.getIsDetailsClickedProperty();
+        firstPageGridPane.visibleProperty().bind(isDetailsClicked);
+        detailsComponentController.bindShowDetails(isDetailsClicked);
     }
 
     public List<DTOEntityInfo> getEntityDetails() {
@@ -118,6 +123,7 @@ public class FirstPageController {
         loadRulesDetailsResourced();
         loadEnvironmentDetailsResourced();
         loadTerminationDetailsResourced();
+        loadGridDetailsResourced();
     }
 
     private void loadEntitiesDetailsResourced() throws IOException {
@@ -137,6 +143,11 @@ public class FirstPageController {
     public void loadTerminationDetailsResourced() throws IOException {
         FXMLLoader fxmlLoader = loadResourced(TERMINATION_DETAILS_PAGE);
         presentTermination = fxmlLoader.getController();
+    }
+
+    public void loadGridDetailsResourced() throws IOException {
+        FXMLLoader fxmlLoader = loadResourced(GRID_DETAILS_PAGE);
+        presentGrid = fxmlLoader.getController();
     }
 
     public FXMLLoader loadResourced(String path) throws IOException {
@@ -169,10 +180,9 @@ public class FirstPageController {
 
 
     public void setGridDetails() {
-        //todo: when we move to new schema
-//        presentGrid.setVisibleGridPage(true);
-//        scrollPaneDetails.setContent(presentGrid.getGridPane());
-//        presentGrid.setTerminationDetails(gridDetails);
+        presentGrid.setVisibleGridPage(true);
+        scrollPaneDetails.setContent(presentGrid.getGridPane());
+        presentGrid.setGridDetails(gridDetails);
     }
 
     public void setEnvironmentDetails(DTOEnvironmentInfo dtoEnvironmentInfo) {
@@ -183,15 +193,18 @@ public class FirstPageController {
 
 
     public void setMessageForUser(String message) {
-        mainController.setMessageInHeader(message);
+        mainController.setErrorMessage(message);
     }
 
-    public void resetAllComponent() {
+    public void resetAllComponentFirstPage() {
         presentEntities.setVisibleEntitiesPage(false);
         presentRule.setVisibleEntitiesPage(false);
         presentTermination.setVisibleTerminationPage(false);
         presentEnvironment.setVisibleEnvironmentPage(false);
-//        presentGrid.setVisibleGridPage(false);
+        presentGrid.setVisibleGridPage(false);
     }
 
+    public GridPane getFirstPageGridPane() {
+        return firstPageGridPane;
+    }
 }

@@ -1,6 +1,9 @@
 package firstPage.presentDetails.presentEntities;
 
 import DTO.DTOPropertyInfo;
+import DTO.DTORangeInfo;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
@@ -8,6 +11,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 
 import java.util.List;
 
@@ -43,9 +47,28 @@ public class PresentEntities {
         entitiesTableView.getItems().addAll(properties);
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        rangeColumn.setCellValueFactory(new PropertyValueFactory<>("range"));
-        fromColumn.setCellValueFactory(new PropertyValueFactory<>("from"));
-        toColumn.setCellValueFactory(new PropertyValueFactory<>("to"));
+        fromColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<DTOPropertyInfo, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<DTOPropertyInfo, String> param) {
+                String fromValue = null;
+                if(param.getValue().getRange() != null) {
+                    fromValue = param.getValue().getRange().getFrom();
+                }
+                return new SimpleStringProperty(fromValue != null ? fromValue : ""); // Return an empty string if fromValue is null
+            }
+        });
+
+        toColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<DTOPropertyInfo, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<DTOPropertyInfo, String> param) {
+                String toValue = null;
+                if(param.getValue().getRange() != null) {
+                    toValue = param.getValue().getRange().getTo();
+                }
+                return new SimpleStringProperty(toValue != null ? toValue : ""); // Return an empty string if toValue is null
+            }
+        });
+
         isRandomInitColumn.setCellValueFactory(new PropertyValueFactory<>("isRandom"));
     }
 

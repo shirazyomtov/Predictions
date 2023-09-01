@@ -6,6 +6,7 @@ import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
 import jaxb.schema.generated.PRDAction;
 import world.entity.instance.EntityInstance;
+import world.enums.CalculationBinaryTypeAction;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
 import world.rule.action.Action;
@@ -14,8 +15,8 @@ import world.worldInstance.WorldInstance;
 import java.io.Serializable;
 
 public class Divide extends BinaryAction implements Serializable {
-    public Divide(PRDAction prdAction) {
-        super(prdAction.getEntity(), prdAction.getResultProp(), prdAction.getPRDDivide().getArg1(), prdAction.getPRDDivide().getArg2(), prdAction.getPRDSecondaryEntity());
+    public Divide(PRDAction prdAction, CalculationBinaryTypeAction typeOfCalculation) {
+        super(prdAction.getEntity(), typeOfCalculation, prdAction.getResultProp(), prdAction.getPRDDivide().getArg1(), prdAction.getPRDDivide().getArg2(), prdAction.getPRDSecondaryEntity());
     }
 
     @Override

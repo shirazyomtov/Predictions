@@ -1,5 +1,6 @@
 package world.rule.action;
 
+import com.sun.org.apache.bcel.internal.generic.PUSH;
 import exceptions.*;
 import jaxb.schema.generated.PRDAction;
 import world.entity.instance.EntityInstance;
@@ -37,6 +38,15 @@ public abstract class Action implements ActionOperation, Serializable {
 
     public SecondaryEntity getSecondaryEntity() {
         return secondaryEntity;
+    }
+
+    public String getSecondaryEntityAsString(){
+        if(secondaryEntity != null){
+            return secondaryEntity.getSecondaryEntityName();
+        }
+        else{
+            return "";
+        }
     }
 
     public EntityInstance checkAndGetAppropriateInstance(EntityInstance entity, EntityInstance secondaryEntity) throws EntityNotDefine{

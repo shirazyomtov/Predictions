@@ -157,4 +157,16 @@ public class SingleCondition extends AbstractCondition implements Serializable {
             return false;
         }
     }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
 }

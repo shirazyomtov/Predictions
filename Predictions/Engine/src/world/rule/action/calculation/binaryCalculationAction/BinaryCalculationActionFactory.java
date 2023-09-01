@@ -10,10 +10,10 @@ public class BinaryCalculationActionFactory {
         Action selectedAction = null;
         switch (type) {
             case MULTIPLY:
-                selectedAction = new Multiply(prdAction);
+                selectedAction = new Multiply(prdAction, type);
                 break;
             case DIVIDE:
-                selectedAction = new Divide(prdAction);
+                selectedAction = new Divide(prdAction, type);
                 break;
         }
 

@@ -145,7 +145,11 @@ public class ExpressionIml implements Expression, Serializable {
         return entity.getPropertyValue(expressionName, true);
     }
 
-    public void setType(Type type) {
+    public String getExpressionName() {
+        return expressionName;
+    }
+
+    public void setType(Type type){
         this.type = type;
     }
 

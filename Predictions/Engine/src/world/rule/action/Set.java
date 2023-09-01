@@ -63,4 +63,12 @@ public class Set extends Action implements Serializable {
         }
         return null;
     }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public String getExpression() {
+        return expression.getExpressionName();
+    }
 }

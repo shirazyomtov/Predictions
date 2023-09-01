@@ -6,6 +6,7 @@ import exceptions.ObjectNotExist;
 import exceptions.OperationNotCompatibleTypes;
 import jaxb.schema.generated.PRDAction;
 import world.entity.instance.EntityInstance;
+import world.enums.CalculationBinaryTypeAction;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
 import world.rule.action.Action;
@@ -15,9 +16,8 @@ import java.io.Serializable;
 
 public class Multiply extends BinaryAction implements Serializable {
 
-
-    public Multiply(PRDAction prdAction) {
-        super(prdAction.getEntity(), prdAction.getResultProp(), prdAction.getPRDMultiply().getArg1(), prdAction.getPRDMultiply().getArg2(), prdAction.getPRDSecondaryEntity());
+    public Multiply(PRDAction prdAction, CalculationBinaryTypeAction typeOfCalculation) {
+        super(prdAction.getEntity(), typeOfCalculation, prdAction.getResultProp(), prdAction.getPRDMultiply().getArg1(), prdAction.getPRDMultiply().getArg2(), prdAction.getPRDSecondaryEntity());
     }
 
 

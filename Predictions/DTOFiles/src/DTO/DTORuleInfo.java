@@ -1,6 +1,8 @@
 package DTO;
 
 
+import DTO.DTOActions.DTOActionInfo;
+
 import java.util.List;
 
 public class DTORuleInfo {

@@ -2,6 +2,9 @@ package firstPage;
 
 import DTO.*;
 import firstPage.presentDetails.presentEntities.PresentEntities;
+import firstPage.presentDetails.presentEnvironment.PresentEnvironment;
+import firstPage.presentDetails.presentGrid.PresentGrid;
+import firstPage.presentDetails.presentRules.PresentRule;
 import firstPage.presentDetails.presentTermination.PresentTermination;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -19,15 +22,24 @@ import java.net.URL;
 import java.util.List;
 
 public class FirstPageController {
+    //todo: check the path that there will not be a problem in the jar
     private static final String ENTITIES_DETAILS_PAGE = "/firstPage/presentDetails/presentEntities/presentEntity.fxml";
 
+    private static final String RULES_DETAILS_PAGE = "/firstPage/presentDetails/presentRules/presentRule.fxml";
+
+    private static final String ENVIRONMENT_DETAILS_PAGE = "/firstPage/presentDetails/presentEnvironment/presentEnvironment.fxml";
+
     private static final String TERMINATION_DETAILS_PAGE = "/firstPage/presentDetails/presentTermination/presentTermination.fxml";
+    private static final String GRID_DETAILS_PAGE = "/firstPage/presentDetails/presentGrid/presentGrid.fxml";
+
 
     private AppController mainController;
 
     @FXML
     private DetailsController detailsComponentController;
 
+    @FXML
+    private GridPane firstPageGridPane;
     @FXML
     private GridPane detailsComponent;
 
@@ -37,16 +49,6 @@ public class FirstPageController {
     @FXML
     private ScrollPane scrollPaneDetails;
 
-
-    //
-//    @FXML
-//    private SplitPane smallSplitPane;
-//
-//    @FXML
-//    private BorderPane codeCalibrationComponent;
-//
-//    @FXML
-//    private BorderPane codeConfigComponent;
     private EngineManager engineManager;
 
     private List<DTOEntityInfo> entityDetails;
@@ -57,9 +59,17 @@ public class FirstPageController {
 
     private DTOTerminationInfo terminationDetails;
 
+    private DTOGrid gridDetails;
+
     private PresentEntities presentEntities;
 
+    private PresentRule presentRule;
+
+    private PresentEnvironment presentEnvironment;
+
     private PresentTermination presentTermination;
+
+    private PresentGrid presentGrid;
 
     public void setControllers(AppController mainController, EngineManager engineManager) throws IOException {
         setMainController(mainController);
@@ -82,19 +92,14 @@ public class FirstPageController {
         rulesDetails = engineManager.getRulesDetails();
         environmentDetails = engineManager.getEnvironmentNamesList();
         terminationDetails = engineManager.getTerminationDetails();
-        //grid - when we move to other schema
-        //todo: add grid after we add the new schema
+        gridDetails =  engineManager.getDTOGridDetails();
         detailsComponentController.setComboBoxes();
     }
 
     public void bindToIsDetailsClicked() throws IOException {
-        SimpleBooleanProperty isFileLoaded = mainController.getIsDetailsClickedProperty();
-        detailsComponentController.bindShowDetails(isFileLoaded);
-    }
-
-    private void setPresentDetailsInvisibleAndSetDetails() throws IOException {
-        loadEntitiesDetailsResourced();
-        loadTerminationDetailsResourced();
+        SimpleBooleanProperty isDetailsClicked = mainController.getIsDetailsClickedProperty();
+        firstPageGridPane.visibleProperty().bind(isDetailsClicked);
+        detailsComponentController.bindShowDetails(isDetailsClicked);
     }
 
     public List<DTOEntityInfo> getEntityDetails() {
@@ -113,6 +118,46 @@ public class FirstPageController {
         return terminationDetails;
     }
 
+    private void setPresentDetailsInvisibleAndSetDetails() throws IOException {
+        loadEntitiesDetailsResourced();
+        loadRulesDetailsResourced();
+        loadEnvironmentDetailsResourced();
+        loadTerminationDetailsResourced();
+        loadGridDetailsResourced();
+    }
+
+    private void loadEntitiesDetailsResourced() throws IOException {
+        FXMLLoader fxmlLoader = loadResourced(ENTITIES_DETAILS_PAGE);
+        presentEntities = fxmlLoader.getController();
+    }
+
+    private void loadRulesDetailsResourced() throws IOException {
+        FXMLLoader fxmlLoader = loadResourced(RULES_DETAILS_PAGE);
+        presentRule = fxmlLoader.getController();
+    }
+
+    private void loadEnvironmentDetailsResourced() throws IOException {
+        FXMLLoader fxmlLoader = loadResourced(ENVIRONMENT_DETAILS_PAGE);
+        presentEnvironment = fxmlLoader.getController();
+    }
+    public void loadTerminationDetailsResourced() throws IOException {
+        FXMLLoader fxmlLoader = loadResourced(TERMINATION_DETAILS_PAGE);
+        presentTermination = fxmlLoader.getController();
+    }
+
+    public void loadGridDetailsResourced() throws IOException {
+        FXMLLoader fxmlLoader = loadResourced(GRID_DETAILS_PAGE);
+        presentGrid = fxmlLoader.getController();
+    }
+
+    public FXMLLoader loadResourced(String path) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(path);
+        fxmlLoader.setLocation(url);
+        InputStream inputStream = url.openStream();
+        GridPane gridPane = fxmlLoader.load(inputStream);
+        return fxmlLoader;
+    }
 
     public void setEntitiesDetails(List<DTOPropertyInfo> allPropertiesOfEntity, String entityName) throws IOException {
         presentEntities.setVisibleEntitiesPage(true);
@@ -120,38 +165,46 @@ public class FirstPageController {
         presentEntities.setAllColumns(allPropertiesOfEntity);
         presentEntities.setEntityNameTextField(entityName);
     }
-    private void loadEntitiesDetailsResourced() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        URL url = getClass().getResource(ENTITIES_DETAILS_PAGE);
-        fxmlLoader.setLocation(url);
-        InputStream inputStream = url.openStream();
-        GridPane gridPane = fxmlLoader.load(inputStream);
-        presentEntities = fxmlLoader.getController();
-        scrollPaneDetails.setContent(gridPane);
-    }
 
-    public void loadTerminationDetailsResourced() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        URL url = getClass().getResource(TERMINATION_DETAILS_PAGE);
-        fxmlLoader.setLocation(url);
-        InputStream inputStream = url.openStream();
-        GridPane gridPane = fxmlLoader.load(inputStream);
-        presentTermination = fxmlLoader.getController();
-        scrollPaneDetails.setContent(gridPane);
-    }
-
-    private void loadResourced(String path){
-
+    public void setRulesDetails(DTORuleInfo specificRule) {
+        presentRule.setVisibleEntitiesPage(true);
+        scrollPaneDetails.setContent(presentRule.getRulesGridPane());
+        presentRule.setSpecificRuleDetails(specificRule);
     }
 
     public void SetTerminationDetails() {
         presentTermination.setVisibleTerminationPage(true);
         scrollPaneDetails.setContent(presentTermination.getTerminationGridPane());
-        presentTermination.setTerminationDetails(terminationDetails);
+        presentTermination.setTerminationDetailsPage(terminationDetails);
     }
 
-    public void resetAllComponent() {
+
+    public void setGridDetails() {
+        presentGrid.setVisibleGridPage(true);
+        scrollPaneDetails.setContent(presentGrid.getGridPane());
+        presentGrid.setGridDetails(gridDetails);
+    }
+
+    public void setEnvironmentDetails(DTOEnvironmentInfo dtoEnvironmentInfo) {
+        presentEnvironment.setVisibleEnvironmentPage(true);
+        scrollPaneDetails.setContent(presentEnvironment.getEnvironmentGridPane());
+        presentEnvironment.setEnvironmentDetailsPage(dtoEnvironmentInfo);
+    }
+
+
+    public void setMessageForUser(String message) {
+        mainController.setErrorMessage(message);
+    }
+
+    public void resetAllComponentFirstPage() {
         presentEntities.setVisibleEntitiesPage(false);
+        presentRule.setVisibleEntitiesPage(false);
         presentTermination.setVisibleTerminationPage(false);
+        presentEnvironment.setVisibleEnvironmentPage(false);
+        presentGrid.setVisibleGridPage(false);
+    }
+
+    public GridPane getFirstPageGridPane() {
+        return firstPageGridPane;
     }
 }

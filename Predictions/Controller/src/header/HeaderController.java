@@ -1,17 +1,15 @@
 package header;
 
 import app.AppController;
+import javafx.animation.PauseTransition;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.util.Duration;
+
 public class HeaderController {
 
     private AppController mainController;
@@ -85,7 +83,8 @@ public class HeaderController {
                 setSuccessMessage();
         }
         catch(Exception e){
-            setErrorMessage(e.getMessage());
+            mainController.setErrorMessage(e.getMessage());
+//            setErrorMessage(e.getMessage());
         }
     }
 
@@ -94,14 +93,19 @@ public class HeaderController {
         mainController.setIsDetailsClickedProperty(true);
     }
 
-    private void setErrorMessage(String message) {
-        messageLabel.setText(message);
-        messageLabel.setStyle("-fx-background-color: #fc6060; -fx-font-size: 14px; -fx-text-fill: white");
+    private void setSuccessMessage() {
+        //todo: maybe move to main controller like I did in error message
+        pauseTransitionMessage();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText(null);
+        alert.setContentText("File loaded successfully.");
+        alert.showAndWait();
     }
 
-    private void setSuccessMessage() {
-        messageLabel.setText("File loaded successfully.");
-        messageLabel.setStyle("-fx-background-color: #D3EBCD; -fx-font-size: 14px; -fx-text-fill: black");
+    private void pauseTransitionMessage(){
+        PauseTransition pause = new PauseTransition(Duration.seconds(3));
+        pause.play();
     }
 
     public void setMainController(AppController mainController) {
@@ -111,15 +115,41 @@ public class HeaderController {
     public void bindToIsFXMLLoaded(){
         SimpleBooleanProperty isFileLoaded = mainController.getIsFileLoadedProperty();
         detailsToggleButton.disableProperty().bind(isFileLoaded.not());
+        newExecutionToggleButton.disableProperty().bind(isFileLoaded.not());
     }
 
     public void bindXmlPathToTextField(SimpleStringProperty path){
         XMLFileTextField.textProperty().bind(path);
     }
 
-    public void bindComponents(SimpleStringProperty path) {
+    public void bindComponents(SimpleStringProperty path, BooleanProperty startButtonPressedProperty) {
         bindToIsFXMLLoaded();
         bindXmlPathToTextField(path);
+        bindScreensToButtons();
+        bindStartButton(startButtonPressedProperty);
+    }
+
+    public void bindScreensToButtons() {
+        detailsToggleButton.selectedProperty().addListener(e -> {
+            mainController.showFirstPage();
+        });
+
+        newExecutionToggleButton.selectedProperty().addListener(e -> {
+            mainController.showSecondPage();
+        });
+
+        resultsToggleButton.selectedProperty().addListener(e -> {
+            mainController.showThirdPage();
+        });
+        //todo: when we have the third screen
+
+    }
+
+    public void bindStartButton(BooleanProperty startButtonPressedProperty) {
+        resultsToggleButton.disableProperty().bind(startButtonPressedProperty.not());
+//        resultsToggleButton.selectedProperty().bind(startButtonPressedProperty);
+
+        //todo:Add later after we press the start button we move directly to result page
     }
 }
 

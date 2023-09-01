@@ -87,6 +87,10 @@ public final class WorldDefinition implements Serializable {
         return twoDimensionalGrid;
     }
 
+    public DTOGrid createDTOGridDetails() {
+        return new DTOGrid(twoDimensionalGrid.getRows().toString(), twoDimensionalGrid.getCols().toString());
+    }
+
     public Type checkTypeOfEnvironmentProperty(String value) {
         if(environmentDefinition.containsKey(value)){
             return environmentDefinition.get(value).getType();

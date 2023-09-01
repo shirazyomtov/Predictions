@@ -482,4 +482,6 @@ public class EngineManager implements Serializable{
     public void clearPastValues() {
         environmentValuesByUser.clear();
     }
+
+    public DTOGrid getDTOGridDetails(){return world.createDTOGridDetails();};
 }

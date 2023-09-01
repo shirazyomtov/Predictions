@@ -2,6 +2,7 @@ package world.worldDefinition;
 
 import DTO.*;
 import world.entity.definition.EntityDefinitionImpl;
+import world.enums.Type;
 import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
 import world.rule.RuleImpl;
@@ -86,7 +87,16 @@ public final class WorldDefinition implements Serializable {
         return twoDimensionalGrid;
     }
 
-    public DTOGrid createDTOGridDetails(){
+    public DTOGrid createDTOGridDetails() {
         return new DTOGrid(twoDimensionalGrid.getRows().toString(), twoDimensionalGrid.getCols().toString());
+    }
+
+    public Type checkTypeOfEnvironmentProperty(String value) {
+        if(environmentDefinition.containsKey(value)){
+            return environmentDefinition.get(value).getType();
+        }
+        else {
+            return Type.STRING;
+        }
     }
 }

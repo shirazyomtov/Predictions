@@ -26,9 +26,15 @@ public class Set extends Action implements Serializable {
 
 
     @Override
-    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-            EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity);
-          String value = expression.decipher(entityInstance, worldInstance);
+    public Action operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity);
+        String value;
+        if(entityInstance == secondaryEntity) {
+            value = expression.decipher(entityInstance, worldInstance, primaryEntity);
+        }
+        else{
+            value = expression.decipher(entityInstance, worldInstance, secondaryEntity);
+        }
           Property property = entityInstance.getAllProperty().get(propertyName);
           Type type = property.getType();
         try {

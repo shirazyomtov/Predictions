@@ -20,10 +20,18 @@ public class Divide extends BinaryAction implements Serializable {
     }
 
     @Override
-    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity);
-        String valueArg1 = this.getArgument1().decipher(entityInstance, worldInstance);
-        String valueArg2 = this.getArgument2().decipher(entityInstance, worldInstance);
+    public Action operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity);
+        String valueArg1;
+        String valueArg2;
+        if(entityInstance == secondaryEntity) {
+            valueArg1 = this.getArgument1().decipher(entityInstance, worldInstance, primaryEntity );
+            valueArg2 = this.getArgument2().decipher(entityInstance, worldInstance, primaryEntity);
+        }
+        else{
+            valueArg1 = this.getArgument1().decipher(entityInstance, worldInstance, secondaryEntity);
+            valueArg2 = this.getArgument2().decipher(entityInstance, worldInstance, secondaryEntity);
+        }
         Property resultProp = entityInstance.getAllProperty().get(getResultPropertyName());
         Type type = resultProp.getType();
         try {

@@ -2,24 +2,27 @@ package world.rule.action;
 
 import exceptions.*;
 import jaxb.schema.generated.PRDAction;
+import world.auxiliaryFunctions.AuxiliaryFunctionsImpl;
 import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
+import world.rule.action.expression.ExpressionIml;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Proximity extends  Action implements Serializable {
 
     private final String targetEntity;
-    private final String of;
+    private final ExpressionIml of;
     private List<Action> actions = null;
 
     public Proximity(PRDAction prdAction){
         super(prdAction.getPRDBetween().getSourceEntity(), ActionType.PROXIMITY, prdAction.getPRDSecondaryEntity());
         this.targetEntity = prdAction.getPRDBetween().getTargetEntity();
-        this.of =  prdAction.getPRDEnvDepth().getOf();
+        this.of =  new  ExpressionIml(prdAction.getPRDEnvDepth().getOf());
         if (prdAction.getPRDActions().getPRDAction() != null){
             this.actions = ActionFactory.createListActions(prdAction.getPRDActions().getPRDAction());
         }
@@ -38,24 +41,29 @@ public class Proximity extends  Action implements Serializable {
                 }
             }
         }
-        if (isProximity){
-            for(EntityInstance targetEntity: proximityEntityInstance) {
+        if (isProximity) {
+            for (EntityInstance targetEntity : proximityEntityInstance) {
                 if (actions != null) {
                     for (Action action : actions) {
+                        if (!action.getActionType().equals(ActionType.KILL) && !action.getActionType().equals(ActionType.REPLACE)) {
                             action.operation(entityInstance, worldInstance, targetEntity);
+                        }
+                        else {
+                            return action;
                         }
                     }
                 }
             }
+        }
         return null;
     }
 
-    private boolean checkTheProximity(EntityInstance entityInstanceSource, EntityInstance entityInstanceTarget,  WorldInstance worldInstance) throws NumberFormatException {
+    private boolean checkTheProximity(EntityInstance entityInstanceSource, EntityInstance entityInstanceTarget,  WorldInstance worldInstance) throws NumberFormatException, ObjectNotExist, OperationNotCompatibleTypes, FormatException {
         int row;
         int rowPositive;
         int colPositive;
-        //String ofString =
-        int ofInt = Integer.parseInt(of);
+        String ofString = of.decipher(entityInstanceSource, worldInstance, entityInstanceTarget);
+        int ofInt = Integer.parseInt(ofString);
         int entityInstanceSourceRow = entityInstanceSource.getLocation().getRow();
         int entityInstanceSourceCol = entityInstanceSource.getLocation().getCol();
         int entityInstanceTargetRow = entityInstanceTarget.getLocation().getRow();
@@ -84,7 +92,7 @@ public class Proximity extends  Action implements Serializable {
                     return  true;
                 }
             }
-        } //todo
+        }
         return false;
     }
 
@@ -93,7 +101,7 @@ public class Proximity extends  Action implements Serializable {
     }
 
     public String getOf() {
-        return of;
+        return of.getExpressionName();
     }
 
     public List<Action> getActions() {

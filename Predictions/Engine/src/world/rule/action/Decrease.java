@@ -26,9 +26,15 @@ public class Decrease extends Action implements Serializable {
     }
 
     @Override
-    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity);
-        String by = expression.decipher(entityInstance, worldInstance);
+    public Action operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity);
+        String by;
+        if(entityInstance == secondaryEntity) {
+             by = expression.decipher(entityInstance, worldInstance, primaryEntity);
+        }
+        else{
+            by = expression.decipher(entityInstance, worldInstance, secondaryEntity);
+        }
         Property property = entityInstance.getAllProperty().get(propertyName);
         Type type = property.getType();
         try {

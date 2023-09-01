@@ -8,15 +8,16 @@ import world.entity.instance.EntityInstance;
 import world.enums.Type;
 import world.propertyInstance.api.Property;
 import world.worldInstance.WorldInstance;
+import xml.XMLValidation;
 
 import java.io.Serializable;
 
 import static world.enums.AuxiliaryFunction.*;
 
 public class ExpressionIml implements Expression, Serializable {
-    private  String expressionName;
+    private final String expressionName;
 
-    private String propertyName = null;//todo delete
+    private String propertyName = null;
     private Type type = null;
 
     public ExpressionIml(String expressionName, String propertyName) {
@@ -29,13 +30,17 @@ public class ExpressionIml implements Expression, Serializable {
     @Override
     public String decipher(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance seocndEntity) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes, FormatException {
         String object = null ;
+        if (propertyName != null) {
+            Type propertyNameType = decipherType(primaryEntity, worldInstance);
+            setType(propertyNameType);
+        }
         if (checkOptionByFunctionName(expressionName)) {
             int index = expressionName.indexOf("(");
             String functionName = expressionName.substring(0, index).trim();
             String value = expressionName.substring(index + 1, expressionName.length() - 1).trim();
             if (functionName.equals(ENVIRONMENT.getFunctionName())) {
                 if(propertyName != null) {
-                    object = AuxiliaryFunctionsImpl.environment(value, worldInstance, getTypeOfProperty(primaryEntity, propertyName, worldInstance, seocndEntity)).toString();
+                    object = AuxiliaryFunctionsImpl.environment(value, worldInstance, type).toString();
                 }
                 else {
                     object = AuxiliaryFunctionsImpl.environment(value, worldInstance, null).toString();
@@ -46,7 +51,7 @@ public class ExpressionIml implements Expression, Serializable {
             }
             else if (functionName.equals(EVALUATE.getFunctionName())) {
                 if(propertyName != null) {
-                        object = AuxiliaryFunctionsImpl.evaluate(value, worldInstance, getTypeOfProperty(primaryEntity, propertyName, worldInstance, seocndEntity), primaryEntity, seocndEntity).toString();
+                        object = AuxiliaryFunctionsImpl.evaluate(value, worldInstance, type, primaryEntity, seocndEntity).toString();
                 }
                 else{
                     object = AuxiliaryFunctionsImpl.evaluate(value, worldInstance, null, primaryEntity, seocndEntity).toString();
@@ -66,8 +71,8 @@ public class ExpressionIml implements Expression, Serializable {
         }
         else if (checkIfValueIsProperty(primaryEntity) != null) {
             if (propertyName != null) {
-                Type propertyType = getTypeOfProperty(primaryEntity, propertyName, worldInstance, seocndEntity);
-                Type valueType = getTypeOfProperty(primaryEntity, expressionName, worldInstance, seocndEntity);
+                Type propertyType = type;
+                Type valueType = checkProperty(primaryEntity, expressionName);
                 if (checkSameType(propertyType, valueType)) {
                     object = checkIfValueIsProperty(primaryEntity).toString();
                 } else {
@@ -84,30 +89,50 @@ public class ExpressionIml implements Expression, Serializable {
         return object;
     }
 
-    private Type getTypeOfProperty(EntityInstance primaryEntity, String property,  WorldInstance worldInstance, EntityInstance seocndEntity) throws ObjectNotExist, OperationNotCompatibleTypes, FormatException {
+    private Type decipherType(EntityInstance primaryEntity, WorldInstance worldInstance) {
+        Type type1;
+        type1 = checkProperty(primaryEntity, propertyName);
+        if(type1 == null) {
+            if (checkOptionByFunctionName(propertyName)) {
+                int functionIndex = propertyName.indexOf("(");
+                if(functionIndex == -1){
+                    //todo:handle error when it not function
+                }
+                String value = propertyName.substring(functionIndex + 1, propertyName.length() - 1).trim();
+                if (extractFunctionName(propertyName).equals("environment")) {
+                    type1 = worldInstance.getWorldDefinition().checkTypeOfEnvironmentProperty(value);
+                } else if (extractFunctionName(propertyName).equals("evaluate")) {
+                    int index = value.indexOf(".");
+                    if (index == -1) {
+                        type1 = Type.STRING;
+                    }
+                    String entity = value.substring(0, index).trim();
+                    String property = value.substring(index + 1).trim();
+                    if (entity.equals(primaryEntity.getName())) {
+                        type1 = checkProperty(primaryEntity, propertyName);
+                    }
+                    if (type1 == null) {
+                        type1 = Type.STRING;
+                    }
+                } else {
+                    type1 = Type.FLOAT;
+                }
+            } else {
+                type1 = Type.STRING;
+            }
+        }
+        return  type1;
+    }
+
+
+    private Type checkProperty(EntityInstance primaryEntity, String propertyName){
         for(Property propertyInstance: primaryEntity.getAllProperty().values()){
-            if(propertyInstance.getName().equals(property)){
+            if(propertyInstance.getName().equals(propertyName)){
                 return propertyInstance.getType();
             }
         }
-
-        setPropertyName(null);
-        String name = expressionName;
-        setExpressionName(property);
-        String value = decipher(primaryEntity, worldInstance, seocndEntity);
-        setExpressionName(name);
-        try {
-            Float floatValue = Float.parseFloat(value);
-            return Type.FLOAT;
-        } catch (NumberFormatException ignore){
-
-        }if(value.equals("true") || value.equals("false")){
-            return Type.BOOLEAN;
-        }else{
-            return Type.STRING;
-        }
+        return  null;
     }
-
     private static boolean checkSameType(Type propertyType, Type valueType) {
         if ((propertyType.equals(Type.DECIMAL) || (propertyType.equals(Type.FLOAT))) && (valueType.equals(Type.DECIMAL) || (valueType.equals(Type.FLOAT)))) {
             return  true;
@@ -120,15 +145,11 @@ public class ExpressionIml implements Expression, Serializable {
         return entity.getPropertyValue(expressionName, true);
     }
 
-    public void setPropertyName(String propertyName) {
-        this.propertyName = propertyName;
-    }
-
-    public void setExpressionName(String expressionName) {
-        this.expressionName = expressionName;
-    }
-
     public void setType(Type type) {
         this.type = type;
+    }
+
+    public Type getType() {
+        return type;
     }
 }

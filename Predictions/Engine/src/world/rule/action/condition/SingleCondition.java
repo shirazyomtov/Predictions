@@ -47,9 +47,9 @@ public class SingleCondition extends AbstractCondition implements Serializable {
         else {
             valueInCondition = expression.decipher(entityInstance, worldInstance, secondaryEntity);
         }
-              ExpressionIml expressionPropertyValue = new ExpressionIml(propertyName);
+              ExpressionIml expressionPropertyValue = new ExpressionIml(propertyName, propertyName);
               String propertyValue = expressionPropertyValue.decipher(entityInstance, worldInstance, secondaryEntity);
-              Type propertyType = getPropertyType(propertyValue);
+              Type propertyType = expressionPropertyValue.getType();
             boolean flag = false;
             switch (operator) {
                 case "=":
@@ -67,19 +67,6 @@ public class SingleCondition extends AbstractCondition implements Serializable {
             }
 
             return flag;
-    }
-
-    private Type getPropertyType(String propertyValue) {
-        try {
-            Float floatValue = Float.parseFloat(propertyValue);
-            return Type.FLOAT;
-        } catch (NumberFormatException ignore){
-
-        }if(propertyValue.equals("true") || propertyValue.equals("false")){
-            return Type.BOOLEAN;
-        }else{
-            return Type.STRING;
-        }
     }
 
     private boolean checkIfPropertyIsLessOrBiggerThanValue( String propertyValue, Type propertyType, String valueInCondition, ComparisonOperator operator) throws ClassCastException, OperationNotSupportedType {

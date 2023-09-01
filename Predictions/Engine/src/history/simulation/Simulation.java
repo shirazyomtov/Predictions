@@ -153,7 +153,7 @@ public  class Simulation implements Serializable {
         List<EntityInstance> secondaryEntities = new ArrayList<>();
         Random random = new Random();
         int randomIndexOfList;
-        for(int i = 0; i< numberOfSecondaryInstance; i++){
+        for(int i = 0; i < numberOfSecondaryInstance; i++){
             randomIndexOfList = random.nextInt(allInstanceOfSpecificEntity.size());
             secondaryEntities.add(allInstanceOfSpecificEntity.get(randomIndexOfList));
         }

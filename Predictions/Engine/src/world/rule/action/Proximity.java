@@ -41,15 +41,20 @@ public class Proximity extends  Action implements Serializable {
                 }
             }
         }
-        if (isProximity){
-            for(EntityInstance targetEntity: proximityEntityInstance) {
+        if (isProximity) {
+            for (EntityInstance targetEntity : proximityEntityInstance) {
                 if (actions != null) {
                     for (Action action : actions) {
+                        if (!action.getActionType().equals(ActionType.KILL) && !action.getActionType().equals(ActionType.REPLACE)) {
                             action.operation(entityInstance, worldInstance, targetEntity);
+                        }
+                        else {
+                            return action;
                         }
                     }
                 }
             }
+        }
         return null;
     }
 

@@ -7,5 +7,5 @@ import world.entity.instance.EntityInstance;
 import world.worldInstance.WorldInstance;
 
 public interface Expression {
-    Object decipher(EntityInstance entity, WorldInstance worldInstance) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes, FormatException;
+    Object decipher(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondEntity) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes, FormatException;
 }

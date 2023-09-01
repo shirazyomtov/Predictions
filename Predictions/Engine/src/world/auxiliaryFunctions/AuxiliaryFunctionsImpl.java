@@ -13,12 +13,16 @@ public final class AuxiliaryFunctionsImpl {
 
     public static Object environment(String value, WorldInstance worldInstance, Type type) throws ObjectNotExist, OperationNotCompatibleTypes {
         if (worldInstance.getEnvironmentInstanceMap().containsKey(value)) {
-            Type typeEnvironment = worldInstance.getEnvironmentInstanceMap().get(value).getProperty().getType();
-            if (checkSameType(typeEnvironment, type)) {
-                return worldInstance.getEnvironmentInstanceMap().get(value).getProperty().getValue();
+            if( type != null) {
+                Type typeEnvironment = worldInstance.getEnvironmentInstanceMap().get(value).getProperty().getType();
+                if (checkSameType(typeEnvironment, type)) {
+                    return worldInstance.getEnvironmentInstanceMap().get(value).getProperty().getValue();
+                } else {
+                    throw new OperationNotCompatibleTypes(typeEnvironment.toString(), type.toString());
+                }
             }
-            else {
-                throw new OperationNotCompatibleTypes(typeEnvironment.toString(), type.toString());
+            else{
+                return worldInstance.getEnvironmentInstanceMap().get(value).getProperty().getValue();
             }
         }
         else {
@@ -43,32 +47,41 @@ public final class AuxiliaryFunctionsImpl {
         }
     }
 
-    public static Float percent(String value, EntityInstance entity, WorldInstance worldInstance, String propertyName) throws ObjectNotExist, OperationNotCompatibleTypes, FormatException, ClassCastException{
+    public static Float percent(String value, EntityInstance primaryEntity, WorldInstance worldInstance, String propertyName, EntityInstance secondEntity) throws ObjectNotExist, OperationNotCompatibleTypes, FormatException, ClassCastException{
         int index = value.indexOf(",");
         String expression1 = value.substring(0, index).trim();
         String expression2 = value.substring(index + 1).trim();
-        ExpressionIml expressionIml1 = new ExpressionIml(expression1, propertyName);
-        ExpressionIml expressionIml2  = new ExpressionIml(expression2, propertyName);
-        String value1 = expressionIml1.decipher(entity, worldInstance);
-        String value2 = expressionIml2.decipher(entity, worldInstance);
+        ExpressionIml expressionIml1 ;
+        ExpressionIml expressionIml2 ;
+        if(propertyName != null) {
+            expressionIml1 = new ExpressionIml(expression1, propertyName);
+            expressionIml2 = new ExpressionIml(expression2, propertyName);
+        }
+        else{
+            expressionIml1 = new ExpressionIml(expression1);
+            expressionIml2 = new ExpressionIml(expression2);
+        }
+        String value1 = expressionIml1.decipher(primaryEntity, worldInstance, secondEntity);
+        String value2 = expressionIml2.decipher(primaryEntity, worldInstance, secondEntity);
         return (Float.parseFloat(value1) * Float.parseFloat(value2)) / 100;
 
     }
 
-    public static Object evaluate(String value, WorldInstance worldInstance,  Type typePropertyName) throws FormatException, ObjectNotExist, OperationNotCompatibleTypes {
-        return checkFormat(value, worldInstance, true, typePropertyName);
+    public static Object evaluate(String value, WorldInstance worldInstance,  Type typePropertyName, EntityInstance primaryEntity, EntityInstance secondEntity) throws FormatException, ObjectNotExist, OperationNotCompatibleTypes {
+        return checkFormat(value, worldInstance, true, typePropertyName, primaryEntity, secondEntity);
     }
-    public static Integer ticks(String value,  WorldInstance worldInstance) throws FormatException, ObjectNotExist, ClassCastException, OperationNotCompatibleTypes {
-       Object propertyValue = checkFormat(value, worldInstance, false, null);
+    public static Integer ticks(String value,  WorldInstance worldInstance, EntityInstance primaryEntity, EntityInstance secondEntity) throws FormatException, ObjectNotExist, ClassCastException, OperationNotCompatibleTypes {
+       Object propertyValue = checkFormat(value, worldInstance, false, null, primaryEntity, secondEntity);
        return (Integer) propertyValue;
     }
 
 
-    private static Object checkFormat(String value, WorldInstance worldInstance, boolean propertyValueCheck, Type typePropertyName) throws FormatException, ObjectNotExist, OperationNotCompatibleTypes {
+    private static Object checkFormat(String value, WorldInstance worldInstance, boolean propertyValueCheck, Type typePropertyName, EntityInstance primaryEntity, EntityInstance secondEntity) throws FormatException, ObjectNotExist, OperationNotCompatibleTypes {
         int index = value.indexOf(".");
         if(index == -1){
             throw new FormatException();
         }
+        EntityInstance entityInstance = null;
         String entity = value.substring(0, index).trim();
         String property = value.substring(index + 1).trim();
         if(typePropertyName != null){
@@ -77,7 +90,15 @@ public final class AuxiliaryFunctionsImpl {
                 throw new OperationNotCompatibleTypes(typePropertyName.toString(), type.toString());
             }
         }
-        EntityInstance entityInstance = worldInstance.isEntityExists(entity);
+        if(entity.equals(primaryEntity.getName())) {
+             entityInstance = primaryEntity;
+        }
+
+        else if (secondEntity !=null){
+            if (entity.equals(secondEntity.getName())) {
+                entityInstance = secondEntity;
+            }
+        }
         if (entityInstance != null) {
             Object propertyValue = entityInstance.getPropertyValue(property, propertyValueCheck);
             if(propertyValue != null){

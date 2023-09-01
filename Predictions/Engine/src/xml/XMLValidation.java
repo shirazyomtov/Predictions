@@ -112,7 +112,6 @@ public final class XMLValidation {
         String entityAction = action.getEntity();
         if (action.getType().equals("condition")){
             if (action.getPRDCondition().getSingularity().equals("single")) {
-                findProperty(action.getPRDCondition().getProperty(), entityAction);
             }
             else{
                 List<PRDCondition> conditions = action.getPRDCondition().getPRDCondition();
@@ -165,9 +164,6 @@ public final class XMLValidation {
             else {
                 if (isEntityCheck){
                     findEntity(condition.getEntity());
-                }
-                else{
-                    findProperty(condition.getProperty(), entityAction);
                 }
             }
         }

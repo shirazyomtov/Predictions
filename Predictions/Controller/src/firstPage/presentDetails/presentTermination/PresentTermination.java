@@ -39,8 +39,8 @@ public class PresentTermination {
             secondsTextField.setText(terminationDetails.getSecond().toString());
         }
         //todo: when we will have in the engine the user termination we will add a text for it
-        if(terminationDetails.getTicks() == null && terminationDetails.getSecond() == null){
-            terminationLabel.setText("");
+        if(terminationDetails.getTicks() == null && terminationDetails.getSecond() == null && terminationDetails.getTerminationByUser()){
+            terminationLabel.setText("The termination is by the user");
         }
     }
 

@@ -77,7 +77,7 @@ public class EngineManager implements Serializable{
     }
 
     public DTOTerminationInfo getTerminationDetails(){
-        return new DTOTerminationInfo(world.getTermination().getTicks(), world.getTermination().getSecond());
+        return new DTOTerminationInfo(world.getTermination().getTicks(), world.getTermination().getSecond(), world.getTermination().getTerminationByUser());
     }
 
     public int getAmountOfEnvironmentDefinition() throws NullPointerException{
@@ -92,59 +92,8 @@ public class EngineManager implements Serializable{
         return getEnvironmentNamesList().get(userIntegerInput -1);
     }
 
-    public void checkValidationFloatEnvironment(String valueInput, int userIntegerInput)throws NumberFormatException, IndexOutOfBoundsException{
-        String environmentName = getEnvironmentDetails(userIntegerInput).getName();
-        EnvironmentDefinition environmentDefinition = world.getEnvironmentDefinition().get(environmentName);
-        EnvironmentInstance environmentInstance = null;
-        Float userInput = Float.parseFloat(valueInput);
-        checkIfInputInRange(userInput, environmentDefinition, false);
-        environmentInstance = new EnvironmentInstance(new FloatPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((float)userInput), environmentDefinition.getRange()));
-        environmentValuesByUser.put(environmentInstance.getProperty().getName(), environmentInstance);
-    }
-
-    public void checkValidationDecimalEnvironment(String valueInput, int userIntegerInput)throws NumberFormatException, IndexOutOfBoundsException {
-        String environmentName = getEnvironmentDetails(userIntegerInput).getName();
-        EnvironmentDefinition environmentDefinition = world.getEnvironmentDefinition().get(environmentName);
-        EnvironmentInstance environmentInstance = null;
-        Integer userInput = Integer.parseInt(valueInput);
-        checkIfInputInRange(userInput, environmentDefinition, true);
-        environmentInstance= new EnvironmentInstance(new IntegerPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((int)userInput), environmentDefinition.getRange()));
-        environmentValuesByUser.put(environmentInstance.getProperty().getName(), environmentInstance); // problem
-    }
-    private void checkIfInputInRange(Object userInput, EnvironmentDefinition environmentDefinition, boolean isDecimal) throws IndexOutOfBoundsException{
-        if (environmentDefinition.getRange() != null){
-            if(!isDecimal) {
-                if ((float) userInput < environmentDefinition.getRange().getFrom() || (float) userInput > environmentDefinition.getRange().getTo()) {
-                    throw new IndexOutOfBoundsException();
-                }
-            }
-            else {
-                if ((int) userInput < environmentDefinition.getRange().getFrom().intValue() || (int) userInput > environmentDefinition.getRange().getTo().intValue()) {
-                    throw new IndexOutOfBoundsException();
-                }
-            }
-        }
-    }
-
-    public void checkValidationBoolEnvironment(Integer userInput, int userIntegerInput)throws NumberFormatException, IndexOutOfBoundsException {
-        String environmentName = getEnvironmentDetails(userIntegerInput).getName();
-        EnvironmentDefinition environmentDefinition = world.getEnvironmentDefinition().get(environmentName);
-        EnvironmentInstance environmentInstance = null;
-        if(userInput == 1) {
-            environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed(true), environmentDefinition.getRange()));
-        }
-        else{
-            environmentInstance = new EnvironmentInstance(new BooleanPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed(false), environmentDefinition.getRange()));
-        }
-        environmentValuesByUser.put(environmentInstance.getProperty().getName(), environmentInstance);
-    }
-
-    public void checkValidationStringEnvironment(String valueInput, int userIntegerInput)throws NumberFormatException, IndexOutOfBoundsException {
-        String environmentName = getEnvironmentDetails(userIntegerInput).getName();
-        EnvironmentDefinition environmentDefinition = world.getEnvironmentDefinition().get(environmentName);
-        EnvironmentInstance environmentInstance = null;
-        environmentInstance = new EnvironmentInstance(new StringPropertyInstance(environmentDefinition.getName(), ValueGeneratorFactory.createFixed((String) valueInput), environmentDefinition.getRange()));
-        environmentValuesByUser.put(environmentInstance.getProperty().getName(), environmentInstance);
+    public void checkValidValueAndSetValue(String environmentName, String value) throws IndexOutOfBoundsException, IllegalArgumentException{
+        world.checkValidationValue(environmentName, value, environmentValuesByUser);
     }
 
     public void setSimulation(){
@@ -153,8 +102,6 @@ public class EngineManager implements Serializable{
         setRandomEnvironmentValues(environmentInstanceMap);
         setSimulationDetailsAndAddToHistory(environmentInstanceMap);
     }
-
-
 
     private void setRandomEnvironmentValues(Map<String, EnvironmentInstance> environmentInstanceMap) {
 
@@ -484,4 +431,21 @@ public class EngineManager implements Serializable{
     }
 
     public DTOGrid getDTOGridDetails(){return world.createDTOGridDetails();};
+
+    public void setAmountOfEntities(String entityName, int amountOfEntityInstance) throws IndexOutOfBoundsException{
+        if(amountOfEntityInstance >= 0) {
+            world.setSpecificEntityAmount(entityName, amountOfEntityInstance);
+        }
+        else {
+            throw new IndexOutOfBoundsException("You need to enter a amount of entity instance that is bigger or equal to 0");
+        }
+    }
+
+    public Object getValueOfEntity(String environmentName) {
+        EnvironmentInstance environmentInstance = environmentValuesByUser.get(environmentName);
+        if(environmentInstance != null){
+            return environmentInstance.getProperty().getValue();
+        }
+        return null;
+    }
 }

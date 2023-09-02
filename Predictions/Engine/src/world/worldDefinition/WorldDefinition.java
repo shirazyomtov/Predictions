@@ -5,9 +5,14 @@ import world.entity.definition.EntityDefinitionImpl;
 import world.enums.Type;
 import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
+import world.propertyInstance.impl.BooleanPropertyInstance;
+import world.propertyInstance.impl.FloatPropertyInstance;
+import world.propertyInstance.impl.IntegerPropertyInstance;
+import world.propertyInstance.impl.StringPropertyInstance;
 import world.rule.RuleImpl;
 import world.termination.Termination;
 import world.twoDimensionalGrid.TwoDimensionalGrid;
+import world.value.generator.api.ValueGeneratorFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,6 +31,8 @@ public final class WorldDefinition implements Serializable {
     private final Map<String, EnvironmentDefinition> environmentDefinition;
 
     private TwoDimensionalGrid twoDimensionalGrid;
+
+    private Integer amountOfAllPopulation = 0;
 
     public WorldDefinition(Map<String, EntityDefinitionImpl> entityDefinition, List<RuleImpl> rules, Termination termination,
                            Map<String, EnvironmentDefinition> environmentDefinition, int rows, int columns)
@@ -97,6 +104,62 @@ public final class WorldDefinition implements Serializable {
         }
         else {
             return Type.STRING;
+        }
+    }
+
+    public void setSpecificEntityAmount(String entityName, int amountOfEntityInstance){
+        int spaceSize = twoDimensionalGrid.getRows() * twoDimensionalGrid.getCols();
+        int currentAmountOfEntity = entityDefinition.get(entityName).getAmountOfPopulation();
+        if(currentAmountOfEntity != 0){
+            amountOfAllPopulation -= currentAmountOfEntity;
+        }
+        int currentAmountOfAllPopulation = amountOfAllPopulation + amountOfEntityInstance;
+        if(currentAmountOfAllPopulation > spaceSize){
+            throw new IndexOutOfBoundsException("The maximum number of entity instances you can insert is the size of the space which it " + spaceSize);
+        }
+        else{
+            entityDefinition.get(entityName).setAmountOfPopulation(amountOfEntityInstance);
+        }
+    }
+
+    public void checkValidationValue(String environmentName, String value, Map<String, EnvironmentInstance> environmentValuesByUser) throws IndexOutOfBoundsException, IllegalArgumentException{
+        EnvironmentDefinition specificEnvironmentDefinition = environmentDefinition.get(environmentName);
+        EnvironmentInstance environmentInstance = null;
+        switch (specificEnvironmentDefinition.getType()) {
+            case FLOAT:
+                environmentInstance = checkAndSetFloatEnvironment(value, specificEnvironmentDefinition);
+                break;
+            case DECIMAL:
+                environmentInstance = checkAndSetIntegerEnvironment(value, specificEnvironmentDefinition);
+                break;
+            case BOOLEAN:
+                environmentInstance = checkAndSetBooleanEnvironment(value, specificEnvironmentDefinition);
+                break;
+            case STRING:
+                environmentInstance = new EnvironmentInstance(new StringPropertyInstance(specificEnvironmentDefinition.getName(), ValueGeneratorFactory.createFixed(value), specificEnvironmentDefinition.getRange()));
+                break;
+        }
+
+        environmentValuesByUser.put(environmentInstance.getProperty().getName(), environmentInstance);
+    }
+
+    private EnvironmentInstance checkAndSetFloatEnvironment(String value, EnvironmentDefinition specificEnvironmentDefinition) throws NumberFormatException, IndexOutOfBoundsException{
+        specificEnvironmentDefinition.checkValidationFloatEnvironment(value);
+        return new EnvironmentInstance(new FloatPropertyInstance(specificEnvironmentDefinition.getName(), ValueGeneratorFactory.createFixed(Float.parseFloat(value)), specificEnvironmentDefinition.getRange()));
+    }
+
+    private EnvironmentInstance checkAndSetIntegerEnvironment(String value, EnvironmentDefinition specificEnvironmentDefinition) throws NumberFormatException, IndexOutOfBoundsException{
+        specificEnvironmentDefinition.checkValidationDecimalEnvironment(value);
+        return new EnvironmentInstance(new IntegerPropertyInstance(specificEnvironmentDefinition.getName(), ValueGeneratorFactory.createFixed(Integer.parseInt(value)), specificEnvironmentDefinition.getRange()));
+    }
+
+    private EnvironmentInstance checkAndSetBooleanEnvironment(String value, EnvironmentDefinition specificEnvironmentDefinition) throws IllegalArgumentException{
+        specificEnvironmentDefinition.checkValidationBoolEnvironment(value);
+        if(value.equals("true")) {
+            return new EnvironmentInstance(new BooleanPropertyInstance(specificEnvironmentDefinition.getName(), ValueGeneratorFactory.createFixed(true), specificEnvironmentDefinition.getRange()));
+        }
+        else{
+            return new EnvironmentInstance(new BooleanPropertyInstance(specificEnvironmentDefinition.getName(), ValueGeneratorFactory.createFixed(false), specificEnvironmentDefinition.getRange()));
         }
     }
 }

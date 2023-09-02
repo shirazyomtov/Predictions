@@ -1,9 +1,11 @@
 package xml;
 
+import exceptions.FormatException;
 import exceptions.NameAlreadyExist;
 import exceptions.ObjectNotExist;
 import jaxb.schema.generated.*;
 import sun.nio.ch.SelectorImpl;
+import world.enums.Type;
 
 import java.util.HashMap;
 import java.util.List;
@@ -243,9 +245,12 @@ public final class XMLValidation {
             String value = extractValueInParentheses(arg);
             if (extractFunctionName(arg).equals("random") && !isNumber(value))
             {
-                throw new NumberFormatException("You provide a value that is not a Integer number, the value is " + value + " in the randomFunction " );
+                throw new NumberFormatException("You provide a value that is not a Integer number, the value is " + value + " in the random function " );
             }
             else if(extractFunctionName(arg).equals("environment") && !checkTypeOfEnvironmentProperty(value) ){
+                throw new NumberFormatException("You provide a value that is not a number, the value is " + value + " in the action " + actionType);
+            }
+            else if (extractFunctionName(arg).equals("evaluate") && !checkTypeOfValueInEvaluateFunction(value)) {
                 throw new NumberFormatException("You provide a value that is not a number, the value is " + value + " in the action " + actionType);
             }
         }
@@ -254,6 +259,28 @@ public final class XMLValidation {
                 throw new NumberFormatException("You provide a value that is not a number the value is " + arg + " in the action " + actionType);
             }
         }
+    }
+
+    private  boolean checkTypeOfValueInEvaluateFunction(String value){
+        boolean flag = false;
+        int index = value.indexOf(".");
+        if(index == -1){
+            return  false;
+        }
+        String entity = value.substring(0, index).trim();
+        String property = value.substring(index + 1).trim();
+        for (PRDEntity prdEntity: world.getPRDEntities().getPRDEntity()){
+            if (prdEntity.getName().equals(entity)){
+                for (PRDProperty prdProperty: prdEntity.getPRDProperties().getPRDProperty()){
+                    if (prdProperty.getPRDName().equals(property)){
+                        if (prdProperty.getType().equals("decimal") || prdProperty.getType().equals("float")) {
+                            flag = true;
+                        }
+                    }
+                }
+            }
+        }
+        return flag;
     }
 
     private boolean checkTypeOfEnvironmentProperty(String value) {

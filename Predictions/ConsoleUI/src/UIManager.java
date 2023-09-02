@@ -1,4 +1,5 @@
 import DTO.*;
+import DTO.DTOActions.DTOActionInfo;
 import DTO.DTOEntityInfo;
 import engineManager.EngineManager;
 import enums.DisplaySimulationOption;
@@ -296,20 +297,20 @@ public class UIManager {
         String valueInput;
         switch (dtoEnvironmentInfo.getType()) {
             case "FLOAT":
-                valueInput = scanner.nextLine();
-                engineManager.checkValidationFloatEnvironment(valueInput, userIntegerInput);
+//                valueInput = scanner.nextLine();
+//                engineManager.checkValidationFloatEnvironment(valueInput, userIntegerInput);
                 break;
             case "DECIMAL":
-                valueInput = scanner.nextLine();
-                engineManager.checkValidationDecimalEnvironment(valueInput, userIntegerInput);
+//                valueInput = scanner.nextLine();
+//                engineManager.checkValidationDecimalEnvironment(valueInput, userIntegerInput);
                 break;
             case "BOOLEAN":
-                Integer userInput = chooseBooleanValue();
-                engineManager.checkValidationBoolEnvironment(userInput, userIntegerInput);
+//                Integer userInput = chooseBooleanValue();
+//                engineManager.checkValidationBoolEnvironment(userInput, userIntegerInput);
                 break;
             case "STRING":
-                valueInput = scanner.nextLine();
-                engineManager.checkValidationStringEnvironment(valueInput, userIntegerInput);
+//                valueInput = scanner.nextLine();
+//                engineManager.checkValidationStringEnvironment(valueInput, userIntegerInput);
                 break;
         }
     }

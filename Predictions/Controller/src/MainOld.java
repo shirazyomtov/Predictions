@@ -14,7 +14,7 @@ import java.net.URL;
 public class Main extends Application {
     public static final String APP_FXML_LIGHT_RESOURCE = "/app/app.fxml";
 
-    public static void main(String[] args) {
+    public static void mainO(String[] args) {
         Thread.currentThread().setName("main");
         launch(args);
     }

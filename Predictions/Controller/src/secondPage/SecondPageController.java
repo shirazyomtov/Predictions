@@ -105,11 +105,11 @@ public class SecondPageController {
     void entitiesNamesListViewClicked(MouseEvent event) {
         choseValueVbox.visibleProperty().set(true);
         int selectedIndex = entitiesNamesListView.getSelectionModel().getSelectedIndex();
-        int currentValue = mainController.getEngineManager().getEntitiesDetails().get(selectedIndex).getInitialAmount();
-        valueTextField.setText(String.valueOf(currentValue));
         if (selectedIndex >= 0) {
             String entityName = entitiesNames.get(selectedIndex);
             entityNameTextField.setText(entityName);
+            int currentValue = mainController.getEngineManager().getEntityAmount(entityName);
+            valueTextField.setText(String.valueOf(currentValue));
         }
         else{
             //todo: add message that the user need to chose one of the entity it entities name
@@ -191,8 +191,9 @@ public class SecondPageController {
     @FXML
     void clearButtonClicked(ActionEvent event) {
         //todo: add the clear function
-        valueTextField.clear();
-        valueEnvironmentTextField.setText("0");
+        valueTextField.setText("0");
+        valueEnvironmentTextField.clear();
+        mainController.getEngineManager().clearPastValues();
 //        mainController.getEngineManager().clearDataOfEntitiesAndEnvironment();
     }
 

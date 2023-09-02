@@ -107,21 +107,6 @@ public final class WorldDefinition implements Serializable {
         }
     }
 
-    public void setSpecificEntityAmount(String entityName, int amountOfEntityInstance){
-        int spaceSize = twoDimensionalGrid.getRows() * twoDimensionalGrid.getCols();
-        int currentAmountOfEntity = entityDefinition.get(entityName).getAmountOfPopulation();
-        if(currentAmountOfEntity != 0){
-            amountOfAllPopulation -= currentAmountOfEntity;
-        }
-        int currentAmountOfAllPopulation = amountOfAllPopulation + amountOfEntityInstance;
-        if(currentAmountOfAllPopulation > spaceSize){
-            throw new IndexOutOfBoundsException("The maximum number of entity instances you can insert is the size of the space which it " + spaceSize);
-        }
-        else{
-            entityDefinition.get(entityName).setAmountOfPopulation(amountOfEntityInstance);
-        }
-    }
-
     public void checkValidationValue(String environmentName, String value, Map<String, EnvironmentInstance> environmentValuesByUser) throws IndexOutOfBoundsException, IllegalArgumentException{
         EnvironmentDefinition specificEnvironmentDefinition = environmentDefinition.get(environmentName);
         EnvironmentInstance environmentInstance = null;

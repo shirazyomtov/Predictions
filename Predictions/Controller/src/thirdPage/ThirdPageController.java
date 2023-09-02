@@ -1,11 +1,14 @@
 package thirdPage;
 
 import DTO.DTOActions.DTOActionInfo;
+import DTO.DTOEntityInfo;
+import DTO.DTOPropertyInfo;
 import DTO.DTOSimulationInfo;
 import app.AppController;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.event.ActionEvent;
@@ -20,28 +23,28 @@ public class ThirdPageController {
     private GridPane thirdPageGridPane;
 
     @FXML
-    private TableColumn<?, ?> amountColumn;
-
-    @FXML
     private TextField currentTickTextField;
 
     @FXML
     private ComboBox<?> displayModeComboBox;
 
     @FXML
-    private TreeView<?> entitiesAndPropertiesTreeView;
+    private TreeView<String> entitiesAndPropertiesTreeView;
 
     @FXML
-    private ListView<?> entitiesListView;
-
-    @FXML
-    private TableView<?> entitiesTableView;
+    private ListView<String> entitiesListView;
 
     @FXML
     private Pane graphPane;
 
     @FXML
-    private TableColumn<?, ?> nameColumn;
+    private TableView<DTOEntityInfo> entitiesTableView;
+
+    @FXML
+    private TableColumn<DTOEntityInfo, String> nameColumn;
+
+    @FXML
+    private TableColumn<DTOEntityInfo, String> amountColumn;
 
     @FXML
     private Button pauseButton;
@@ -59,7 +62,7 @@ public class ThirdPageController {
     private Button stopButton;
 
     @FXML
-    private SplitPane simulationInfoSplitPane;
+    private GridPane simulationInfoGridPane;
 
     @FXML
     private ListView<String> executionListView;
@@ -88,7 +91,7 @@ public class ThirdPageController {
                 state = "(Ended)";
             }
             else{
-                state = "(Active)";
+                state = "(Running)";
             }
             executionListView.getItems().add(state + " Simulation ID: " + dtoSimulationInfo.getSimulationId() + ", Date: " + dtoSimulationInfo.getSimulationDate());
         }
@@ -108,13 +111,17 @@ public class ThirdPageController {
     }
 
     private void setSpecificSimulationDetails(DTOSimulationInfo selectedSimulation) {
-        simulationInfoSplitPane.setVisible(true);
-        if(!selectedSimulation.getFinish()){
+        simulationInfoGridPane.setVisible(true);
+        if(selectedSimulation.getFinish()){
             pauseButton.setVisible(false);
-            rerunButton.setVisible(false);
+            resumeButton.setVisible(false);
             stopButton.setVisible(false);
+            endedSimulationInfoScrollPane.setVisible(true);
         }
         else{
+            pauseButton.setVisible(true);
+            resumeButton.setVisible(true);
+            stopButton.setVisible(true);
             endedSimulationInfoScrollPane.setVisible(false);
         }
 
@@ -122,9 +129,44 @@ public class ThirdPageController {
     }
 
     private void setDetails(DTOSimulationInfo selectedSimulation) {
-//        currentTickTextField.setText(selectedSimulation.get);
-//        secondsCounterTextField.setText(selectedSimulation.get);
-//        addEntitiesDetails(selectedSimulation);
+        currentTickTextField.setText(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()).toString());
+        secondsCounterTextField.setText(mainController.getEngineManager().getCurrentSecond(selectedSimulation.getSimulationId()).toString());
+        List<DTOEntityInfo> entityInfos = mainController.getEngineManager().getAllAmountOfEntities(selectedSimulation.getSimulationId());
+        addEntitiesDetails(entityInfos);
+        if (selectedSimulation.getFinish()){
+            setEntitiesAndProperties(entityInfos);
+            setEntities(entityInfos);
+        }
+    }
+
+
+    private void addEntitiesDetails(List<DTOEntityInfo> allAmountOfEntities) {
+        entitiesTableView.getItems().clear();
+        entitiesTableView.getItems().addAll(allAmountOfEntities);
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("entityName"));
+        amountColumn.setCellValueFactory(new PropertyValueFactory<>("finalAmount"));
+        //todo: after we have the simulation that we can see running change the amount to current amount
+    }
+
+
+    private void setEntitiesAndProperties(List<DTOEntityInfo> allAmountOfEntities) {
+        TreeItem<String> root = new TreeItem<>("Entities");
+        for (DTOEntityInfo dtoEntityInfo : allAmountOfEntities) {
+            TreeItem<String> entityBranch = new TreeItem<>(dtoEntityInfo.getEntityName());
+            for(DTOPropertyInfo dtoPropertyInfo: dtoEntityInfo.getProperties()){
+                TreeItem<String> leaf = new TreeItem<>(dtoPropertyInfo.getName());
+                entityBranch.getChildren().add(leaf);
+            }
+            root.getChildren().add(entityBranch);
+        }
+        entitiesAndPropertiesTreeView.setRoot(root);
+
+    }
+
+    private void setEntities(List<DTOEntityInfo> allAmountOfEntities) {
+        for(DTOEntityInfo dtoEntityInfo: allAmountOfEntities){
+            entitiesListView.getItems().add(dtoEntityInfo.getEntityName());
+        }
     }
 
     @FXML

@@ -58,7 +58,7 @@
                   </VBox>
                </children>
             </GridPane>
-            <SplitPane dividerPositions="0.5" orientation="VERTICAL">
+            <SplitPane fx:id="simulationInfoSplitPane" dividerPositions="0.5" orientation="VERTICAL" visible="false">
                <items>
                   <GridPane>
                      <columnConstraints>
@@ -103,7 +103,7 @@
                         </TableView>
                      </children>
                   </GridPane>
-                  <ScrollPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                  <ScrollPane fx:id="endedSimulationInfoScrollPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                      <content>
                         <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="254.0" prefWidth="498.0" tabClosingPolicy="UNAVAILABLE">
                           <tabs>

@@ -11,13 +11,12 @@ import java.util.List;
 
 public class EntityDefinitionImpl implements EntityDefinition, Serializable {
     private final String name;
-    private  Integer amountOfPopulation = 0;
+    private Integer amountOfPopulation = 0;
     private final List<PropertyDefinition> allProperties;
 
-    public EntityDefinitionImpl(String name, Integer amountOfPopulation, List<PropertyDefinition> allProperties)
+    public EntityDefinitionImpl(String name, List<PropertyDefinition> allProperties)
     {
         this.name = name;
-        this.amountOfPopulation = amountOfPopulation;
         this.allProperties = allProperties;
     }
 

@@ -78,34 +78,18 @@ public class HeaderController {
     @FXML
     void loadFileButtonClicked(ActionEvent event) {
         try {
-            String filePath = mainController.loadXML(); // status = -1 if user close dialog without choosing file
+            String filePath = mainController.loadXML();
             if (!filePath.isEmpty())
-                setSuccessMessage();
+                mainController.setSuccessMessage("File loaded successfully.");
         }
         catch(Exception e){
             mainController.setErrorMessage(e.getMessage());
-//            setErrorMessage(e.getMessage());
         }
     }
 
     @FXML
     void detailsButtonClicked(ActionEvent event) {
         mainController.setIsDetailsClickedProperty(true);
-    }
-
-    private void setSuccessMessage() {
-        //todo: maybe move to main controller like I did in error message
-        pauseTransitionMessage();
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Success");
-        alert.setHeaderText(null);
-        alert.setContentText("File loaded successfully.");
-        alert.showAndWait();
-    }
-
-    private void pauseTransitionMessage(){
-        PauseTransition pause = new PauseTransition(Duration.seconds(3));
-        pause.play();
     }
 
     public void setMainController(AppController mainController) {
@@ -147,7 +131,7 @@ public class HeaderController {
 
     public void bindStartButton(BooleanProperty startButtonPressedProperty) {
         resultsToggleButton.disableProperty().bind(startButtonPressedProperty.not());
-//        resultsToggleButton.selectedProperty().bind(startButtonPressedProperty);
+//        resultsToggleButton.selectedProperty().bind(startButtonPressedProperty.not());
 
         //todo:Add later after we press the start button we move directly to result page
     }

@@ -28,6 +28,8 @@ public  class Simulation implements Serializable {
     private LocalDateTime dateTime;
     private final String formattedDateTime;
 
+    private Boolean isFinish = false;
+
     public Simulation(WorldInstance worldInstance, LocalDateTime dateTime) {
         this.worldInstance = worldInstance;
         this.dateTime = dateTime;
@@ -91,6 +93,7 @@ public  class Simulation implements Serializable {
             seconds = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
         }
 
+        isFinish = true;
         if (worldInstance.getWorldDefinition().getTermination().getSecond() != null && seconds > worldInstance.getWorldDefinition().getTermination().getSecond()) {
             message = "The simulation has ended because more than " + worldInstance.getWorldDefinition().getTermination().getSecond() + " seconds have passed";
         } else if (worldInstance.getWorldDefinition().getTermination().getTicks() != null && worldInstance.getCurrentTick() > worldInstance.getWorldDefinition().getTermination().getTicks()) {
@@ -226,4 +229,7 @@ public  class Simulation implements Serializable {
         }
     }
 
+    public Boolean getIsFinish() {
+        return isFinish;
+    }
 }

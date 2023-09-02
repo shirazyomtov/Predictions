@@ -177,6 +177,15 @@ public class AppController {
         borderPaneComponent.setCenter(thirdPageController.getThirdPageGridPane());
     }
 
+    public void setSuccessMessage(String message) {
+        pauseTransitionMessage();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
     public void setErrorMessage(String errorMessage){
         pauseTransitionMessage();
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -198,7 +207,7 @@ public class AppController {
 
     public void setSimulationsDetails() {
         //engineManager.getAllPastSimulation()
-        thirdPageController.setThirdPageDetails(null);
+        thirdPageController.setThirdPageDetails(engineManager.getAllPastSimulation());
         //todo : fix this after the second page logic
     }
 }

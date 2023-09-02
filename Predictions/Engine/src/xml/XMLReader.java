@@ -73,7 +73,7 @@ public  final class XMLReader implements  Serializable {
                 prdBySecond = (PRDBySecond) terminationParameter;
             }
         }
-        return new Termination(prdByTicks, prdBySecond);
+        return new Termination(prdByTicks, prdBySecond, world.getPRDTermination().getPRDByUser());
     }
     private  List<RuleImpl> defineRules() {
         List<RuleImpl> ruleIml = new ArrayList<>();
@@ -90,7 +90,7 @@ public  final class XMLReader implements  Serializable {
         for (PRDEntity entity: world.getPRDEntities().getPRDEntity())
         {
             List<PropertyDefinition> allProperties = defineProperties(entity);
-            entityDefinition.put(entity.getName(), new EntityDefinitionImpl(entity.getName(), 3, allProperties));
+            entityDefinition.put(entity.getName(), new EntityDefinitionImpl(entity.getName(), allProperties));
         }
 
         return entityDefinition;

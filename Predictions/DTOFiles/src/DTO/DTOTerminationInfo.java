@@ -4,9 +4,12 @@ public class DTOTerminationInfo {
     private Integer ticks;
     private Integer second;
 
-    public DTOTerminationInfo(Integer ticks, Integer second) {
+    private Boolean terminationByUser;
+
+    public DTOTerminationInfo(Integer ticks, Integer second, Boolean terminationByUser) {
         this.ticks = ticks;
         this.second = second;
+        this.terminationByUser = terminationByUser;
     }
 
     public Integer getTicks() {
@@ -15,5 +18,9 @@ public class DTOTerminationInfo {
 
     public Integer getSecond() {
         return second;
+    }
+
+    public Boolean getTerminationByUser() {
+        return terminationByUser;
     }
 }

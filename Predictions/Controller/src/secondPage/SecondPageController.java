@@ -4,6 +4,7 @@ import DTO.DTOEntityInfo;
 import DTO.DTOEnvironmentInfo;
 import app.AppController;
 import engineManager.EngineManager;
+import exceptions.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
@@ -25,8 +26,6 @@ public class SecondPageController {
 
     @FXML
     private VBox choseValueVbox;
-
-
 
     @FXML
     private ListView<String> entitiesNamesListView;
@@ -106,7 +105,8 @@ public class SecondPageController {
     void entitiesNamesListViewClicked(MouseEvent event) {
         choseValueVbox.visibleProperty().set(true);
         int selectedIndex = entitiesNamesListView.getSelectionModel().getSelectedIndex();
-
+        int currentValue = mainController.getEngineManager().getEntitiesDetails().get(selectedIndex).getInitialAmount();
+        valueTextField.setText(String.valueOf(currentValue));
         if (selectedIndex >= 0) {
             String entityName = entitiesNames.get(selectedIndex);
             entityNameTextField.setText(entityName);
@@ -121,8 +121,9 @@ public class SecondPageController {
         try {
             if (!valueTextField.getText().isEmpty()) {
                 int amountOfEntityInstance = Integer.parseInt(valueTextField.getText());
-                //todo: save the value to the logic
-                //todo: check if the amount of entities that the user chose is not bigger than the size of the space
+                String entityName = entityNameTextField.getText();
+                mainController.getEngineManager().setAmountOfEntities(entityName, amountOfEntityInstance);
+                mainController.setSuccessMessage("The value was saved successfully");
             } else {
                 mainController.setErrorMessage("You need to enter a value before pressing save");
             }
@@ -130,6 +131,9 @@ public class SecondPageController {
         catch (NumberFormatException e)
         {
             mainController.setErrorMessage("You need to enter a number as value");
+        }
+        catch (Exception e){
+            mainController.setErrorMessage(e.getMessage());
         }
     }
 
@@ -149,6 +153,13 @@ public class SecondPageController {
         if (selectedIndex >= 0) {
             String environmentName = environmentsNames.get(selectedIndex);
             environmentNameTextField.setText(environmentName);
+            Object value = mainController.getEngineManager().getValueOfEntity(environmentName);
+            if(value != null){
+                valueEnvironmentTextField.setText(value.toString());
+            }
+            else{
+                valueEnvironmentTextField.setText("");
+            }
         }
         else{
             //todo: add message that the user need to chose one of the environment it environments name
@@ -157,7 +168,20 @@ public class SecondPageController {
 
     @FXML
     void saveEnvironmentValueButtonClicked(ActionEvent event) {
-
+        try {
+            if (!valueEnvironmentTextField.getText().isEmpty()) {
+                String valueOfEnvironment = valueEnvironmentTextField.getText();
+                String environmentName = environmentNameTextField.getText();
+                mainController.getEngineManager().checkValidValueAndSetValue(environmentName, valueOfEnvironment);
+                mainController.setSuccessMessage("The value was saved successfully");
+            }
+            else {
+                mainController.setErrorMessage("You need to enter a value before pressing save");
+            }
+        }
+        catch (Exception e){
+            mainController.setErrorMessage(e.getMessage());
+        }
     }
 
     public void setVisible(boolean state) {
@@ -167,14 +191,19 @@ public class SecondPageController {
     @FXML
     void clearButtonClicked(ActionEvent event) {
         //todo: add the clear function
+        valueTextField.clear();
+        valueEnvironmentTextField.setText("0");
 //        mainController.getEngineManager().clearDataOfEntitiesAndEnvironment();
     }
 
     @FXML
-    void startButtonClicked(ActionEvent event) {
+    void startButtonClicked(ActionEvent event) throws EntityNotDefine, ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException {
         //todo: after we add the third screen
         isStartButtonPressed.set(true);
+        mainController.getEngineManager().setSimulation();
+        mainController.getEngineManager().getRunSimulation();
         mainController.setSimulationsDetails();
+        mainController.showThirdPage();
     }
 
     public BooleanProperty getStartButtonPressedProperty() {

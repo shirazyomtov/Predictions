@@ -32,8 +32,6 @@ public final class WorldDefinition implements Serializable {
 
     private TwoDimensionalGrid twoDimensionalGrid;
 
-    private Integer amountOfAllPopulation = 0;
-
     public WorldDefinition(Map<String, EntityDefinitionImpl> entityDefinition, List<RuleImpl> rules, Termination termination,
                            Map<String, EnvironmentDefinition> environmentDefinition, int rows, int columns)
     {
@@ -75,7 +73,7 @@ public final class WorldDefinition implements Serializable {
         List<DTOEntityInfo> entitiesDetails = new ArrayList<>();
         Collection<EntityDefinitionImpl> collectionOfEntity = entityDefinition.values();
         for (EntityDefinitionImpl entityDefinition: collectionOfEntity) {
-            DTOEntityInfo dtoEntity = new DTOEntityInfo(entityDefinition.getName(), entityDefinition.getAmountOfPopulation(), entityDefinition.getDTOProperties());
+            DTOEntityInfo dtoEntity = new DTOEntityInfo(entityDefinition.getName(), entityDefinition.getDTOProperties());
             entitiesDetails.add(dtoEntity);
         }
         return entitiesDetails;

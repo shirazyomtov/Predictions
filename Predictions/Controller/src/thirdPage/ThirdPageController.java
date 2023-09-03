@@ -7,6 +7,7 @@ import DTO.DTOSimulationInfo;
 import app.AppController;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
@@ -26,13 +27,15 @@ public class ThirdPageController {
     private TextField currentTickTextField;
 
     @FXML
-    private ComboBox<?> displayModeComboBox;
+    private Label displayModeLabel;
+
+    @FXML
+    private ComboBox<String> displayModeComboBox;
 
     @FXML
     private TreeView<String> entitiesAndPropertiesTreeView;
 
-    @FXML
-    private ListView<String> entitiesListView;
+
 
     @FXML
     private Pane graphPane;
@@ -67,6 +70,13 @@ public class ThirdPageController {
     @FXML
     private ListView<String> executionListView;
 
+    //Graphs population change
+    @FXML
+    private LineChart<?, ?> amountOfEntitiesLineChart;
+
+    @FXML
+    private ListView<String> entitiesListView;
+
     @FXML
     private ScrollPane endedSimulationInfoScrollPane;
 
@@ -74,11 +84,17 @@ public class ThirdPageController {
 
     private List<DTOSimulationInfo> allDTOSimulationList;
 
+    private DTOSimulationInfo selectedSimulation;
+
+    private List<DTOEntityInfo> chosenSimulationEntities;
+
     public void setMainController(AppController appController) {
         this.mainController = appController;
     }
 
     public void setThirdPageDetails(List<DTOSimulationInfo> simulationInfos) {
+        displayModeLabel.setVisible(false);
+        displayModeComboBox.setVisible(false);
         allDTOSimulationList = simulationInfos;
         executionListView.getItems().clear();
         addSimulationsToExecutionListView(simulationInfos);
@@ -102,15 +118,15 @@ public class ThirdPageController {
         int selectedIndex = executionListView.getSelectionModel().getSelectedIndex();
 
         if (selectedIndex >= 0) {
-            DTOSimulationInfo selectedSimulation = allDTOSimulationList.get(selectedIndex);
-            setSpecificSimulationDetails(selectedSimulation);
+            selectedSimulation = allDTOSimulationList.get(selectedIndex);
+            setSpecificSimulationDetails();
         }
         else{
             //todo: add message that the user need to chose one of the action it actions name
         }
     }
 
-    private void setSpecificSimulationDetails(DTOSimulationInfo selectedSimulation) {
+    private void setSpecificSimulationDetails() {
         simulationInfoGridPane.setVisible(true);
         if(selectedSimulation.getFinish()){
             pauseButton.setVisible(false);
@@ -125,33 +141,33 @@ public class ThirdPageController {
             endedSimulationInfoScrollPane.setVisible(false);
         }
 
-        setDetails(selectedSimulation);
+        setDetails();
     }
 
-    private void setDetails(DTOSimulationInfo selectedSimulation) {
+    private void setDetails() {
         currentTickTextField.setText(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()).toString());
         secondsCounterTextField.setText(mainController.getEngineManager().getCurrentSecond(selectedSimulation.getSimulationId()).toString());
-        List<DTOEntityInfo> entityInfos = mainController.getEngineManager().getAllAmountOfEntities(selectedSimulation.getSimulationId());
-        addEntitiesDetails(entityInfos);
+        chosenSimulationEntities = mainController.getEngineManager().getAllAmountOfEntities(selectedSimulation.getSimulationId());
+        addEntitiesDetails();
         if (selectedSimulation.getFinish()){
-            setEntitiesAndProperties(entityInfos);
-            setEntities(entityInfos);
+            setEntitiesAndProperties();
+            setEntities();
         }
     }
 
 
-    private void addEntitiesDetails(List<DTOEntityInfo> allAmountOfEntities) {
+    private void addEntitiesDetails() {
         entitiesTableView.getItems().clear();
-        entitiesTableView.getItems().addAll(allAmountOfEntities);
+        entitiesTableView.getItems().addAll(chosenSimulationEntities);
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("entityName"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("finalAmount"));
         //todo: after we have the simulation that we can see running change the amount to current amount
     }
 
 
-    private void setEntitiesAndProperties(List<DTOEntityInfo> allAmountOfEntities) {
+    private void setEntitiesAndProperties() {
         TreeItem<String> root = new TreeItem<>("Entities");
-        for (DTOEntityInfo dtoEntityInfo : allAmountOfEntities) {
+        for (DTOEntityInfo dtoEntityInfo : chosenSimulationEntities) {
             TreeItem<String> entityBranch = new TreeItem<>(dtoEntityInfo.getEntityName());
             for(DTOPropertyInfo dtoPropertyInfo: dtoEntityInfo.getProperties()){
                 TreeItem<String> leaf = new TreeItem<>(dtoPropertyInfo.getName());
@@ -163,10 +179,17 @@ public class ThirdPageController {
 
     }
 
-    private void setEntities(List<DTOEntityInfo> allAmountOfEntities) {
-        for(DTOEntityInfo dtoEntityInfo: allAmountOfEntities){
+    private void setEntities() {
+        entitiesListView.getItems().clear();
+        for(DTOEntityInfo dtoEntityInfo: chosenSimulationEntities){
             entitiesListView.getItems().add(dtoEntityInfo.getEntityName());
         }
+    }
+
+
+    @FXML
+    void entitiesListViewClicked(MouseEvent event) {
+        //todo: add a function and data to save the info about amount of each entity in each tick
     }
 
     @FXML
@@ -176,18 +199,43 @@ public class ThirdPageController {
 
     @FXML
     void entitiesAndPropertiesTreeViewClicked(MouseEvent event) {
+        displayModeComboBox.getItems().clear();
+        displayModeComboBox.getItems().add("Histogram of population");
+        displayModeComboBox.getItems().add("Consistency");
+        TreeItem<String> selectedItem = entitiesAndPropertiesTreeView.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            if (!selectedItem.isLeaf()) {
+                return;
+            }
 
+            String propertyName = selectedItem.getValue();
+            TreeItem<String> entityItem = selectedItem.getParent();
+            if (entityItem != null) {
+                String entityName = entityItem.getValue();
+                setComboBox(entityName, propertyName);
+            }
+        }
     }
 
-
+    private void setComboBox(String entityName, String propertyName) {
+        chosenSimulationEntities.stream()
+                .filter(dtoEntityInfo -> dtoEntityInfo.getEntityName().equals(entityName))
+                .findFirst()
+                .ifPresent(entity -> {
+                    entity.getProperties().stream()
+                            .filter(dtoPropertyInfo -> dtoPropertyInfo.getName().equals(propertyName))
+                            .filter(dtoPropertyInfo -> dtoPropertyInfo.getType().equals("FLOAT"))
+                            .forEach(dtoPropertyInfo -> {
+                                String displayMode = "Average value";
+                                displayModeComboBox.getItems().add(displayMode);
+                            });
+                });
+        displayModeLabel.setVisible(true);
+        displayModeComboBox.setVisible(true);
+    }
 
     @FXML
     void pauseButtonClicked(ActionEvent event) {
-
-    }
-
-    @FXML
-    void rerunButtonClicked(ActionEvent event) {
 
     }
 
@@ -201,6 +249,16 @@ public class ThirdPageController {
 
     }
 
+    @FXML
+    void rerunButtonClicked(ActionEvent event) {
+        if(selectedSimulation.getFinish()) {
+            mainController.setSecondPageDetails(selectedSimulation.getSimulationId());
+            mainController.showSecondPage();
+        }
+        else {
+            mainController.setErrorMessage("You cannot rerun a simulation that is still running");
+        }
+    }
 
     public void setVisible(boolean state) {
         thirdPageGridPane.visibleProperty().set(state);
@@ -209,5 +267,14 @@ public class ThirdPageController {
 
     public Node getThirdPageGridPane() {
         return thirdPageGridPane;
+    }
+
+    public void clearAllData() {
+        simulationInfoGridPane.setVisible(false);
+        endedSimulationInfoScrollPane.setVisible(false);
+        entitiesListView.getItems().clear();
+        entitiesAndPropertiesTreeView.setRoot(null);
+        entitiesListView.getItems().clear();
+
     }
 }

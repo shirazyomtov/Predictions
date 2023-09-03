@@ -419,8 +419,8 @@ public class UIManager {
     }
 
     private void displayByQuantity(int userIntegerInput) {
-        System.out.println("The initial and final quantity of each entity: ");
-        printInitAndFinalEntities(engineManager.getQuantityOfEachEntity(userIntegerInput));
+//        System.out.println("The initial and final quantity of each entity: ");
+//        printInitAndFinalEntities(engineManager.getQuantityOfEachEntity(userIntegerInput));
     }
 
     private void printInitAndFinalEntities(DTOEntityInfo dtoEntityInfo){

@@ -2,15 +2,11 @@ package world.worldInstance;
 
 import DTO.DTOEnvironmentInfo;
 import world.entity.instance.EntityInstance;
-import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
 import world.worldDefinition.WorldDefinition;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WorldInstance implements Serializable {
 
@@ -20,14 +16,19 @@ public class WorldInstance implements Serializable {
 
     private WorldDefinition worldDefinition = null;
 
+    private Map<String, Integer> initAmountOfEntities;
+
+    private Map<String, Integer> currentAmountOfEntities;
 
     private int currentTick = 1;
-    public WorldInstance(Map<String, EnvironmentInstance> environmentInstanceMap, List<EntityInstance> entityInstanceList, WorldDefinition worldDefinition) {
+
+    public WorldInstance(Map<String, EnvironmentInstance> environmentInstanceMap, List<EntityInstance> entityInstanceList, WorldDefinition worldDefinition, Map<String, Integer> initAmountOfEntities, Map<String, Integer> currentAmountOfEntities) {
         this.environmentInstanceMap = environmentInstanceMap;
         this.entityInstanceList = entityInstanceList;
         this.worldDefinition = worldDefinition;
+        this.initAmountOfEntities = initAmountOfEntities;
+        this.currentAmountOfEntities = currentAmountOfEntities;
     }
-
 
     public int getCurrentTick() {
         return currentTick;
@@ -72,4 +73,16 @@ public class WorldInstance implements Serializable {
         entityInstanceList.add(entityInstance);
     }
 
+    public void setCurrentAmountOfEntities(Map<String, Integer> currentAmountOfEntities) {
+        this.currentAmountOfEntities = currentAmountOfEntities;
+        //todo: maybe change
+    }
+
+    public Map<String, Integer> getInitAmountOfEntities() {
+        return initAmountOfEntities;
+    }
+
+    public Map<String, Integer> getCurrentAmountOfEntities() {
+        return currentAmountOfEntities;
+    }
 }

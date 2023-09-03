@@ -1,5 +1,7 @@
 package app;
 
+import DTO.DTOEntityInfo;
+import DTO.DTOEnvironmentInfo;
 import engineManager.EngineManager;
 import firstPage.FirstPageController;
 import header.HeaderController;
@@ -155,12 +157,14 @@ public class AppController {
     }
 
     private void setAllPagesDetails() {
+        engineManager.clearPastValues();
         secondPageController.getStartButtonPressedProperty().set(false);
         firstPageController.setWorldDetailsFromEngine();
         firstPageController.resetAllComponentFirstPage();
         secondPageController.setVisible(false);
         secondPageController.setSecondPageDetails(engineManager.getEntitiesDetails(), engineManager.getEnvironmentNamesList());
         thirdPageController.setVisible(false);
+        thirdPageController.clearAllData();
     }
 
     public void showFirstPage() {
@@ -209,5 +213,9 @@ public class AppController {
         //engineManager.getAllPastSimulation()
         thirdPageController.setThirdPageDetails(engineManager.getAllPastSimulation());
         //todo : fix this after the second page logic
+    }
+
+    public void setSecondPageDetails(Integer simulationId) {
+        secondPageController.setSecondPageDetails(engineManager.getAllAmountOfEntitiesAndSetEntitiesByUser(simulationId), engineManager.getEnvironmentValuesOfChosenSimulation(simulationId));
     }
 }

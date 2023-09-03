@@ -35,6 +35,7 @@ public class EngineManager implements Serializable{
     private WorldInstance worldInstance = null;
 
     Map <String, EnvironmentInstance> environmentValuesByUser = new HashMap<>();
+    Map <String, Integer> entitiesAmountByUser = new HashMap<>();
 
     public void loadXMLAAndCheckValidation(String xmlPath) throws Exception {
         try {
@@ -100,7 +101,14 @@ public class EngineManager implements Serializable{
         Map<String, EnvironmentInstance> environmentInstanceMap = environmentValuesByUser;
 
         setRandomEnvironmentValues(environmentInstanceMap);
+        setEntitiesDefinitionPopulation();
         setSimulationDetailsAndAddToHistory(environmentInstanceMap);
+    }
+
+    private void setEntitiesDefinitionPopulation() {
+        for(String entityName: entitiesAmountByUser.keySet()){
+            world.getEntityDefinition().get(entityName).setAmountOfPopulation(entitiesAmountByUser.get(entityName));
+        }
     }
 
     private void setRandomEnvironmentValues(Map<String, EnvironmentInstance> environmentInstanceMap) {
@@ -320,14 +328,14 @@ public class EngineManager implements Serializable{
                 }
                 int amount = history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityInstance1.getName()).getAmountOfPopulation();
                 String name = entityInstance1.getName();
-                dtoEntityInfo = new DTOEntityInfo(amount, count, name);
+                dtoEntityInfo = new DTOEntityInfo(amount, count, name, history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(name).getDTOProperties());
                 count = 0;
             }
         }
 
         if (!flag) {
             for (Map.Entry<String, EntityDefinitionImpl> entityDefinition : history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().entrySet()) {
-                dtoEntityInfo = new DTOEntityInfo(entityDefinition.getValue().getAmountOfPopulation(), 0, entityDefinition.getKey());
+                dtoEntityInfo = new DTOEntityInfo(entityDefinition.getValue().getAmountOfPopulation(), 0, entityDefinition.getKey(), history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityDefinition.getKey()).getDTOProperties());
             }
         }
         return dtoEntityInfo;
@@ -428,17 +436,39 @@ public class EngineManager implements Serializable{
 
     public void clearPastValues() {
         environmentValuesByUser.clear();
+        entitiesAmountByUser.clear();
     }
 
     public DTOGrid getDTOGridDetails(){return world.createDTOGridDetails();};
 
     public void setAmountOfEntities(String entityName, int amountOfEntityInstance) throws IndexOutOfBoundsException{
         if(amountOfEntityInstance >= 0) {
-            world.setSpecificEntityAmount(entityName, amountOfEntityInstance);
+            setSpecificEntityAmount(entityName, amountOfEntityInstance);
         }
         else {
             throw new IndexOutOfBoundsException("You need to enter a amount of entity instance that is bigger or equal to 0");
         }
+    }
+
+    public void setSpecificEntityAmount(String entityName, int amountOfEntityInstance){
+        int currentAmountOfEntity = 0;
+        int spaceSize = world.getTwoDimensionalGrid().getRows() * world.getTwoDimensionalGrid().getCols();
+        int amountOfAllPopulation = getAmountOfAllEntities();
+        int currentAmountOfAllPopulation = amountOfAllPopulation + amountOfEntityInstance;
+        if(currentAmountOfAllPopulation > spaceSize){
+            throw new IndexOutOfBoundsException("The maximum number of entity instances you can insert is the size of the space which it " + spaceSize);
+        }
+        else{
+            entitiesAmountByUser.put(entityName, amountOfEntityInstance);
+        }
+    }
+
+    private int getAmountOfAllEntities() {
+        int sum = 0;
+        for (int value : entitiesAmountByUser.values()) {
+            sum += value;
+        }
+        return sum;
     }
 
     public Object getValueOfEntity(String environmentName) {
@@ -448,4 +478,41 @@ public class EngineManager implements Serializable{
         }
         return null;
     }
+
+    public int getEntityAmount(String entityName) {
+        if (entitiesAmountByUser.containsKey(entityName)) {
+            return entitiesAmountByUser.get(entityName);
+        }
+        else{
+            return 0;
+        }
+    }
+
+    public Integer getCurrentTick(int simulationId){
+        return worldInstance.getCurrentTick();
+    }
+
+    public Integer getCurrentSecond(int simulationId){
+        return history.getAllSimulations().get(simulationId).getCurrentSecond();
+    }
+
+    public List<DTOEntityInfo> getAllAmountOfEntities(int simulationId) {
+        List<DTOEntityInfo> entityInfos = new ArrayList<>();
+
+        Map<String, Integer> entityCount = new HashMap<>();
+        for (EntityInstance entityInstance : history.getAllSimulations().get(simulationId).getWorldInstance().getEntityInstanceList()) {
+            String entityName = entityInstance.getName();
+            entityCount.put(entityName, entityCount.getOrDefault(entityName, 0) + 1);
+        }
+
+        for(String entityName: entityCount.keySet()){
+            int initAmount = history.getAllSimulations().get(simulationId).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityName).getAmountOfPopulation();
+            List<DTOPropertyInfo> dtoPropertyInfos = history.getAllSimulations().get(simulationId).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityName).getDTOProperties();
+            DTOEntityInfo dtoEntityInfo = new DTOEntityInfo(initAmount, entityCount.get(entityName), entityName, dtoPropertyInfos);
+            entityInfos.add(dtoEntityInfo);
+        }
+
+        return entityInfos;
+    }
+
 }

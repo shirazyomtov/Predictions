@@ -30,6 +30,8 @@ public  class Simulation implements Serializable {
 
     private Boolean isFinish = false;
 
+    private Integer currentSecond = 0;
+
     public Simulation(WorldInstance worldInstance, LocalDateTime dateTime) {
         this.worldInstance = worldInstance;
         this.dateTime = dateTime;
@@ -56,6 +58,7 @@ public  class Simulation implements Serializable {
 
         while ((worldInstance.getWorldDefinition().getTermination().getSecond() == null || seconds <= worldInstance.getWorldDefinition().getTermination().getSecond()) &&
                 (worldInstance.getWorldDefinition().getTermination().getTicks() == null || worldInstance.getCurrentTick() <= worldInstance.getWorldDefinition().getTermination().getTicks())) {
+            currentSecond = seconds;
             moveEntities();
             activationAction = createActivationActionsList();
             for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
@@ -231,5 +234,9 @@ public  class Simulation implements Serializable {
 
     public Boolean getIsFinish() {
         return isFinish;
+    }
+
+    public Integer getCurrentSecond() {
+        return currentSecond;
     }
 }

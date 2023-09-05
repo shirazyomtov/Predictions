@@ -1,12 +1,14 @@
 package thirdPage;
 
-import DTO.DTOActions.DTOActionInfo;
 import DTO.DTOEntityInfo;
 import DTO.DTOPropertyInfo;
 import DTO.DTOSimulationInfo;
 import app.AppController;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -14,12 +16,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.Pane;
+import thirdPage.histogramOfPopulation.HistogramOfPopulation;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 public class ThirdPageController {
 
+    private static final String HISTOGRAM_FXML_LIGHT_RESOURCE = "/thirdPage/histogramOfPopulation/histogramOfPopulation.fxml";
     @FXML
     private GridPane thirdPageGridPane;
 
@@ -80,13 +87,45 @@ public class ThirdPageController {
     @FXML
     private ScrollPane endedSimulationInfoScrollPane;
 
+    @FXML
+    private Pane staticInfoPane;
+
     private AppController mainController;
 
     private List<DTOSimulationInfo> allDTOSimulationList;
 
     private DTOSimulationInfo selectedSimulation;
 
-    private List<DTOEntityInfo> chosenSimulationEntities;
+//    private List<DTOEntityInfo> chosenSimulationEntities;
+
+    private HistogramOfPopulation histogramOfPopulation;
+
+    private SimpleBooleanProperty isDisplayModePressed;
+
+    public ThirdPageController(){
+        isDisplayModePressed = new SimpleBooleanProperty(false);
+    }
+
+    @FXML
+    public void initialize() throws Exception {
+        loadResourcesStaticData();
+        if(histogramOfPopulation != null){
+            staticInfoPane.visibleProperty().bind(isDisplayModePressed);
+        }
+    }
+
+    private void loadResourcesStaticData() throws IOException {
+        loadResourcesHistogramProperty();
+    }
+
+    private void loadResourcesHistogramProperty() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(HISTOGRAM_FXML_LIGHT_RESOURCE);
+        fxmlLoader.setLocation(url);
+        InputStream inputStream = url.openStream();
+        BarChart barChart = fxmlLoader.load(inputStream);
+        histogramOfPopulation = fxmlLoader.getController();
+    }
 
     public void setMainController(AppController appController) {
         this.mainController = appController;
@@ -147,16 +186,17 @@ public class ThirdPageController {
     private void setDetails() {
         currentTickTextField.setText(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()).toString());
         secondsCounterTextField.setText(mainController.getEngineManager().getCurrentSecond(selectedSimulation.getSimulationId()).toString());
-        chosenSimulationEntities = mainController.getEngineManager().getAllAmountOfEntities(selectedSimulation.getSimulationId());
-        addEntitiesDetails();
+        List<DTOEntityInfo> chosenSimulationEntities = mainController.getEngineManager().getAllAmountOfEntities(selectedSimulation.getSimulationId());
+        addEntitiesDetails(chosenSimulationEntities);
         if (selectedSimulation.getFinish()){
-            setEntitiesAndProperties();
-            setEntities();
+            List<DTOEntityInfo> finalDTOEntities = mainController.getEngineManager().getAllDetailsOfEndedSimulation(selectedSimulation.getSimulationId());
+            setEntitiesAndProperties(finalDTOEntities);
+            setEntities(finalDTOEntities);
         }
     }
 
 
-    private void addEntitiesDetails() {
+    private void addEntitiesDetails(List<DTOEntityInfo> chosenSimulationEntities) {
         entitiesTableView.getItems().clear();
         entitiesTableView.getItems().addAll(chosenSimulationEntities);
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("entityName"));
@@ -165,9 +205,9 @@ public class ThirdPageController {
     }
 
 
-    private void setEntitiesAndProperties() {
+    private void setEntitiesAndProperties(List<DTOEntityInfo> finalDTOEntities) {
         TreeItem<String> root = new TreeItem<>("Entities");
-        for (DTOEntityInfo dtoEntityInfo : chosenSimulationEntities) {
+        for (DTOEntityInfo dtoEntityInfo : finalDTOEntities) {
             TreeItem<String> entityBranch = new TreeItem<>(dtoEntityInfo.getEntityName());
             for(DTOPropertyInfo dtoPropertyInfo: dtoEntityInfo.getProperties()){
                 TreeItem<String> leaf = new TreeItem<>(dtoPropertyInfo.getName());
@@ -179,9 +219,9 @@ public class ThirdPageController {
 
     }
 
-    private void setEntities() {
+    private void setEntities(List<DTOEntityInfo> finalDTOEntities) {
         entitiesListView.getItems().clear();
-        for(DTOEntityInfo dtoEntityInfo: chosenSimulationEntities){
+        for(DTOEntityInfo dtoEntityInfo: finalDTOEntities){
             entitiesListView.getItems().add(dtoEntityInfo.getEntityName());
         }
     }
@@ -194,7 +234,25 @@ public class ThirdPageController {
 
     @FXML
     void displayModeComboBoxClicked(ActionEvent event) {
-
+        isDisplayModePressed.set(true);
+        staticInfoPane.getChildren().clear();
+        String selectedDisplay = displayModeComboBox.getSelectionModel().getSelectedItem();
+        if(selectedDisplay != null) {
+            switch (selectedDisplay) {
+                case "Histogram of population":
+                    staticInfoPane.getChildren().add(histogramOfPopulation.getHistogramBarChart());
+                    TreeItem<String> selectedItem = entitiesAndPropertiesTreeView.getSelectionModel().getSelectedItem();
+                    String propertyName = selectedItem.getValue();
+                    String entityName = selectedItem.getParent().getValue();
+                    Map<Object, Integer> propertyInfoAboutValues = mainController.getEngineManager().createPropertyValuesMap(selectedSimulation.getSimulationId(), entityName, propertyName);
+                    histogramOfPopulation.createBarChart(propertyInfoAboutValues);
+                    break;
+                case "Consistency":
+                    break;
+                case "Average value":
+                    break;
+            }
+        }
     }
 
     @FXML
@@ -205,6 +263,8 @@ public class ThirdPageController {
         TreeItem<String> selectedItem = entitiesAndPropertiesTreeView.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             if (!selectedItem.isLeaf()) {
+                displayModeComboBox.setVisible(false);
+                displayModeLabel.setVisible(false);
                 return;
             }
 
@@ -215,10 +275,15 @@ public class ThirdPageController {
                 setComboBox(entityName, propertyName);
             }
         }
+        else{
+            displayModeComboBox.setVisible(false);
+            displayModeLabel.setVisible(false);
+        }
     }
 
     private void setComboBox(String entityName, String propertyName) {
-        chosenSimulationEntities.stream()
+        List<DTOEntityInfo> finalDTOEntities = mainController.getEngineManager().getAllDetailsOfEndedSimulation(selectedSimulation.getSimulationId());
+        finalDTOEntities.stream()
                 .filter(dtoEntityInfo -> dtoEntityInfo.getEntityName().equals(entityName))
                 .findFirst()
                 .ifPresent(entity -> {

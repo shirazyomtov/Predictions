@@ -10,7 +10,7 @@ import java.util.*;
 
 public class WorldInstance implements Serializable {
 
-    private  Map<String, EnvironmentInstance> environmentInstanceMap = null;
+    private  Map<String, EnvironmentInstance> environmentInstanceMap = new HashMap<>();
 
     private List<EntityInstance> entityInstanceList = null;
 
@@ -23,11 +23,17 @@ public class WorldInstance implements Serializable {
     private int currentTick = 1;
 
     public WorldInstance(Map<String, EnvironmentInstance> environmentInstanceMap, List<EntityInstance> entityInstanceList, WorldDefinition worldDefinition, Map<String, Integer> initAmountOfEntities, Map<String, Integer> currentAmountOfEntities) {
-        this.environmentInstanceMap = environmentInstanceMap;
         this.entityInstanceList = entityInstanceList;
         this.worldDefinition = worldDefinition;
         this.initAmountOfEntities = initAmountOfEntities;
         this.currentAmountOfEntities = currentAmountOfEntities;
+        createEnvironmentMap(environmentInstanceMap);
+    }
+
+    private void createEnvironmentMap(Map<String, EnvironmentInstance> environmentsInstance) {
+        for(String environmentName: environmentsInstance.keySet()){
+            worldDefinition.checkValidationValue(environmentName, environmentsInstance.get(environmentName).getProperty().getValue().toString(), environmentInstanceMap);
+        }
     }
 
     public int getCurrentTick() {

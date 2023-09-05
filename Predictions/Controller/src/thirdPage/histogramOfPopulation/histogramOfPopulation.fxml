@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+
+<BarChart fx:id="histogramBarChart" prefHeight="254.0" prefWidth="249.0" title="Histogram of popualtion" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="thirdPage.histogramOfPopulation.HistogramOfPopulation">
+  <xAxis>
+    <CategoryAxis label="Value" side="BOTTOM" />
+  </xAxis>
+  <yAxis>
+    <NumberAxis label="amount" side="LEFT" />
+  </yAxis>
+</BarChart>

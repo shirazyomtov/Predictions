@@ -42,8 +42,6 @@ public class ThirdPageController {
     @FXML
     private TreeView<String> entitiesAndPropertiesTreeView;
 
-
-
     @FXML
     private Pane graphPane;
 

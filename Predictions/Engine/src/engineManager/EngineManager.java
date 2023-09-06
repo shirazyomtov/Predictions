@@ -558,7 +558,11 @@ public class EngineManager implements Serializable{
     }
 
     public List<DTOEntityInfo> getAllAmountOfEntitiesAndSetEntitiesByUser(Integer simulationId) {
-        entitiesAmountByUser = history.getAllSimulations().get(simulationId).getWorldInstance().getInitAmountOfEntities();
+        entitiesAmountByUser = new HashMap<>();
+        Map <String, Integer> initAmountOfEntities = history.getAllSimulations().get(simulationId).getWorldInstance().getInitAmountOfEntities();
+        for(String entityName: initAmountOfEntities.keySet()){
+            entitiesAmountByUser.put(entityName, initAmountOfEntities.get(entityName));
+        }
         return getAllAmountOfEntities(simulationId);
     }
 }

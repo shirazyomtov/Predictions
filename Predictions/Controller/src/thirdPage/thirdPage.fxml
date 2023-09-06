@@ -58,7 +58,7 @@
                   </VBox>
                </children>
             </GridPane>
-            <SplitPane dividerPositions="0.46450858034321374" orientation="VERTICAL">
+            <SplitPane dividerPositions="0.5" orientation="VERTICAL">
                <items>
                   <GridPane fx:id="simulationInfoGridPane">
                      <columnConstraints>
@@ -104,34 +104,34 @@
                         </TableView>
                      </children>
                   </GridPane>
-                  <ScrollPane fx:id="endedSimulationInfoScrollPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="600.0" style="-fx-border-color: blue;">
+                  <ScrollPane fx:id="endedSimulationInfoScrollPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="600.0">
                      <content>
-                        <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="275.0" prefWidth="600.0" style="-fx-border-color: red;">
+                        <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="654.0">
                            <children>
-                              <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="273.0" prefWidth="600.0" style="-fx-border-color: green;" tabClosingPolicy="UNAVAILABLE">
+                              <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="650.0" tabClosingPolicy="UNAVAILABLE">
                                  <tabs>
                                     <Tab text="Graphs population change">
                                        <content>
-                                          <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="243.0" prefWidth="500.0">
+                                          <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="653.0">
                                              <children>
-                                                <GridPane layoutY="-2.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="213.0" prefWidth="500.0">
+                                                <GridPane layoutX="-3.0" layoutY="-2.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="217.0" prefWidth="653.0">
                                                    <columnConstraints>
-                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
-                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="235.79998779296875" minWidth="10.0" prefWidth="114.9999755859375" />
-                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="40.799951171874994" minWidth="5.0" prefWidth="19.19998779296874" />
-                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="374.20001220703125" minWidth="10.0" prefWidth="342.40001220703124" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.400048828125" minWidth="5.0" prefWidth="10.400048828125" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="235.79998779296875" minWidth="10.0" prefWidth="147.599951171875" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="5.0" prefWidth="20.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="468.8000671386718" minWidth="10.0" prefWidth="468.8000671386718" />
                                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
                                                    </columnConstraints>
                                                    <rowConstraints>
                                                       <RowConstraints maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
                                                       <RowConstraints maxHeight="98.8000244140625" minHeight="10.0" prefHeight="59.60001602172852" vgrow="SOMETIMES" />
-                                                      <RowConstraints maxHeight="157.99997177124024" minHeight="10.0" prefHeight="149.1999839782715" vgrow="SOMETIMES" />
-                                                      <RowConstraints maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="157.99997177124024" minHeight="10.0" prefHeight="136.39995727539062" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="8.80004272460937" minHeight="0.0" prefHeight="8.80004272460937" vgrow="SOMETIMES" />
                                                    </rowConstraints>
                                                    <children>
-                                                      <Pane fx:id="graphPane" prefWidth="600.0" GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.rowSpan="2">
+                                                      <Pane fx:id="graphPane" prefHeight="204.0" prefWidth="478.0" GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.rowSpan="2">
                                                          <children>
-                                                            <LineChart fx:id="amountOfEntitiesLineChart" layoutY="-2.0" prefHeight="204.0" prefWidth="442.0">
+                                                            <LineChart fx:id="amountOfEntitiesLineChart" layoutY="-2.0" prefHeight="200.0" prefWidth="500.0">
                                                                <xAxis>
                                                                   <CategoryAxis label="ticks" side="BOTTOM" />
                                                                </xAxis>
@@ -142,7 +142,7 @@
                                                          </children>
                                                       </Pane>
                                                       <Label prefHeight="52.0" prefWidth="110.0" text="Select an entity name to present the graph:" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                      <ListView fx:id="entitiesListView" onMouseClicked="#entitiesListViewClicked" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                      <ListView fx:id="entitiesListView" onMouseClicked="#entitiesListViewClicked" prefHeight="152.0" prefWidth="151.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                                    </children>
                                                 </GridPane>
                                              </children>
@@ -151,26 +151,26 @@
                                     </Tab>
                                     <Tab text="Static information about the properties">
                                        <content>
-                                          <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="251.0" prefWidth="498.0">
+                                          <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="220.0" prefWidth="650.0">
                                              <children>
-                                                <GridPane layoutY="-2.0" prefHeight="226.0" prefWidth="499.0">
+                                                <GridPane layoutX="1.0" layoutY="-10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="217.0" prefWidth="650.0">
                                                    <columnConstraints>
                                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
-                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="231.5999755859375" minWidth="10.0" prefWidth="88.00001220703125" />
-                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="17.599999999999994" minWidth="5.0" prefWidth="10.399987792968759" />
-                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="154.19998779296873" minWidth="5.0" prefWidth="142.39999999999998" />
-                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="360.4000244140625" minWidth="10.0" prefWidth="235.80001220703127" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="231.5999755859375" minWidth="10.0" prefWidth="97.20001220703125" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="103.20003662109374" minWidth="5.0" prefWidth="23.4000244140625" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="236.80002441406248" minWidth="5.0" prefWidth="140.99997558593753" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="398.20004272460943" minWidth="10.0" prefWidth="376.0000061035156" />
                                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
                                                    </columnConstraints>
                                                    <rowConstraints>
                                                       <RowConstraints maxHeight="14.39998779296875" minHeight="5.0" prefHeight="14.39998779296875" vgrow="SOMETIMES" />
                                                       <RowConstraints maxHeight="127.79997558593749" minHeight="10.0" prefHeight="127.79997558593749" vgrow="SOMETIMES" />
-                                                      <RowConstraints maxHeight="145.0000328063965" minHeight="10.0" prefHeight="86.20002441406248" vgrow="SOMETIMES" />
-                                                      <RowConstraints maxHeight="5.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="145.0000328063965" minHeight="10.0" prefHeight="72.8000244140625" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
                                                    </rowConstraints>
                                                    <children>
-                                                      <Pane fx:id="staticInfoPane" prefHeight="200.0" prefWidth="200.0" visible="false" GridPane.columnIndex="4" GridPane.rowIndex="1" GridPane.rowSpan="2" />
-                                                      <Label fx:id="displayModeLabel" alignment="CENTER" prefHeight="68.0" prefWidth="92.0" text="Select display mode:" visible="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                      <Pane fx:id="staticInfoPane" prefHeight="220.0" prefWidth="400.0" visible="false" GridPane.columnIndex="4" GridPane.rowIndex="1" GridPane.rowSpan="2" />
+                                                      <Label fx:id="displayModeLabel" alignment="CENTER" prefHeight="79.0" prefWidth="99.0" text="Select display mode:" visible="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                                       <Label prefHeight="114.0" prefWidth="85.0" text="Select property name to present information:" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                       <TreeView fx:id="entitiesAndPropertiesTreeView" onMouseClicked="#entitiesAndPropertiesTreeViewClicked" prefHeight="110.0" prefWidth="136.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                                                       <ComboBox fx:id="displayModeComboBox" onAction="#displayModeComboBoxClicked" prefWidth="150.0" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="2" />
@@ -183,7 +183,7 @@
                                  </tabs>
                               </TabPane>
                            </children>
-                        </Pane>
+                        </AnchorPane>
                      </content>
                   </ScrollPane>
                </items>

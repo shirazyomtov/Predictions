@@ -141,7 +141,7 @@
                                                             </LineChart>
                                                          </children>
                                                       </Pane>
-                                                      <Label prefHeight="52.0" prefWidth="110.0" text="Select an entity name to present the graph:" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <Label prefHeight="59.0" prefWidth="148.0" text="Select an entity name to present the graph:" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                       <ListView fx:id="entitiesListView" onMouseClicked="#entitiesListViewClicked" prefHeight="152.0" prefWidth="151.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                                    </children>
                                                 </GridPane>
@@ -171,7 +171,7 @@
                                                    <children>
                                                       <Pane fx:id="staticInfoPane" prefHeight="220.0" prefWidth="400.0" visible="false" GridPane.columnIndex="4" GridPane.rowIndex="1" GridPane.rowSpan="2" />
                                                       <Label fx:id="displayModeLabel" alignment="CENTER" prefHeight="79.0" prefWidth="99.0" text="Select display mode:" visible="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                      <Label prefHeight="114.0" prefWidth="85.0" text="Select property name to present information:" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <Label prefHeight="123.0" prefWidth="98.0" text="Select property name to present information:" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                       <TreeView fx:id="entitiesAndPropertiesTreeView" onMouseClicked="#entitiesAndPropertiesTreeViewClicked" prefHeight="110.0" prefWidth="136.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                                                       <ComboBox fx:id="displayModeComboBox" onAction="#displayModeComboBoxClicked" prefWidth="150.0" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                                                    </children>

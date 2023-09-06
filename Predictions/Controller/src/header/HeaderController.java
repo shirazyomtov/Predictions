@@ -1,6 +1,7 @@
 package header;
 
 import app.AppController;
+import enums.SkinsOptions;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -20,25 +21,19 @@ public class HeaderController {
     private TextField XMLFileTextField;
 
     @FXML
-    private MenuItem cookieMenuItem;
-
-    @FXML
     private MenuItem defaultMenuItem;
 
     @FXML
     private ToggleButton detailsToggleButton;
 
     @FXML
-    private MenuItem lionMenuItem;
+    private MenuItem flowersMenuItem;
 
     @FXML
     private Button loadFileButton;
 
     @FXML
     private ToggleButton newExecutionToggleButton;
-
-    @FXML
-    private MenuItem peachMenuItem;
 
     @FXML
     private Label predictionsLabel;
@@ -56,23 +51,18 @@ public class HeaderController {
     private Label messageLabel;
 
     @FXML
-    void cookieMenuItemClicked(ActionEvent event) {
-
+    void dogsMenuItemClicked(ActionEvent event) {
+        mainController.setSkin(SkinsOptions.DOGS);
     }
 
     @FXML
     void defaultMenuItemClicked(ActionEvent event) {
-
+        mainController.setSkin(SkinsOptions.DEFAULT);
     }
 
     @FXML
-    void lionMenuItemClicked(ActionEvent event) {
-
-    }
-
-    @FXML
-    void peachMenuItemClicked(ActionEvent event) {
-
+    void flowersMenuItemClicked(ActionEvent event) {
+        mainController.setSkin(SkinsOptions.FLOWERS);
     }
 
     @FXML

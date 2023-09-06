@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="presentDetailsGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="333.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="firstPage.detailsOfSystem.DetailsController">
+<GridPane fx:id="presentDetailsGridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="333.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="firstPage.detailsOfSystem.DetailsController">
   <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
     <ColumnConstraints hgrow="ALWAYS" maxWidth="150.0" minWidth="10.0" prefWidth="89.0" />
@@ -34,28 +34,28 @@
       </AnchorPane>
       <AnchorPane GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1">
          <children>
-            <Label alignment="CENTER" layoutY="26.0" prefHeight="21.0" prefWidth="57.0" text="Entities" />
-            <ComboBox fx:id="entitiesComboBox" layoutX="98.0" layoutY="21.0" prefHeight="31.0" prefWidth="126.0" />
-            <Button fx:id="entitiesShowButton" alignment="CENTER" layoutX="242.0" layoutY="21.0" mnemonicParsing="false" onAction="#showEntitiesButtonClicked" prefHeight="31.0" prefWidth="57.0" text="Show" />
+            <Label layoutY="26.0" prefHeight="22.0" prefWidth="90.0" text="Entities" />
+            <ComboBox fx:id="entitiesComboBox" layoutX="104.0" layoutY="21.0" prefHeight="31.0" prefWidth="120.0" />
+            <Button fx:id="entitiesShowButton" alignment="CENTER" layoutX="242.0" layoutY="21.0" mnemonicParsing="false" onAction="#showEntitiesButtonClicked" text="Show" />
          </children>
       </AnchorPane>
       <AnchorPane GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="2">
          <children>
-            <Button fx:id="rulesShowButton" alignment="CENTER" layoutX="242.0" layoutY="17.0" mnemonicParsing="false" onAction="#rulesShowButtonClicked" prefHeight="31.0" prefWidth="57.0" text="Show" />
-            <Label alignment="CENTER" layoutY="24.0" prefHeight="21.0" prefWidth="40.0" text="Rules" />
-            <ComboBox fx:id="rulesComboBox" layoutX="99.0" layoutY="19.0" prefHeight="31.0" prefWidth="126.0" />
+            <Button fx:id="rulesShowButton" alignment="CENTER" layoutX="242.0" layoutY="17.0" mnemonicParsing="false" onAction="#rulesShowButtonClicked" text="Show" />
+            <Label layoutY="24.0" prefHeight="22.0" prefWidth="89.0" text="Rules" />
+            <ComboBox fx:id="rulesComboBox" layoutX="105.0" layoutY="19.0" prefHeight="31.0" prefWidth="120.0" />
          </children>
       </AnchorPane>
       <AnchorPane GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="3">
          <children>
-            <Label alignment="CENTER" layoutY="26.0" prefHeight="21.0" prefWidth="93.0" text="Environment " />
+            <Label layoutY="26.0" prefHeight="22.0" prefWidth="106.0" text="Environment " />
             <Button fx:id="environmentShowButton" alignment="CENTER" layoutX="242.0" layoutY="21.0" mnemonicParsing="false" onAction="#environmentShowButtonClicked" text="Show" />
-            <ComboBox fx:id="environmentComboBox" layoutX="99.0" layoutY="21.0" prefHeight="31.0" prefWidth="126.0" />
+            <ComboBox fx:id="environmentComboBox" layoutX="105.0" layoutY="21.0" prefHeight="31.0" prefWidth="120.0" />
          </children>
       </AnchorPane>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4">
          <children>
-            <Label alignment="CENTER" layoutX="-1.0" layoutY="32.0" prefHeight="21.0" prefWidth="86.0" text="Termination " />
+            <Label layoutX="-1.0" layoutY="32.0" prefHeight="22.0" prefWidth="106.0" text="Termination " />
             <Button fx:id="terminationShowButton" alignment="CENTER" layoutX="157.0" layoutY="27.0" mnemonicParsing="false" onAction="#terminationShowButtonClicked" text="Show" />
          </children>
       </AnchorPane>

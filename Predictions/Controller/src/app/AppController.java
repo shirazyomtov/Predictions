@@ -3,6 +3,7 @@ package app;
 import DTO.DTOEntityInfo;
 import DTO.DTOEnvironmentInfo;
 import engineManager.EngineManager;
+import enums.SkinsOptions;
 import firstPage.FirstPageController;
 import header.HeaderController;
 import javafx.animation.PauseTransition;
@@ -10,6 +11,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
@@ -59,6 +61,7 @@ public class AppController {
 
     @FXML
     private ThirdPageController thirdPageController;
+    private SkinsOptions skinsOption = SkinsOptions.DEFAULT;
 
     public AppController(){
         isFileLoaded = new SimpleBooleanProperty(false);
@@ -217,5 +220,14 @@ public class AppController {
 
     public void setSecondPageDetails(Integer simulationId) {
         secondPageController.setSecondPageDetails(engineManager.getAllAmountOfEntitiesAndSetEntitiesByUser(simulationId), engineManager.getEnvironmentValuesOfChosenSimulation(simulationId));
+    }
+
+    public void setSkin(SkinsOptions skinsOption) {
+        Scene scene = primaryStage.getScene();
+        this.skinsOption = skinsOption;
+        scene.getStylesheets().clear();
+
+        if(skinsOption != SkinsOptions.DEFAULT)
+            scene.getStylesheets().add(skinsOption.getCSS());
     }
 }

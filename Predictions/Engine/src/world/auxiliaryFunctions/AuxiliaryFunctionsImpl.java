@@ -47,7 +47,7 @@ public final class AuxiliaryFunctionsImpl {
         }
     }
 
-    public static Float percent(String value, EntityInstance primaryEntity, WorldInstance worldInstance, String propertyName, EntityInstance secondEntity) throws ObjectNotExist, OperationNotCompatibleTypes, FormatException, ClassCastException{
+    public static Float percent(String value, EntityInstance primaryEntity, WorldInstance worldInstance, String propertyName, EntityInstance secondEntity, String secondEntityName) throws ObjectNotExist, OperationNotCompatibleTypes, FormatException, ClassCastException{
         int index = value.indexOf(",");
         String expression1 = value.substring(0, index).trim();
         String expression2 = value.substring(index + 1).trim();
@@ -61,22 +61,22 @@ public final class AuxiliaryFunctionsImpl {
             expressionIml1 = new ExpressionIml(expression1);
             expressionIml2 = new ExpressionIml(expression2);
         }
-        String value1 = expressionIml1.decipher(primaryEntity, worldInstance, secondEntity);
-        String value2 = expressionIml2.decipher(primaryEntity, worldInstance, secondEntity);
+        String value1 = expressionIml1.decipher(primaryEntity, worldInstance, secondEntity, secondEntityName);
+        String value2 = expressionIml2.decipher(primaryEntity, worldInstance, secondEntity, secondEntityName);
         return (Float.parseFloat(value1) * Float.parseFloat(value2)) / 100;
 
     }
 
-    public static Object evaluate(String value, WorldInstance worldInstance,  Type typePropertyName, EntityInstance primaryEntity, EntityInstance secondEntity) throws FormatException, ObjectNotExist, OperationNotCompatibleTypes {
-        return checkFormat(value, worldInstance, true, typePropertyName, primaryEntity, secondEntity);
+    public static Object evaluate(String value, WorldInstance worldInstance,  Type typePropertyName, EntityInstance primaryEntity, EntityInstance secondEntity, String secondEntityName) throws FormatException, ObjectNotExist, OperationNotCompatibleTypes {
+        return checkFormat(value, worldInstance, true, typePropertyName, primaryEntity, secondEntity, secondEntityName);
     }
-    public static Integer ticks(String value,  WorldInstance worldInstance, EntityInstance primaryEntity, EntityInstance secondEntity) throws FormatException, ObjectNotExist, ClassCastException, OperationNotCompatibleTypes {
-       Object propertyValue = checkFormat(value, worldInstance, false, null, primaryEntity, secondEntity);
+    public static Integer ticks(String value,  WorldInstance worldInstance, EntityInstance primaryEntity, EntityInstance secondEntity, String secondEntityName) throws FormatException, ObjectNotExist, ClassCastException, OperationNotCompatibleTypes {
+       Object propertyValue = checkFormat(value, worldInstance, false, null, primaryEntity, secondEntity, secondEntityName);
        return (Integer) propertyValue;
     }
 
 
-    private static Object checkFormat(String value, WorldInstance worldInstance, boolean propertyValueCheck, Type typePropertyName, EntityInstance primaryEntity, EntityInstance secondEntity) throws FormatException, ObjectNotExist, OperationNotCompatibleTypes {
+    private static Object checkFormat(String value, WorldInstance worldInstance, boolean propertyValueCheck, Type typePropertyName, EntityInstance primaryEntity, EntityInstance secondEntity, String secondEntityName) throws FormatException, ObjectNotExist, OperationNotCompatibleTypes {
         int index = value.indexOf(".");
         if(index == -1){
             throw new FormatException();
@@ -94,7 +94,7 @@ public final class AuxiliaryFunctionsImpl {
              entityInstance = primaryEntity;
         }
 
-        else if (secondEntity !=null){
+        else if (secondEntity != null){
             if (entity.equals(secondEntity.getName())) {
                 entityInstance = secondEntity;
             }
@@ -109,6 +109,11 @@ public final class AuxiliaryFunctionsImpl {
             }
         }
         else {
+            if(secondEntityName != null){
+                if(entity.equals(secondEntityName)) {
+                    return null;
+                }
+            }
             throw new ObjectNotExist(entity, "entity");
         }
     }

@@ -14,18 +14,23 @@ public class Kill extends Action implements Serializable {
         super(entityName, ActionType.KILL, prdSecondaryEntity);
     }
     @Override
-    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws EntityNotDefine {
-        EntityInstance entityPrimary = checkAndGetAppropriateInstance(entity, secondaryEntity);
-        EntityInstance entityToRemove = null;
-        for (EntityInstance entityInstance: worldInstance.getEntityInstanceList()){
-            if(entityInstance == entityPrimary){
-                entityToRemove = entityInstance;
+    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws EntityNotDefine {
+        EntityInstance entityPrimary = checkAndGetAppropriateInstance(entity, secondaryEntity, secondEntityName);
+        if(entityPrimary != null) {
+            EntityInstance entityToRemove = null;
+            for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
+                if (entityInstance == entityPrimary) {
+                    entityToRemove = entityInstance;
+                }
             }
+            if (entityToRemove != null) {
+                worldInstance.getWorldDefinition().getTwoDimensionalGrid().setTwoD_arr(entityToRemove.getLocation().getRow(), entityToRemove.getLocation().getCol(), false);
+                worldInstance.getEntityInstanceList().remove(entityToRemove);
+            }
+            return null;
         }
-        if (entityToRemove != null) {
-            worldInstance.getWorldDefinition().getTwoDimensionalGrid().setTwoD_arr(entityToRemove.getLocation().getRow(),entityToRemove.getLocation().getCol(),false);
-            worldInstance.getEntityInstanceList().remove(entityToRemove);
+        else {
+            return null;
         }
-        return null;
     }
 }

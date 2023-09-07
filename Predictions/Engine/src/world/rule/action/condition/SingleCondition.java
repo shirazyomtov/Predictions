@@ -29,44 +29,63 @@ public class SingleCondition extends AbstractCondition implements Serializable {
     }
 
     @Override
-    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        boolean flag = false;
+    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        Boolean flag = false;
         Action killOrReplace = null;
-        flag = checkIfConditionIsTrue(entity, worldInstance, secondaryEntity);
-        killOrReplace = performThenOrElse(flag, entity, worldInstance, secondaryEntity);
-        return killOrReplace;
+        flag = checkIfConditionIsTrue(entity, worldInstance, secondaryEntity, secondEntityName);
+        if(flag != null) {
+            killOrReplace = performThenOrElse(flag, entity, worldInstance, secondaryEntity, secondEntityName);
+            return killOrReplace;
+        }
+        else{
+            return null;
+        }
     }
 
-    public boolean checkIfConditionIsTrue(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, ClassCastException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity);
-        String valueInCondition = null;
-        ExpressionIml expression = new ExpressionIml(value, propertyName);
-        if(entityInstance == secondaryEntity) {
-            valueInCondition = expression.decipher(entityInstance, worldInstance, entity);
+    public Boolean checkIfConditionIsTrue(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, ClassCastException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity, secondEntityName);
+        if(entityInstance != null) {
+            String valueInCondition = null;
+            ExpressionIml expression = new ExpressionIml(value, propertyName);
+            if (entityInstance == secondaryEntity) {
+                valueInCondition = expression.decipher(entityInstance, worldInstance, entity, secondEntityName);
+            } else {
+                valueInCondition = expression.decipher(entityInstance, worldInstance, secondaryEntity, secondEntityName);
+            }
+            if (valueInCondition != null) {
+                ExpressionIml expressionPropertyValue = new ExpressionIml(propertyName, propertyName);
+                String propertyValue = expressionPropertyValue.decipher(entityInstance, worldInstance, secondaryEntity, secondEntityName);
+                if (propertyValue != null) {
+                    Type propertyType = expressionPropertyValue.getType();
+                    boolean flag = false;
+                    switch (operator) {
+                        case "=":
+                            flag = checkIfPropertyIsEqualToValue(propertyValue, propertyType, valueInCondition);
+                            break;
+                        case "!=":
+                            flag = checkIfPropertyIsNotEqualToValue(propertyValue, propertyType, valueInCondition);
+                            break;
+                        case "bt":
+                            flag = checkIfPropertyIsLessOrBiggerThanValue(propertyValue, propertyType, valueInCondition, ComparisonOperator.BIGGERTHAN);
+                            break;
+                        case "lt":
+                            flag = checkIfPropertyIsLessOrBiggerThanValue(propertyValue, propertyType, valueInCondition, ComparisonOperator.LESSTHAN);
+                            break;
+                    }
+
+                    return flag;
+                }
+                else {
+                    return null;
+                }
+            }
+            else {
+                return null;
+            }
         }
         else {
-            valueInCondition = expression.decipher(entityInstance, worldInstance, secondaryEntity);
+            return null;
         }
-              ExpressionIml expressionPropertyValue = new ExpressionIml(propertyName, propertyName);
-              String propertyValue = expressionPropertyValue.decipher(entityInstance, worldInstance, secondaryEntity);
-              Type propertyType = expressionPropertyValue.getType();
-            boolean flag = false;
-            switch (operator) {
-                case "=":
-                    flag = checkIfPropertyIsEqualToValue(propertyValue, propertyType, valueInCondition);
-                    break;
-                case "!=":
-                    flag = checkIfPropertyIsNotEqualToValue(propertyValue, propertyType, valueInCondition);
-                    break;
-                case "bt":
-                    flag = checkIfPropertyIsLessOrBiggerThanValue(propertyValue, propertyType, valueInCondition, ComparisonOperator.BIGGERTHAN);
-                    break;
-                case "lt":
-                    flag = checkIfPropertyIsLessOrBiggerThanValue(propertyValue, propertyType, valueInCondition, ComparisonOperator.LESSTHAN);
-                    break;
-            }
-
-            return flag;
     }
 
     private boolean checkIfPropertyIsLessOrBiggerThanValue( String propertyValue, Type propertyType, String valueInCondition, ComparisonOperator operator) throws ClassCastException, OperationNotSupportedType {

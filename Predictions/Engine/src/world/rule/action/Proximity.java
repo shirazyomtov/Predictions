@@ -29,40 +29,43 @@ public class Proximity extends  Action implements Serializable {
     }
 
     @Override
-    public Action operation(EntityInstance sourceEntity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        EntityInstance entityInstance = checkAndGetAppropriateInstance(sourceEntity, secondaryEntity);
-        boolean isProximity = false;
-        List<EntityInstance> proximityEntityInstance = new ArrayList<>();
-        for (EntityInstance targetEntityInstance: worldInstance.getEntityInstanceList()){
-            if(targetEntity.equals(targetEntityInstance.getName())){
-                if (checkTheProximity(entityInstance, targetEntityInstance, worldInstance)){
-                    isProximity = true;
-                    proximityEntityInstance.add(targetEntityInstance);
+    public Action operation(EntityInstance sourceEntity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(sourceEntity, secondaryEntity, secondEntityName);
+        if (entityInstance != null) {
+            boolean isProximity = false;
+            EntityInstance proximityEntityInstance = null;
+            for (EntityInstance targetEntityInstance : worldInstance.getEntityInstanceList()) {
+                if (targetEntity.equals(targetEntityInstance.getName())) {
+                    if (checkTheProximity(entityInstance, targetEntityInstance, worldInstance)) {
+                        isProximity = true;
+                        proximityEntityInstance = targetEntityInstance;
+                        break;
+                    }
                 }
             }
-        }
-        if (isProximity) {
-            for (EntityInstance targetEntity : proximityEntityInstance) {
+            if (isProximity) {
                 if (actions != null) {
                     for (Action action : actions) {
                         if (!action.getActionType().equals(ActionType.KILL) && !action.getActionType().equals(ActionType.REPLACE)) {
-                            action.operation(entityInstance, worldInstance, targetEntity);
-                        }
-                        else {
+                            action.operation(entityInstance, worldInstance, proximityEntityInstance, proximityEntityInstance.getName());
+                        } else {
                             return action;
                         }
                     }
                 }
             }
+            return null;
         }
-        return null;
+        else{
+            return null;
+        }
     }
 
     private boolean checkTheProximity(EntityInstance entityInstanceSource, EntityInstance entityInstanceTarget,  WorldInstance worldInstance) throws NumberFormatException, ObjectNotExist, OperationNotCompatibleTypes, FormatException {
         int row;
         int rowPositive;
         int colPositive;
-        String ofString = of.decipher(entityInstanceSource, worldInstance, entityInstanceTarget);
+        String ofString = of.decipher(entityInstanceSource, worldInstance, entityInstanceTarget, null);
         int ofInt = Integer.parseInt(ofString);
         int entityInstanceSourceRow = entityInstanceSource.getLocation().getRow();
         int entityInstanceSourceCol = entityInstanceSource.getLocation().getCol();

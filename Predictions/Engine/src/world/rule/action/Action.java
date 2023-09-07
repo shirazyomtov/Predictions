@@ -26,7 +26,7 @@ public abstract class Action implements ActionOperation, Serializable {
         }
     }
 
-    public abstract Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine;
+    public abstract Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine;
 
     public String getEntityName() {
         return entityName;
@@ -49,11 +49,11 @@ public abstract class Action implements ActionOperation, Serializable {
         }
     }
 
-    public EntityInstance checkAndGetAppropriateInstance(EntityInstance entity, EntityInstance secondaryEntity) throws EntityNotDefine{
+    public EntityInstance checkAndGetAppropriateInstance(EntityInstance entity, EntityInstance secondaryEntity, String secondEntityName) throws EntityNotDefine{
         if(entity.getName().equals(entityName)){
             return entity;
         }
-        else if (secondaryEntity != null && secondaryEntity.getName().equals(entityName)) {
+        else if (secondEntityName.equals(entityName)) {
             return  secondaryEntity;
         }
         else{

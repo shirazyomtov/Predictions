@@ -30,17 +30,21 @@ public class Replace extends Action implements Serializable {
     }
 
     @Override
-    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity);
-        if (mode.equals("scratch")){
-            createEntityInstanceFromScratch(worldInstance, null);
+    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity, secondEntityName);
+        if (entityInstance != null) {
+            if (mode.equals("scratch")) {
+                createEntityInstanceFromScratch(worldInstance, null);
+            } else if (mode.equals("derived")) {
+                createEntityInstanceFromDerived(entityInstance, worldInstance);
+            }
+            Kill killAction = new Kill(entityInstance.getName(), null);
+            killAction.operation(entityInstance, worldInstance, null, null);
+            return null;
         }
-        else if (mode.equals("derived")){
-            createEntityInstanceFromDerived(entityInstance, worldInstance);
+        else {
+            return null;
         }
-        Kill killAction = new Kill(entityInstance.getName(), null);
-        killAction.operation(entityInstance, worldInstance, null);
-        return null;
     }
 
     private void createEntityInstanceFromDerived(EntityInstance entity, WorldInstance worldInstance) {

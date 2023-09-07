@@ -101,18 +101,10 @@ public class EngineManager implements Serializable{
         Map<String, EnvironmentInstance> environmentInstanceMap = environmentValuesByUser;
 
         setRandomEnvironmentValues(environmentInstanceMap);
-        setEntitiesDefinitionPopulation();
         setSimulationDetailsAndAddToHistory(environmentInstanceMap);
     }
 
-    private void setEntitiesDefinitionPopulation() {
-        for(String entityName: entitiesAmountByUser.keySet()){
-            world.getEntityDefinition().get(entityName).setAmountOfPopulation(entitiesAmountByUser.get(entityName));
-        }
-    }
-
     private void setRandomEnvironmentValues(Map<String, EnvironmentInstance> environmentInstanceMap) {
-
         for (String environmentName: world.getEnvironmentDefinition().keySet()){
             if(!environmentValuesByUser.containsKey(environmentName)){
                 provideRandomValues(world.getEnvironmentDefinition().get(environmentName), environmentInstanceMap);
@@ -169,17 +161,37 @@ public class EngineManager implements Serializable{
     private void setSimulationDetailsAndAddToHistory(Map<String, EnvironmentInstance> environmentInstanceMap) {
         numberOfTimesUserSelectSimulation++;
         List<EntityInstance> entityInstanceList = initEntities();
-        worldInstance =new WorldInstance(environmentInstanceMap, entityInstanceList, world);
+        Map<String, Integer> initAmountOfEntities = createInitAmountOfEntities();
+        Map<String, Integer> currentAmountOfEntities = createCurrentAmountOfEntities();
+        worldInstance =new WorldInstance(environmentInstanceMap, entityInstanceList, world, initAmountOfEntities, currentAmountOfEntities);
         Simulation simulation = new Simulation(worldInstance, LocalDateTime.now());
         history = History.getInstance();
         history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
         history.addSimulation(simulation);
     }
 
+    private Map<String, Integer> createInitAmountOfEntities() {
+        Map<String, Integer> mapOfInitAmountOfEntities = new HashMap<>();
+        for(String entityName: entitiesAmountByUser.keySet()){
+            mapOfInitAmountOfEntities.put(entityName, entitiesAmountByUser.get(entityName));
+        }
+
+        return mapOfInitAmountOfEntities;
+    }
+
+    private Map<String, Integer> createCurrentAmountOfEntities() {
+        Map<String, Integer> mapOfCurrentAmountOfEntities = new HashMap<>();
+        for(String entityName: entitiesAmountByUser.keySet()){
+            mapOfCurrentAmountOfEntities.put(entityName, entitiesAmountByUser.get(entityName));
+        }
+
+        return mapOfCurrentAmountOfEntities;
+    }
+
     private List<EntityInstance> initEntities() {
         List<EntityInstance> entityInstanceList = new ArrayList<>();
         for (EntityDefinition entityDefinition: world.getEntityDefinition().values()){
-            for (int count = 0; count < entityDefinition.getAmountOfPopulation(); count++){
+            for (int count = 0; count < entitiesAmountByUser.get(entityDefinition.getName()); count++){
                 Map<String, Property> allProperty = new HashMap<>();
                 for(PropertyDefinition propertyDefinition: entityDefinition.getProps()){
                     allProperty.put(propertyDefinition.getName(), initProperty(propertyDefinition));
@@ -311,35 +323,35 @@ public class EngineManager implements Serializable{
         return history.getSortMapOfSimulations().size();
     }
 
-    public DTOEntityInfo getQuantityOfEachEntity(int userIntegerInput) {
-        int count = 0;
-        boolean flag = false;
-        Map<String, Integer> entity = new HashMap<>();
-        DTOEntityInfo dtoEntityInfo = null;
-
-        for (EntityInstance entityInstance1 : history.getAllSimulations().get(userIntegerInput).getWorldInstance().getEntityInstanceList()) {
-            flag = true;
-            if (!entity.containsKey(entityInstance1.getName())) {
-                entity.put(entityInstance1.getName(), 1);
-                for (EntityInstance entityInstance2 : history.getAllSimulations().get(userIntegerInput).getWorldInstance().getEntityInstanceList()) {
-                    if (entityInstance2.getName().equals(entityInstance1.getName())) {
-                        count++;
-                    }
-                }
-                int amount = history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityInstance1.getName()).getAmountOfPopulation();
-                String name = entityInstance1.getName();
-                dtoEntityInfo = new DTOEntityInfo(amount, count, name, history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(name).getDTOProperties());
-                count = 0;
-            }
-        }
-
-        if (!flag) {
-            for (Map.Entry<String, EntityDefinitionImpl> entityDefinition : history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().entrySet()) {
-                dtoEntityInfo = new DTOEntityInfo(entityDefinition.getValue().getAmountOfPopulation(), 0, entityDefinition.getKey(), history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityDefinition.getKey()).getDTOProperties());
-            }
-        }
-        return dtoEntityInfo;
-    }
+//    public DTOEntityInfo getQuantityOfEachEntity(int userIntegerInput) {
+//        int count = 0;
+//        boolean flag = false;
+//        Map<String, Integer> entity = new HashMap<>();
+//        DTOEntityInfo dtoEntityInfo = null;
+//
+//        for (EntityInstance entityInstance1 : history.getAllSimulations().get(userIntegerInput).getWorldInstance().getEntityInstanceList()) {
+//            flag = true;
+//            if (!entity.containsKey(entityInstance1.getName())) {
+//                entity.put(entityInstance1.getName(), 1);
+//                for (EntityInstance entityInstance2 : history.getAllSimulations().get(userIntegerInput).getWorldInstance().getEntityInstanceList()) {
+//                    if (entityInstance2.getName().equals(entityInstance1.getName())) {
+//                        count++;
+//                    }
+//                }
+//                int amount = history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityInstance1.getName()).getAmountOfPopulation();
+//                String name = entityInstance1.getName();
+//                dtoEntityInfo = new DTOEntityInfo(amount, count, name, history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(name).getDTOProperties());
+//                count = 0;
+//            }
+//        }
+//
+//        if (!flag) {
+//            for (Map.Entry<String, EntityDefinitionImpl> entityDefinition : history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().entrySet()) {
+//                dtoEntityInfo = new DTOEntityInfo(entityDefinition.getValue().getAmountOfPopulation(), 0, entityDefinition.getKey(), history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityDefinition.getKey()).getDTOProperties());
+//            }
+//        }
+//        return dtoEntityInfo;
+//    }
 
     public void checkIfThereIsEntity(int userIntegerInput) throws Exception{
         WorldInstance worldInstance1 = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
@@ -368,8 +380,8 @@ public class EngineManager implements Serializable{
 
     }
 
-    public Map<Object, Integer> createPropertyValuesMap(int userIntegerInput, String entityName, String propertyName) {
-        WorldInstance currentWorld = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
+    public Map<Object, Integer> createPropertyValuesMap(int simulationId, String entityName, String propertyName) {
+        WorldInstance currentWorld = history.getAllSimulations().get(simulationId).getWorldInstance();
         Map<Object, Integer> valuesProperty = new HashMap<>();
         for (EntityInstance entityInstance : currentWorld.getEntityInstanceList()) {
             if (entityInstance.getName().equals(entityName)) {
@@ -489,30 +501,68 @@ public class EngineManager implements Serializable{
     }
 
     public Integer getCurrentTick(int simulationId){
-        return worldInstance.getCurrentTick();
+        return history.getAllSimulations().get(simulationId).getWorldInstance().getCurrentTick();
     }
 
     public Integer getCurrentSecond(int simulationId){
         return history.getAllSimulations().get(simulationId).getCurrentSecond();
     }
-
-    public List<DTOEntityInfo> getAllAmountOfEntities(int simulationId) {
-        List<DTOEntityInfo> entityInfos = new ArrayList<>();
-
+    private Map<String, Integer> getCurrentAmountOfEntities(int simulationId){
         Map<String, Integer> entityCount = new HashMap<>();
         for (EntityInstance entityInstance : history.getAllSimulations().get(simulationId).getWorldInstance().getEntityInstanceList()) {
             String entityName = entityInstance.getName();
             entityCount.put(entityName, entityCount.getOrDefault(entityName, 0) + 1);
         }
 
-        for(String entityName: entityCount.keySet()){
-            int initAmount = history.getAllSimulations().get(simulationId).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityName).getAmountOfPopulation();
-            List<DTOPropertyInfo> dtoPropertyInfos = history.getAllSimulations().get(simulationId).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityName).getDTOProperties();
-            DTOEntityInfo dtoEntityInfo = new DTOEntityInfo(initAmount, entityCount.get(entityName), entityName, dtoPropertyInfos);
-            entityInfos.add(dtoEntityInfo);
+        return entityCount;
+    }
+
+    public List<DTOEntityInfo> getAllAmountOfEntities(int simulationId) {
+        List<DTOEntityInfo> entityInfos = new ArrayList<>();
+        Map<String, Integer> entityCount = getCurrentAmountOfEntities(simulationId);
+
+        for(String entityName: history.getAllSimulations().get(simulationId).getWorldInstance().getWorldDefinition().getEntityDefinition().keySet()){
+            addDTOEntity(simulationId, entityInfos, entityCount, entityName);
         }
 
         return entityInfos;
     }
 
+    public List<DTOEntityInfo> getAllDetailsOfEndedSimulation(int simulationId){
+        List<DTOEntityInfo> entityInfos = new ArrayList<>();
+        Map<String, Integer> entityCount = getCurrentAmountOfEntities(simulationId);
+
+
+        for(String entityName: entityCount.keySet()){
+            addDTOEntity(simulationId, entityInfos, entityCount, entityName);
+        }
+
+        return entityInfos;
+    }
+
+    private void addDTOEntity(int simulationId, List<DTOEntityInfo> entityInfos, Map<String, Integer> entityCount, String entityName) {
+        int initAmount = history.getAllSimulations().get(simulationId).getWorldInstance().getInitAmountOfEntities().get(entityName);
+        List<DTOPropertyInfo> dtoPropertyInfos = history.getAllSimulations().get(simulationId).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityName).getDTOProperties();
+        DTOEntityInfo dtoEntityInfo;
+        dtoEntityInfo = new DTOEntityInfo(initAmount, entityCount.getOrDefault(entityName, 0), entityName, dtoPropertyInfos);
+        entityInfos.add(dtoEntityInfo);
+    }
+
+    public List<DTOEnvironmentInfo> getEnvironmentValuesOfChosenSimulation(Integer simulationId){
+        environmentValuesByUser = new HashMap<>();
+        Map<String, EnvironmentInstance> environmentInstanceMapOfSpecificSimulation = history.getAllSimulations().get(simulationId).getWorldInstance().getEnvironmentInstanceMap();
+        for(String environmentName: environmentInstanceMapOfSpecificSimulation.keySet()){
+            world.checkValidationValue(environmentName, environmentInstanceMapOfSpecificSimulation.get(environmentName).getProperty().getValue().toString(), environmentValuesByUser);
+        }
+        return history.getAllSimulations().get(simulationId).getWorldInstance().createListEnvironmentNamesAndValues();
+    }
+
+    public List<DTOEntityInfo> getAllAmountOfEntitiesAndSetEntitiesByUser(Integer simulationId) {
+        entitiesAmountByUser = new HashMap<>();
+        Map <String, Integer> initAmountOfEntities = history.getAllSimulations().get(simulationId).getWorldInstance().getInitAmountOfEntities();
+        for(String entityName: initAmountOfEntities.keySet()){
+            entitiesAmountByUser.put(entityName, initAmountOfEntities.get(entityName));
+        }
+        return getAllAmountOfEntities(simulationId);
+    }
 }

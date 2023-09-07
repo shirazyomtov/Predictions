@@ -28,7 +28,7 @@
       <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <Label prefHeight="21.0" prefWidth="127.0" text="Properties:" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <Label prefHeight="22.0" prefWidth="330.0" text="Properties:" GridPane.columnIndex="1" GridPane.rowIndex="5" />
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <children>
             <TextField fx:id="entityNameTextField" editable="false" prefHeight="31.0" prefWidth="433.0" />
@@ -37,7 +37,7 @@
             <Insets />
          </GridPane.margin>
       </HBox>
-      <Label prefHeight="21.0" prefWidth="90.0" text="Entity name: " GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <Label prefHeight="22.0" prefWidth="343.0" text="Entity name: " GridPane.columnIndex="1" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets />
          </GridPane.margin>

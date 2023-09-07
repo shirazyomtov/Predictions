@@ -27,7 +27,7 @@
     <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <SplitPane dividerPositions="0.5494367959949937" prefHeight="500.0" prefWidth="680.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.rowSpan="2">
+      <SplitPane dividerPositions="0.5588235294117646" prefHeight="500.0" prefWidth="680.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.rowSpan="2">
          <items>
             <GridPane prefHeight="461.0" prefWidth="345.0">
               <columnConstraints>
@@ -35,27 +35,27 @@
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="147.0" minWidth="10.0" prefWidth="101.40001220703125" />
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="34.99998779296875" minWidth="0.0" prefWidth="18.400004577636707" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="288.39996337890625" minWidth="10.0" prefWidth="215.19997558593752" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="29.600012207031227" minWidth="10.0" prefWidth="24.800024414062477" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <VBox prefHeight="450.0" prefWidth="130.0" spacing="20.0" GridPane.columnIndex="1">
+                  <VBox prefHeight="450.0" prefWidth="130.0" spacing="15.0" GridPane.columnIndex="1">
                      <children>
-                        <Label alignment="CENTER" prefHeight="78.0" prefWidth="123.0" text="Select entity name" wrapText="true">
+                        <Label alignment="CENTER" prefHeight="79.0" prefWidth="97.0" text="Select entity name" wrapText="true">
                            <VBox.margin>
                               <Insets top="10.0" />
                            </VBox.margin>
                         </Label>
-                        <ListView fx:id="entitiesNamesListView" onMouseClicked="#entitiesNamesListViewClicked" prefHeight="450.0" prefWidth="130.0" />
+                        <ListView fx:id="entitiesNamesListView" onMouseClicked="#entitiesNamesListViewClicked" prefHeight="394.0" prefWidth="97.0" />
                      </children>
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
                   </VBox>
-                  <VBox fx:id="choseValueVbox" prefHeight="445.0" prefWidth="228.0" spacing="20.0" visible="false" GridPane.columnIndex="3">
+                  <VBox fx:id="choseValueVbox" prefHeight="445.0" prefWidth="228.0" spacing="20.0" GridPane.columnIndex="3">
                      <children>
                         <Label prefHeight="112.0" prefWidth="217.0" text="Enter the number of entity instance that you want to have in the simulation" wrapText="true">
                            <VBox.margin>
@@ -64,14 +64,14 @@
                         </Label>
                         <HBox alignment="CENTER" prefHeight="60.0" prefWidth="221.0">
                            <children>
-                              <Label prefHeight="50.0" prefWidth="100.0" text="Entity name :" />
-                              <TextField fx:id="entityNameTextField" editable="false" prefHeight="40.0" prefWidth="120.0" />
+                              <Label prefHeight="50.0" prefWidth="110.0" text="Entity name :" />
+                              <TextField fx:id="entityNameTextField" editable="false" prefHeight="40.0" prefWidth="108.0" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="60.0" prefWidth="214.0">
                            <children>
-                              <Label prefHeight="50.0" prefWidth="100.0" text="Choose value :" />
-                              <TextField fx:id="valueTextField" prefHeight="40.0" prefWidth="120.0" />
+                              <Label prefHeight="50.0" prefWidth="109.0" text="Choose value :" />
+                              <TextField fx:id="valueTextField" prefHeight="40.0" prefWidth="108.0" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="64.0" prefWidth="158.0">

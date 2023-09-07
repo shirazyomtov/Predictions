@@ -204,6 +204,7 @@ public class SecondPageController {
         mainController.getEngineManager().setSimulation();
         mainController.getEngineManager().getRunSimulation();
         mainController.setSimulationsDetails();
+        clearButtonClicked(event);
         mainController.showThirdPage();
     }
 

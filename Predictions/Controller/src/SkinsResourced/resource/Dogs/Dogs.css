@@ -1,0 +1,52 @@
+.root, .gradientBack {
+    -fx-background-image: url("dogsBackground.png");
+    -fx-font-family: "Suez One";
+}
+
+.button, .toggle-button {
+    -fx-background-image: url("whiteButton.png");
+    -fx-background-size: cover;
+    -fx-border-color: #754528;
+    -fx-text-fill: #9d4141;
+    -fx-font-weight: 900;
+    -fx-font-size: 14px;
+}
+
+.button:hover, .toggle-button:hover {
+    -fx-background-image: url("buttonDog.png");
+    -fx-background-size: cover;
+    -fx-border-color: #754528;
+    -fx-text-fill: black;
+}
+
+.text-field, .text-area{
+    -fx-border-radius: 5px;
+}
+
+.label {
+    -fx-text-fill: #7C8797;
+    -fx-font-family: "Suez One";
+    -fx-font-size: 14px;
+}
+
+.scroll-pane, #gridPane {
+    -fx-background-color: #ece3e3;
+}
+
+.text-field{
+    -fx-background-color: #e8dfd8;
+    -fx-border-color: #C99357;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #754528;
+}
+
+
+.table-view{
+    -fx-background-color: #DCE1E8;
+    -fx-text-fill: #223C5E;
+}
+
+.tableCol {
+    -fx-background-color: #DCE1E8;
+    -fx-text-fill: #223C5E;
+}

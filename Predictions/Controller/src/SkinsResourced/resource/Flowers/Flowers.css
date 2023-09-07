@@ -1,0 +1,52 @@
+.root, .gradientBack {
+    -fx-background-image: url("flowersBackground.png");
+    -fx-background-size: cover;
+    -fx-font-family: Arial;
+}
+
+.button, .toggle-button {
+    -fx-background-image: url("whiteButton.png");
+    -fx-background-size: cover;
+    -fx-border-color: #345ebb;
+    -fx-text-fill: #30bba6;
+    -fx-font-weight: 900;
+    -fx-font-size: 14px;
+}
+
+.button:hover, .toggle-button:hover {
+    -fx-background-image: url("flowersButtons.png");
+    -fx-background-size: cover;
+    -fx-border-color: #345ebb;
+    -fx-text-fill: black;
+}
+
+.text-field, .text-area{
+    -fx-border-radius: 5px;
+}
+
+.label {
+    -fx-text-fill: #7C8797;
+    -fx-font-family: Arial;
+    -fx-font-size: 14px;
+}
+
+.scroll-pane, #gridPane {
+    -fx-background-color: rgba(239, 207, 195, 0.77);
+}
+
+.text-field{
+    -fx-background-color: #d7dfec;
+    -fx-border-color: #345ebb;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #754528;
+}
+
+.table-view{
+    -fx-background-color: #DCE1E8;
+    -fx-text-fill: #223C5E;
+}
+
+.tableCol {
+    -fx-background-color: #DCE1E8;
+    -fx-text-fill: #223C5E;
+}

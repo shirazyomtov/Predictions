@@ -11,7 +11,6 @@ import java.util.List;
 
 public class EntityDefinitionImpl implements EntityDefinition, Serializable {
     private final String name;
-    private Integer amountOfPopulation = 0;
     private final List<PropertyDefinition> allProperties;
 
     public EntityDefinitionImpl(String name, List<PropertyDefinition> allProperties)
@@ -23,11 +22,6 @@ public class EntityDefinitionImpl implements EntityDefinition, Serializable {
     @Override
     public String getName() {
         return this.name;
-    }
-
-    @Override
-    public int getAmountOfPopulation() {
-        return this.amountOfPopulation;
     }
 
     @Override
@@ -47,9 +41,5 @@ public class EntityDefinitionImpl implements EntityDefinition, Serializable {
             }
         }
         return propertyInfos;
-    }
-
-    public void setAmountOfPopulation(Integer amountOfPopulation) {
-        this.amountOfPopulation = amountOfPopulation;
     }
 }

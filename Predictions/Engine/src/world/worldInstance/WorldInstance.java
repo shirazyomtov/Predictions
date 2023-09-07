@@ -2,32 +2,39 @@ package world.worldInstance;
 
 import DTO.DTOEnvironmentInfo;
 import world.entity.instance.EntityInstance;
-import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
 import world.worldDefinition.WorldDefinition;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WorldInstance implements Serializable {
 
-    private  Map<String, EnvironmentInstance> environmentInstanceMap = null;
+    private  Map<String, EnvironmentInstance> environmentInstanceMap = new HashMap<>();
 
     private List<EntityInstance> entityInstanceList = null;
 
     private WorldDefinition worldDefinition = null;
 
+    private Map<String, Integer> initAmountOfEntities;
+
+    private Map<String, Integer> currentAmountOfEntities;
 
     private int currentTick = 1;
-    public WorldInstance(Map<String, EnvironmentInstance> environmentInstanceMap, List<EntityInstance> entityInstanceList, WorldDefinition worldDefinition) {
-        this.environmentInstanceMap = environmentInstanceMap;
+
+    public WorldInstance(Map<String, EnvironmentInstance> environmentInstanceMap, List<EntityInstance> entityInstanceList, WorldDefinition worldDefinition, Map<String, Integer> initAmountOfEntities, Map<String, Integer> currentAmountOfEntities) {
         this.entityInstanceList = entityInstanceList;
         this.worldDefinition = worldDefinition;
+        this.initAmountOfEntities = initAmountOfEntities;
+        this.currentAmountOfEntities = currentAmountOfEntities;
+        createEnvironmentMap(environmentInstanceMap);
     }
 
+    private void createEnvironmentMap(Map<String, EnvironmentInstance> environmentsInstance) {
+        for(String environmentName: environmentsInstance.keySet()){
+            worldDefinition.checkValidationValue(environmentName, environmentsInstance.get(environmentName).getProperty().getValue().toString(), environmentInstanceMap);
+        }
+    }
 
     public int getCurrentTick() {
         return currentTick;
@@ -72,4 +79,16 @@ public class WorldInstance implements Serializable {
         entityInstanceList.add(entityInstance);
     }
 
+    public void setCurrentAmountOfEntities(Map<String, Integer> currentAmountOfEntities) {
+        this.currentAmountOfEntities = currentAmountOfEntities;
+        //todo: maybe change
+    }
+
+    public Map<String, Integer> getInitAmountOfEntities() {
+        return initAmountOfEntities;
+    }
+
+    public Map<String, Integer> getCurrentAmountOfEntities() {
+        return currentAmountOfEntities;
+    }
 }

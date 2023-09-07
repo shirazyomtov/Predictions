@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<ScrollPane id="headerBox" fitToHeight="true" fitToWidth="true" prefHeight="168.0" prefWidth="545.0" stylesheets="@header.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="header.HeaderController">
+<ScrollPane id="headerBox" fitToHeight="true" fitToWidth="true" prefHeight="168.0" prefWidth="545.0" stylesheets="@header.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="header.HeaderController">
     <content>
         <GridPane id="gridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="166.0" prefWidth="542.0">
             <columnConstraints>
@@ -45,7 +45,7 @@
                 </HBox>
                 <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="46.0" prefWidth="330.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                     <children>
-                        <Button id="LoadFileBtn" fx:id="loadFileButton" mnemonicParsing="false" onAction="#loadFileButtonClicked" prefHeight="25.0" prefWidth="107.0" styleClass="loadFile-button" text="Load File" HBox.hgrow="ALWAYS" />
+                        <Button id="LoadFileBtn" fx:id="loadFileButton" mnemonicParsing="false" onAction="#loadFileButtonClicked" prefHeight="32.0" prefWidth="107.0" styleClass="loadFile-button" text="Load File" HBox.hgrow="ALWAYS" />
                         <TextField id="xmlField" fx:id="XMLFileTextField" editable="false" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
                     </children>
                 </HBox>
@@ -82,9 +82,8 @@
                         <Menu fx:id="skinsMenu" mnemonicParsing="false" text="Skins">
                             <items>
                                 <MenuItem fx:id="defaultMenuItem" mnemonicParsing="false" onAction="#defaultMenuItemClicked" text="Default" />
-                                <MenuItem fx:id="peachMenuItem" mnemonicParsing="false" onAction="#peachMenuItemClicked" text="Peach" />
-                                <MenuItem fx:id="cookieMenuItem" mnemonicParsing="false" onAction="#cookieMenuItemClicked" text="Cookie Monster" />
-                                <MenuItem fx:id="lionMenuItem" mnemonicParsing="false" onAction="#lionMenuItemClicked" text="Lion King" />
+                                <MenuItem fx:id="flowersMenuItem" mnemonicParsing="false" onAction="#flowersMenuItemClicked" text="Flowers" />
+                                <MenuItem fx:id="dogsMenuItem" mnemonicParsing="false" onAction="#dogsMenuItemClicked" text="Dogs" />
                             </items>
                         </Menu>
                     </menus>

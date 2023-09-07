@@ -26,6 +26,7 @@ public class Kill extends Action implements Serializable {
             if (entityToRemove != null) {
                 worldInstance.getWorldDefinition().getTwoDimensionalGrid().setTwoD_arr(entityToRemove.getLocation().getRow(), entityToRemove.getLocation().getCol(), false);
                 worldInstance.getEntityInstanceList().remove(entityToRemove);
+                worldInstance.setCurrentAmountOfEntitiesAfterKill(entityToRemove);
             }
             return null;
         }

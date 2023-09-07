@@ -1,6 +1,6 @@
 package exceptions;
 
-public class OperationNotCompatibleTypes extends Exception{
+public class OperationNotCompatibleTypes extends RuntimeException{
 
     private final String typeProperty;
 

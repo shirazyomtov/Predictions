@@ -2,6 +2,7 @@ package history;
 
 import DTO.DTOSimulationInfo;
 import history.simulation.Simulation;
+import threadManager.ThreadManager;
 
 import java.io.Serializable;
 import java.util.*;
@@ -12,8 +13,9 @@ public final class History implements Serializable {
     private Map<Integer, Simulation> allSimulations = new HashMap<>();
     private Integer currentSimulationNumber = 0;
 
-    private History() {
+    private ThreadManager threadManager;
 
+    private History() {
     }
 
     public static History getInstance() {
@@ -72,5 +74,13 @@ public final class History implements Serializable {
         }
 
         return dtoSimulations;
+    }
+
+    public ThreadManager getThreadManager() {
+        return threadManager;
+    }
+
+    public void setThreadManager(int numberOfThreads) {
+        this.threadManager = new ThreadManager(numberOfThreads);
     }
 }

@@ -162,13 +162,18 @@ public class EngineManager implements Serializable{
         numberOfTimesUserSelectSimulation++;
         List<EntityInstance> entityInstanceList = initEntities();
         Map<String, Integer> initAmountOfEntities = createInitAmountOfEntities();
-        Map<String, Integer> currentAmountOfEntities = createCurrentAmountOfEntities();
+        Map<String, Integer> currentAmountOfEntities = createInitAmountOfEntities();
         worldInstance =new WorldInstance(environmentInstanceMap, entityInstanceList, world, initAmountOfEntities, currentAmountOfEntities);
         Simulation simulation = new Simulation(worldInstance, LocalDateTime.now());
         history = History.getInstance();
         history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
         history.addSimulation(simulation);
+        if(numberOfTimesUserSelectSimulation == 1){
+            history.setThreadManager(world.getNumberOfThreads());
+        }
+        // todo remove
     }
+
 
     private Map<String, Integer> createInitAmountOfEntities() {
         Map<String, Integer> mapOfInitAmountOfEntities = new HashMap<>();
@@ -177,15 +182,6 @@ public class EngineManager implements Serializable{
         }
 
         return mapOfInitAmountOfEntities;
-    }
-
-    private Map<String, Integer> createCurrentAmountOfEntities() {
-        Map<String, Integer> mapOfCurrentAmountOfEntities = new HashMap<>();
-        for(String entityName: entitiesAmountByUser.keySet()){
-            mapOfCurrentAmountOfEntities.put(entityName, entitiesAmountByUser.get(entityName));
-        }
-
-        return mapOfCurrentAmountOfEntities;
     }
 
     private List<EntityInstance> initEntities() {
@@ -297,9 +293,6 @@ public class EngineManager implements Serializable{
         return worldInstance.createListEnvironmentNamesAndValues();
     }
 
-    public String getRunSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        return history.getSimulation().runSimulation();
-    }
 
     public Integer getNumberOfTimesUserSelectSimulation() {
         return numberOfTimesUserSelectSimulation;
@@ -501,7 +494,7 @@ public class EngineManager implements Serializable{
     }
 
     public Integer getCurrentTick(int simulationId){
-        return history.getAllSimulations().get(simulationId).getWorldInstance().getCurrentTick();
+        return history.getAllSimulations().get(simulationId).getCurrentTick();
     }
 
     public Integer getCurrentSecond(int simulationId){
@@ -564,5 +557,15 @@ public class EngineManager implements Serializable{
             entitiesAmountByUser.put(entityName, initAmountOfEntities.get(entityName));
         }
         return getAllAmountOfEntities(simulationId);
+    }
+
+    public void addSimulationTask() {
+        history.getThreadManager().executeSimulation(history.getSimulation());
+    }
+
+    public DTOWorldInfo getDTOWorldInfo(int simulationId) {
+        Simulation simulation = history.getAllSimulations().get(simulationId);
+        Map <String, Integer> amountOfEntities = simulation.getWorldInstance().getCurrentAmountOfEntities();
+        return new DTOWorldInfo(amountOfEntities, simulation.getCurrentTick(), simulation.getCurrentSecond(), simulation.getIsFinish());
     }
 }

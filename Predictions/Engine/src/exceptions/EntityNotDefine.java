@@ -1,6 +1,6 @@
 package exceptions;
 
-public class EntityNotDefine extends Exception{
+public class EntityNotDefine extends RuntimeException{
     private final String entityName;
     private final String primaryEntity;
     private  String secondaryEntity = null;

@@ -1,6 +1,6 @@
 package exceptions;
 
-public class ObjectNotExist extends Exception{
+public class ObjectNotExist extends RuntimeException{
 
     private final String objectName;
 

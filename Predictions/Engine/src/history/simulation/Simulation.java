@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public  class Simulation implements Serializable {
+public  class Simulation implements Serializable, Runnable {
     private WorldInstance worldInstance = null;
 
     private LocalDateTime dateTime;
@@ -31,6 +31,7 @@ public  class Simulation implements Serializable {
     private Boolean isFinish = false;
 
     private Integer currentSecond = 0;
+    private int currentTick = 1;
 
     public Simulation(WorldInstance worldInstance, LocalDateTime dateTime) {
         this.worldInstance = worldInstance;
@@ -47,18 +48,17 @@ public  class Simulation implements Serializable {
         return this.formattedDateTime;
     }
 
-    public String runSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    @Override
+    public void run() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         long startMillisSeconds = System.currentTimeMillis();
         String message = null;
-        int seconds = 0;
         List<Action> activationAction ;
         List<EntityInstance> secondaryEntities = null;
         List<EntityInstance> entitiesToRemove = new ArrayList<>();
         List<Pair<EntityInstance,Action>> replaceActions = new ArrayList<>();
 
-        while ((worldInstance.getWorldDefinition().getTermination().getSecond() == null || seconds <= worldInstance.getWorldDefinition().getTermination().getSecond()) &&
-                (worldInstance.getWorldDefinition().getTermination().getTicks() == null || worldInstance.getCurrentTick() <= worldInstance.getWorldDefinition().getTermination().getTicks())) {
-            currentSecond = seconds;
+        while ((worldInstance.getWorldDefinition().getTermination().getSecond() == null || currentSecond <= worldInstance.getWorldDefinition().getTermination().getSecond()) &&
+                (worldInstance.getWorldDefinition().getTermination().getTicks() == null || currentTick<= worldInstance.getWorldDefinition().getTermination().getTicks())) {
             moveEntities();
             activationAction = createActivationActionsList();
             for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
@@ -96,19 +96,18 @@ public  class Simulation implements Serializable {
             entitiesToRemove.clear();
             replaceActions.clear();
             updateTickProperty();
-            worldInstance.setCurrentTick(worldInstance.getCurrentTick() + 1);
+            currentTick = currentTick + 1;
             long currentMilliSeconds = System.currentTimeMillis();
-            seconds = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
+            currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
         }
 
         isFinish = true;
-        if (worldInstance.getWorldDefinition().getTermination().getSecond() != null && seconds > worldInstance.getWorldDefinition().getTermination().getSecond()) {
+        if (worldInstance.getWorldDefinition().getTermination().getSecond() != null && currentSecond > worldInstance.getWorldDefinition().getTermination().getSecond()) {
             message = "The simulation has ended because more than " + worldInstance.getWorldDefinition().getTermination().getSecond() + " seconds have passed";
-        } else if (worldInstance.getWorldDefinition().getTermination().getTicks() != null && worldInstance.getCurrentTick() > worldInstance.getWorldDefinition().getTermination().getTicks()) {
+        } else if (worldInstance.getWorldDefinition().getTermination().getTicks() != null && currentTick > worldInstance.getWorldDefinition().getTermination().getTicks()) {
             message = "The simulation has ended because more than " + worldInstance.getWorldDefinition().getTermination().getTicks() + " ticks have passed";
         }
 
-        return message;
         // todo: functions
     }
 
@@ -186,7 +185,7 @@ public  class Simulation implements Serializable {
         List<Action> activationAction = new ArrayList<>();
 
         for (RuleImpl rule : worldInstance.getWorldDefinition().getRules()) {
-            if (rule.getActivation().isActive(worldInstance.getCurrentTick())) {
+            if (rule.getActivation().isActive(currentTick)) {
                 for (Action action : rule.nameActions()) {
                     activationAction.add(action);
                 }
@@ -243,5 +242,9 @@ public  class Simulation implements Serializable {
 
     public Integer getCurrentSecond() {
         return currentSecond;
+    }
+
+    public int getCurrentTick() {
+        return currentTick;
     }
 }

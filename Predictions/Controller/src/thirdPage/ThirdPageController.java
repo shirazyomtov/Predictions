@@ -4,7 +4,10 @@ import DTO.DTOEntityInfo;
 import DTO.DTOPropertyInfo;
 import DTO.DTOSimulationInfo;
 import app.AppController;
+import history.simulation.Simulation;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -100,8 +103,15 @@ public class ThirdPageController {
 
     private SimpleBooleanProperty isDisplayModePressed;
 
+    private SimpleLongProperty currentTicksProperty;
+    private SimpleLongProperty currentSecondsProperty;
+
+    private SimulationTask simulationTask = null;
+
     public ThirdPageController(){
         isDisplayModePressed = new SimpleBooleanProperty(false);
+        this.currentTicksProperty = new SimpleLongProperty(0);
+        this.currentSecondsProperty = new SimpleLongProperty(0);
     }
 
     @FXML
@@ -110,6 +120,8 @@ public class ThirdPageController {
         if(histogramOfPopulation != null){
             staticInfoPane.visibleProperty().bind(isDisplayModePressed);
         }
+        currentTickTextField.textProperty().bind(Bindings.format("%,d", currentTicksProperty));
+        secondsCounterTextField.textProperty().bind(Bindings.format("%,d", currentSecondsProperty));
     }
 
     private void loadResourcesStaticData() throws IOException {
@@ -134,7 +146,7 @@ public class ThirdPageController {
         displayModeComboBox.setVisible(false);
         allDTOSimulationList = simulationInfos;
         executionListView.getItems().clear();
-        addSimulationsToExecutionListView(simulationInfos);
+        // addSimulationsToExecutionListView(simulationInfos);
     }
 
     private void addSimulationsToExecutionListView(List<DTOSimulationInfo> simulationInfos) {
@@ -164,6 +176,7 @@ public class ThirdPageController {
     }
 
     private void setSpecificSimulationDetails() {
+        createTaskOfSimulation();
         simulationInfoGridPane.setVisible(true);
         if(selectedSimulation.getFinish()){
             pauseButton.setVisible(false);
@@ -178,20 +191,20 @@ public class ThirdPageController {
             endedSimulationInfoScrollPane.setVisible(false);
         }
 
-        setDetails();
+//        setDetails();
     }
 
-    private void setDetails() {
-        currentTickTextField.setText(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()).toString());
-        secondsCounterTextField.setText(mainController.getEngineManager().getCurrentSecond(selectedSimulation.getSimulationId()).toString());
-        List<DTOEntityInfo> chosenSimulationEntities = mainController.getEngineManager().getAllAmountOfEntities(selectedSimulation.getSimulationId());
-        addEntitiesDetails(chosenSimulationEntities);
-        if (selectedSimulation.getFinish()){
-            List<DTOEntityInfo> finalDTOEntities = mainController.getEngineManager().getAllDetailsOfEndedSimulation(selectedSimulation.getSimulationId());
-            setEntitiesAndProperties(finalDTOEntities);
-            setEntities(finalDTOEntities);
-        }
-    }
+//    private void setDetails() {
+//        currentTickTextField.setText(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()).toString());
+//        secondsCounterTextField.setText(mainController.getEngineManager().getCurrentSecond(selectedSimulation.getSimulationId()).toString());
+//        List<DTOEntityInfo> chosenSimulationEntities = mainController.getEngineManager().getAllAmountOfEntities(selectedSimulation.getSimulationId());
+//        addEntitiesDetails(chosenSimulationEntities);
+//        if (selectedSimulation.getFinish()){
+//            List<DTOEntityInfo> finalDTOEntities = mainController.getEngineManager().getAllDetailsOfEndedSimulation(selectedSimulation.getSimulationId());
+//            setEntitiesAndProperties(finalDTOEntities);
+//            setEntities(finalDTOEntities);
+//        }
+//    }
 
 
     private void addEntitiesDetails(List<DTOEntityInfo> chosenSimulationEntities) {
@@ -339,5 +352,15 @@ public class ThirdPageController {
         entitiesAndPropertiesTreeView.setRoot(null);
         entitiesListView.getItems().clear();
 
+    }
+
+    private void createTaskOfSimulation() {
+        if(simulationTask == null) {
+            simulationTask = new SimulationTask(selectedSimulation.getSimulationId(), mainController.getEngineManager(), currentTicksProperty, currentSecondsProperty);
+            new Thread(simulationTask).start();
+        }
+        else {
+            simulationTask.setSimulationId(selectedSimulation.getSimulationId());
+        }
     }
 }

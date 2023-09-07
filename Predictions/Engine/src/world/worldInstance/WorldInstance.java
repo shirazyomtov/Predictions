@@ -20,7 +20,6 @@ public class WorldInstance implements Serializable {
 
     private Map<String, Integer> currentAmountOfEntities;
 
-    private int currentTick = 1;
 
     public WorldInstance(Map<String, EnvironmentInstance> environmentInstanceMap, List<EntityInstance> entityInstanceList, WorldDefinition worldDefinition, Map<String, Integer> initAmountOfEntities, Map<String, Integer> currentAmountOfEntities) {
         this.entityInstanceList = entityInstanceList;
@@ -36,13 +35,6 @@ public class WorldInstance implements Serializable {
         }
     }
 
-    public int getCurrentTick() {
-        return currentTick;
-    }
-
-    public void setCurrentTick(int currentTick) {
-        this.currentTick = currentTick;
-    }
     public Map<String, EnvironmentInstance> getEnvironmentInstanceMap() {
         return environmentInstanceMap;
     }
@@ -79,16 +71,19 @@ public class WorldInstance implements Serializable {
         entityInstanceList.add(entityInstance);
     }
 
-    public void setCurrentAmountOfEntities(Map<String, Integer> currentAmountOfEntities) {
-        this.currentAmountOfEntities = currentAmountOfEntities;
-        //todo: maybe change
-    }
-
     public Map<String, Integer> getInitAmountOfEntities() {
         return initAmountOfEntities;
     }
 
     public Map<String, Integer> getCurrentAmountOfEntities() {
         return currentAmountOfEntities;
+    }
+
+    public void setCurrentAmountOfEntitiesAfterKill(EntityInstance entityToRemove) {
+        currentAmountOfEntities.put(entityToRemove.getName(), currentAmountOfEntities.get(entityToRemove.getName()) - 1);
+    }
+
+    public void setCurrentAmountOfEntitiesAfterReplace(EntityInstance entityToRemove) {
+        currentAmountOfEntities.put(entityToRemove.getName(), currentAmountOfEntities.get(entityToRemove.getName()) + 1);
     }
 }

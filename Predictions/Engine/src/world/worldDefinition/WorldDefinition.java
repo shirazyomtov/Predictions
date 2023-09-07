@@ -30,16 +30,19 @@ public final class WorldDefinition implements Serializable {
 
     private final Map<String, EnvironmentDefinition> environmentDefinition;
 
-    private TwoDimensionalGrid twoDimensionalGrid;
+    private TwoDimensionalGrid twoDimensionalGrid; // todo
+
+    private int numberOfThreads;
 
     public WorldDefinition(Map<String, EntityDefinitionImpl> entityDefinition, List<RuleImpl> rules, Termination termination,
-                           Map<String, EnvironmentDefinition> environmentDefinition, int rows, int columns)
+                           Map<String, EnvironmentDefinition> environmentDefinition, int rows, int columns, int numberOfThreads)
     {
         this.entityDefinition = entityDefinition;
         this.rules = rules;
         this.termination = termination;
         this.environmentDefinition = environmentDefinition;
         this.twoDimensionalGrid = new TwoDimensionalGrid(rows,columns);
+        this.numberOfThreads = numberOfThreads;
     }
 
     public Map<String, EntityDefinitionImpl> getEntityDefinition() {
@@ -144,5 +147,9 @@ public final class WorldDefinition implements Serializable {
         else{
             return new EnvironmentInstance(new BooleanPropertyInstance(specificEnvironmentDefinition.getName(), ValueGeneratorFactory.createFixed(false), specificEnvironmentDefinition.getRange()));
         }
+    }
+
+    public int getNumberOfThreads() {
+        return numberOfThreads;
     }
 }

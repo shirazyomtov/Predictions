@@ -1,6 +1,6 @@
 package exceptions;
 
-public class OperationNotSupportedType extends Exception{
+public class OperationNotSupportedType extends RuntimeException{
 
     private  final  String actionType;
 

@@ -27,31 +27,37 @@ public class Increase extends Action implements Serializable {
 
 
     @Override
-    public Action operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity);
-        String by;
-        if(entityInstance == secondaryEntity) {
-            by = expression.decipher(entityInstance, worldInstance, primaryEntity);
+    public Action operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity , String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity, secondEntityName);
+        if (entityInstance != null) {
+            String by;
+            if (entityInstance == secondaryEntity) {
+                by = expression.decipher(entityInstance, worldInstance, primaryEntity, secondEntityName);
+            } else {
+                by = expression.decipher(entityInstance, worldInstance, secondaryEntity, secondEntityName);
+            }
+            if (by != null) {
+                Property property = entityInstance.getAllProperty().get(propertyName);
+                Type type = property.getType();
+                try {
+                    if (type.equals(Type.DECIMAL)) {
+                        Integer number = Integer.parseInt(by);
+                        property.setValue(number + (Integer) property.getValue());
+                    } else if (type.equals(Type.FLOAT)) {
+                        Float number = Float.parseFloat(by);
+                        property.setValue(number + (Float) property.getValue());
+                    }
+                    return null;
+                } catch (NumberFormatException | ClassCastException e) {
+                    throw new NumberFormatException("The value " + by + " that you provide in the action " + getActionType() + " is not a " + type);
+                }
+            }
+            else {
+                return null;
+            }
         }
         else{
-            by = expression.decipher(entityInstance, worldInstance, secondaryEntity);
-        }
-        Property property = entityInstance.getAllProperty().get(propertyName);
-        Type type = property.getType();
-        try {
-            if(type.equals(Type.DECIMAL)) {
-                Integer number = Integer.parseInt(by);
-                property.setValue(number + (Integer) property.getValue());
-            }
-            else if (type.equals(Type.FLOAT)) {
-                Float number = Float.parseFloat(by);
-                property.setValue(number + (Float) property.getValue());
-            }
             return null;
-        }
-
-        catch (NumberFormatException | ClassCastException e){
-            throw new NumberFormatException("The value " + by + " that you provide in the action " + getActionType() + " is not a " + type);
         }
     }
 

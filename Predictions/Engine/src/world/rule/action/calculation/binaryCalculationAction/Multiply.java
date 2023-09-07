@@ -22,35 +22,42 @@ public class Multiply extends BinaryAction implements Serializable {
 
 
     @Override
-    public Action operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity);
-        String valueArg1;
-        String valueArg2;
-        if(entityInstance == secondaryEntity) {
-            valueArg1 = this.getArgument1().decipher(entityInstance, worldInstance, primaryEntity );
-            valueArg2 = this.getArgument2().decipher(entityInstance, worldInstance, primaryEntity);
-        }
-        else{
-            valueArg1 = this.getArgument1().decipher(entityInstance, worldInstance, secondaryEntity);
-            valueArg2 = this.getArgument2().decipher(entityInstance, worldInstance, secondaryEntity);
-        }
-        Property resultProp = entityInstance.getAllProperty().get(getResultPropertyName());
-        Type type = resultProp.getType();
-        try {
-            if (type.equals(Type.DECIMAL)){
-                Integer number = Integer.parseInt(valueArg1);
-                Integer number2 = Integer.parseInt(valueArg2);
-                resultProp.setValue(number * number2);
+    public Action operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity, secondEntityName);
+        if (entityInstance != null) {
+            String valueArg1;
+            String valueArg2;
+            if (entityInstance == secondaryEntity) {
+                valueArg1 = this.getArgument1().decipher(entityInstance, worldInstance, primaryEntity, secondEntityName);
+                valueArg2 = this.getArgument2().decipher(entityInstance, worldInstance, primaryEntity, secondEntityName);
+            } else {
+                valueArg1 = this.getArgument1().decipher(entityInstance, worldInstance, secondaryEntity, secondEntityName);
+                valueArg2 = this.getArgument2().decipher(entityInstance, worldInstance, secondaryEntity, secondEntityName);
             }
-            else if (type.equals(Type.FLOAT)) {
-                Float number = Float.parseFloat(valueArg1);
-                Float number2 = Float.parseFloat(valueArg2);
-                resultProp.setValue(number * number2);
+            if (valueArg1 != null && valueArg2 != null) {
+                Property resultProp = entityInstance.getAllProperty().get(getResultPropertyName());
+                Type type = resultProp.getType();
+                try {
+                    if (type.equals(Type.DECIMAL)) {
+                        Integer number = Integer.parseInt(valueArg1);
+                        Integer number2 = Integer.parseInt(valueArg2);
+                        resultProp.setValue(number * number2);
+                    } else if (type.equals(Type.FLOAT)) {
+                        Float number = Float.parseFloat(valueArg1);
+                        Float number2 = Float.parseFloat(valueArg2);
+                        resultProp.setValue(number * number2);
+                    }
+                    return null;
+                } catch (NumberFormatException | ClassCastException e) {
+                    throw new NumberFormatException("At least one of the values  that you provide in the action " + getActionType() + " is not a " + type);
+                }
             }
+            else {
+                return null;
+            }
+        }
+        else {
             return null;
-        }
-        catch (NumberFormatException | ClassCastException e){
-            throw new NumberFormatException("At least one of the values  that you provide in the action " + getActionType() + " is not a " + type);
         }
     }
 }

@@ -26,42 +26,46 @@ public class Set extends Action implements Serializable {
 
 
     @Override
-    public Action operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity);
-        String value;
-        if(entityInstance == secondaryEntity) {
-            value = expression.decipher(entityInstance, worldInstance, primaryEntity);
-        }
-        else{
-            value = expression.decipher(entityInstance, worldInstance, secondaryEntity);
-        }
-          Property property = entityInstance.getAllProperty().get(propertyName);
-          Type type = property.getType();
-        try {
-            if(type.equals(Type.DECIMAL)) {
-                Integer number = Integer.parseInt(value);
-                property.setValue(number);
+    public Action operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+        EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity, secondEntityName);
+        if (entityInstance != null) {
+            String value;
+            if (entityInstance == secondaryEntity) {
+                value = expression.decipher(entityInstance, worldInstance, primaryEntity, secondEntityName);
+            } else {
+                value = expression.decipher(entityInstance, worldInstance, secondaryEntity, secondEntityName);
             }
-            else if (type.equals(Type.FLOAT)) {
-                Float number = Float.parseFloat(value);
-                property.setValue(number);
-            }
-            else if (type.equals(Type.BOOLEAN)) {
-                if(value.equals("true") || value.equals("false")){
-                    property.setValue(value);
+            if (value != null) {
+                Property property = entityInstance.getAllProperty().get(propertyName);
+                Type type = property.getType();
+                try {
+                    if (type.equals(Type.DECIMAL)) {
+                        Integer number = Integer.parseInt(value);
+                        property.setValue(number);
+                    } else if (type.equals(Type.FLOAT)) {
+                        Float number = Float.parseFloat(value);
+                        property.setValue(number);
+                    } else if (type.equals(Type.BOOLEAN)) {
+                        if (value.equals("true") || value.equals("false")) {
+                            property.setValue(value);
+                        } else {
+                            throw new NumberFormatException();
+                        }
+                    } else if (type.equals(Type.STRING)) {
+                        property.setValue(value);
+                    }
+                } catch (NumberFormatException e) {
+                    throw new NumberFormatException("The value: " + value + " that you provide in the action " + getActionType() + " is not a " + type);
                 }
-                else {
-                    throw new NumberFormatException();
-                }
+                return null;
             }
-            else if (type.equals(Type.STRING)) {
-                property.setValue(value);
+            else {
+                return null;
             }
         }
-        catch (NumberFormatException e){
-            throw new NumberFormatException("The value: " + value + " that you provide in the action " + getActionType() + " is not a " + type);
+        else {
+            return null;
         }
-        return null;
     }
 
     public String getPropertyName() {

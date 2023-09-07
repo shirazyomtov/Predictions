@@ -28,8 +28,8 @@ public class ExpressionIml implements Expression, Serializable {
         this.expressionName = expressionName;
     }
     @Override
-    public String decipher(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance seocndEntity) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes, FormatException {
-        String object = null ;
+    public String decipher(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance seocndEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, OperationNotCompatibleTypes, FormatException {
+        Object object = null ;
         if (propertyName != null) {
             Type propertyNameType = decipherType(primaryEntity, worldInstance);
             setType(propertyNameType);
@@ -40,33 +40,33 @@ public class ExpressionIml implements Expression, Serializable {
             String value = expressionName.substring(index + 1, expressionName.length() - 1).trim();
             if (functionName.equals(ENVIRONMENT.getFunctionName())) {
                 if(propertyName != null) {
-                    object = AuxiliaryFunctionsImpl.environment(value, worldInstance, type).toString();
+                    object = AuxiliaryFunctionsImpl.environment(value, worldInstance, type);
                 }
                 else {
-                    object = AuxiliaryFunctionsImpl.environment(value, worldInstance, null).toString();
+                    object = AuxiliaryFunctionsImpl.environment(value, worldInstance, null);
                 }
             }
             else if (functionName.equals(RANDOM.getFunctionName())) {
-                object = AuxiliaryFunctionsImpl.random(value).toString();
+                object = AuxiliaryFunctionsImpl.random(value);
             }
             else if (functionName.equals(EVALUATE.getFunctionName())) {
                 if(propertyName != null) {
-                        object = AuxiliaryFunctionsImpl.evaluate(value, worldInstance, type, primaryEntity, seocndEntity).toString();
+                        object = AuxiliaryFunctionsImpl.evaluate(value, worldInstance, type, primaryEntity, seocndEntity, secondEntityName);
                 }
                 else{
-                    object = AuxiliaryFunctionsImpl.evaluate(value, worldInstance, null, primaryEntity, seocndEntity).toString();
+                    object = AuxiliaryFunctionsImpl.evaluate(value, worldInstance, null, primaryEntity, seocndEntity, secondEntityName);
                 }
             }
             else if (functionName.equals(PERCENT.getFunctionName())) {
                 if (propertyName != null) {
-                    object = AuxiliaryFunctionsImpl.percent(value, primaryEntity, worldInstance, propertyName, seocndEntity).toString();
+                    object = AuxiliaryFunctionsImpl.percent(value, primaryEntity, worldInstance, propertyName, seocndEntity, secondEntityName);
                 }
                 else{
-                    object = AuxiliaryFunctionsImpl.percent(value, primaryEntity, worldInstance, null, seocndEntity).toString();
+                    object = AuxiliaryFunctionsImpl.percent(value, primaryEntity, worldInstance, null, seocndEntity, secondEntityName);
                 }
             }
             else if (functionName.equals(TICKS.getFunctionName())) {
-                object = AuxiliaryFunctionsImpl.ticks(value, worldInstance, primaryEntity, seocndEntity).toString();
+                object = AuxiliaryFunctionsImpl.ticks(value, worldInstance, primaryEntity, seocndEntity, secondEntityName);
             }
         }
         else if (checkIfValueIsProperty(primaryEntity) != null) {
@@ -74,19 +74,24 @@ public class ExpressionIml implements Expression, Serializable {
                 Type propertyType = type;
                 Type valueType = checkProperty(primaryEntity, expressionName);
                 if (checkSameType(propertyType, valueType)) {
-                    object = checkIfValueIsProperty(primaryEntity).toString();
+                    object = checkIfValueIsProperty(primaryEntity);
                 } else {
                     throw new OperationNotCompatibleTypes(propertyType.toString(), valueType.toString());
                 }
             }
             else {
-                object = checkIfValueIsProperty(primaryEntity).toString();
+                object = checkIfValueIsProperty(primaryEntity);
             }
         }
         else {
-            object = expressionName;
+           return expressionName;
         }
-        return object;
+      if(object != null){
+          return object.toString();
+      }
+      else{
+          return null;
+      }
     }
 
     private Type decipherType(EntityInstance primaryEntity, WorldInstance worldInstance) {

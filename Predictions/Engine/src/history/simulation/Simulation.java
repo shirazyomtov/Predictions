@@ -65,12 +65,17 @@ public  class Simulation implements Serializable {
                 for (Action activeAction: activationAction){
                     if (activeAction.getEntityName().equals(entityInstance.getName())){
                         if(activeAction.getSecondaryEntity() == null){
-                            performOperation(activeAction, entityInstance, null, entitiesToRemove, replaceActions); //check
+                            performOperation(activeAction, entityInstance, null, entitiesToRemove, replaceActions, null);
                         }
                         else {
                             secondaryEntities = calculateTotalNumberOfSecondaryInstances(activeAction);
-                            for (EntityInstance secondaryEntity: secondaryEntities){
-                                performOperation(activeAction, entityInstance, secondaryEntity, entitiesToRemove, replaceActions);
+                            if (!secondaryEntities.isEmpty()) {
+                                for (EntityInstance secondaryEntity : secondaryEntities) {
+                                    performOperation(activeAction, entityInstance, secondaryEntity, entitiesToRemove, replaceActions, activeAction.getSecondaryEntity().getSecondaryEntityName());
+                                }
+                            }
+                            else{
+                                performOperation(activeAction, entityInstance, null, entitiesToRemove, replaceActions, activeAction.getSecondaryEntity().getSecondaryEntityName());
                             }
                         }
                     }
@@ -79,12 +84,12 @@ public  class Simulation implements Serializable {
 
             for (EntityInstance entityInstanceToRemove : entitiesToRemove) {
                 Kill killAction = new Kill(entityInstanceToRemove.getName(), null);
-                killAction.operation(entityInstanceToRemove, worldInstance, null);
+                killAction.operation(entityInstanceToRemove, worldInstance, null, null);
             }
             for (Pair<EntityInstance, Action> tuple : replaceActions) {
                 if(tuple.getValue() instanceof Replace) {
                     Replace replaceAction = new Replace(tuple.getKey().getName(), ((Replace) tuple.getValue()).getCreateEntityName(), ((Replace) tuple.getValue()).getMode(), null);
-                    replaceAction.operation(tuple.getKey(), worldInstance, null);
+                    replaceAction.operation(tuple.getKey(), worldInstance, null, null);
                 }
             }
 
@@ -141,11 +146,11 @@ public  class Simulation implements Serializable {
         for(EntityInstance entityInstance: secondaryEntities) {
             AbstractCondition abstractCondition = activeAction.getSecondaryEntity().getCondition();
             if (abstractCondition.getSingularity().equals("single")) {
-                flag = ((SingleCondition) abstractCondition).checkIfConditionIsTrue(entityInstance, worldInstance, null);
+                flag = ((SingleCondition) abstractCondition).checkIfConditionIsTrue(entityInstance, worldInstance, null, null);
             }
             else {
                 MultipleCondition multipleCondition = (MultipleCondition) abstractCondition;
-                flag = multipleCondition.checkCondition(entityInstance, multipleCondition.getConditions(), multipleCondition.getLogical(), worldInstance, null);
+                flag = multipleCondition.checkCondition(entityInstance, multipleCondition.getConditions(), multipleCondition.getLogical(), worldInstance, null, null);
             }
             if (flag) {
                 entitiesThatPassedTheCondition.add(entityInstance);
@@ -212,10 +217,10 @@ public  class Simulation implements Serializable {
         }
     }
 
-    private void performOperation(Action action, EntityInstance entityInstance, EntityInstance secondaryEntity, List<EntityInstance> entitiesToRemove,  List<Pair<EntityInstance,Action>> replaceActions) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    private void performOperation(Action action, EntityInstance entityInstance, EntityInstance secondaryEntity, List<EntityInstance> entitiesToRemove,  List<Pair<EntityInstance,Action>> replaceActions, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         Action action1;
         if (!action.getActionType().equals(ActionType.KILL) && !action.getActionType().equals(ActionType.REPLACE)) {
-            action1 = action.operation(entityInstance, worldInstance, secondaryEntity);
+            action1 = action.operation(entityInstance, worldInstance, secondaryEntity, secondEntityName);
             if(action1 != null) {
                 if (action1.getActionType().equals(ActionType.KILL)) {
                     entitiesToRemove.add(entityInstance);

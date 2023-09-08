@@ -5,7 +5,6 @@ import exceptions.*;
 import history.History;
 import history.simulation.Simulation;
 import world.entity.definition.EntityDefinition;
-import world.entity.definition.EntityDefinitionImpl;
 import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
 import world.environment.definition.EnvironmentDefinition;
@@ -265,12 +264,14 @@ public class EngineManager implements Serializable{
 
     private static Property createPropertyBoolean(PropertyDefinition propertyDefinition) {
         BooleanPropertyInstance property;
+        String stringValue;
         if(propertyDefinition.isRandomInitialize()) {
             property = new BooleanPropertyInstance(propertyDefinition.getName(), ValueGeneratorFactory.createRandomBoolean(), propertyDefinition.getRange());
         }
         else{
+            stringValue = (String) propertyDefinition.getInit();
             property = new BooleanPropertyInstance(propertyDefinition.getName(),
-                    ValueGeneratorFactory.createFixed((boolean)propertyDefinition.getInit()), propertyDefinition.getRange());
+                    ValueGeneratorFactory.createFixed(Boolean.parseBoolean(stringValue)), propertyDefinition.getRange());
         }
 
         return property;
@@ -515,7 +516,7 @@ public class EngineManager implements Serializable{
         Map<String, Integer> entityCount = getCurrentAmountOfEntities(simulationId);
 
         for(String entityName: history.getAllSimulations().get(simulationId).getWorldInstance().getWorldDefinition().getEntityDefinition().keySet()){
-            addDTOEntity(simulationId, entityInfos, entityCount, entityName);
+            addDTOEntityToList(simulationId, entityInfos, entityCount, entityName);
         }
 
         return entityInfos;
@@ -527,13 +528,13 @@ public class EngineManager implements Serializable{
 
 
         for(String entityName: entityCount.keySet()){
-            addDTOEntity(simulationId, entityInfos, entityCount, entityName);
+            addDTOEntityToList(simulationId, entityInfos, entityCount, entityName);
         }
 
         return entityInfos;
     }
 
-    private void addDTOEntity(int simulationId, List<DTOEntityInfo> entityInfos, Map<String, Integer> entityCount, String entityName) {
+    private void addDTOEntityToList(int simulationId, List<DTOEntityInfo> entityInfos, Map<String, Integer> entityCount, String entityName) {
         int initAmount = history.getAllSimulations().get(simulationId).getWorldInstance().getInitAmountOfEntities().get(entityName);
         List<DTOPropertyInfo> dtoPropertyInfos = history.getAllSimulations().get(simulationId).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityName).getDTOProperties();
         DTOEntityInfo dtoEntityInfo;
@@ -565,7 +566,29 @@ public class EngineManager implements Serializable{
 
     public DTOWorldInfo getDTOWorldInfo(int simulationId) {
         Simulation simulation = history.getAllSimulations().get(simulationId);
-        Map <String, Integer> amountOfEntities = simulation.getWorldInstance().getCurrentAmountOfEntities();
+        List<DTOEntityInfo> amountOfEntities = getCurrentEntities(simulationId);
         return new DTOWorldInfo(amountOfEntities, simulation.getCurrentTick(), simulation.getCurrentSecond(), simulation.getIsFinish());
     }
+
+    public List<DTOEntityInfo> getCurrentEntities(int simulationId) {
+        List<DTOEntityInfo> entityInfos = new ArrayList<>();
+        Map<String, Integer> entityCount = history.getAllSimulations().get(simulationId).getWorldInstance().getCurrentAmountOfEntities();
+
+        for(String entityName: history.getAllSimulations().get(simulationId).getWorldInstance().getWorldDefinition().getEntityDefinition().keySet()){
+            addDTOEntityToList(simulationId, entityInfos, entityCount, entityName);
+        }
+
+        return entityInfos;
+    }
+
+    public List<DTOEntityInfo> getInitAmountOfEntitiesAndSetEntitiesByUser(Integer simulationId) {
+        entitiesAmountByUser = new HashMap<>();
+        Map <String, Integer> initAmountOfEntities = history.getAllSimulations().get(simulationId).getWorldInstance().getInitAmountOfEntities();
+        for(String entityName: initAmountOfEntities.keySet()){
+            entitiesAmountByUser.put(entityName, initAmountOfEntities.get(entityName));
+        }
+        return getAllAmountOfEntities(simulationId);
+    }
+
+
 }

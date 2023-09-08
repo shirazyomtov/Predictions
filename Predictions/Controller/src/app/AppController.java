@@ -146,6 +146,7 @@ public class AppController {
                 return "";
 
             engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
+            thirdPageController.setSimulationTask(null);
             setAllPagesDetails();
             isFileLoaded.set(true);
             isDetailsClicked.set(false);
@@ -213,14 +214,14 @@ public class AppController {
 
 
     public void setSimulationsDetails() {
-        //engineManager.getAllPastSimulation()
         thirdPageController.setThirdPageDetails(engineManager.getAllPastSimulation());
         //todo : fix this after the second page logic
     }
 
     public void setSecondPageDetails(Integer simulationId) {
-        secondPageController.setSecondPageDetails(engineManager.getAllAmountOfEntitiesAndSetEntitiesByUser(simulationId), engineManager.getEnvironmentValuesOfChosenSimulation(simulationId));
+        secondPageController.setSecondPageDetails(engineManager.getInitAmountOfEntitiesAndSetEntitiesByUser(simulationId), engineManager.getEnvironmentValuesOfChosenSimulation(simulationId));
     }
+
 
     public void setSkin(SkinsOptions skinsOption) {
         Scene scene = primaryStage.getScene();

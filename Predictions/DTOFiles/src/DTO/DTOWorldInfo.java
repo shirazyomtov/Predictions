@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 public class DTOWorldInfo {
-    private Map<String, Integer> currentAmountOfEntities;
+//    private Map<String, Integer> currentAmountOfEntities;
+
+    private List<DTOEntityInfo> currentAmountOfEntities;
 
     private int currentTick;
 
@@ -12,7 +14,7 @@ public class DTOWorldInfo {
 
     private boolean isFinish;
 
-    public DTOWorldInfo( Map<String, Integer> currentAmountOfEntities, int currentTick, int currentSecond, boolean isFinish){
+    public DTOWorldInfo(List<DTOEntityInfo> currentAmountOfEntities, int currentTick, int currentSecond, boolean isFinish){
         this.currentAmountOfEntities = currentAmountOfEntities;
         this.currentTick = currentTick;
         this.currentSecond = currentSecond;
@@ -27,7 +29,12 @@ public class DTOWorldInfo {
         return currentSecond;
     }
 
-    public Map<String, Integer> getCurrentAmountOfEntities() {
+    public List<DTOEntityInfo> getCurrentAmountOfEntities() {
         return currentAmountOfEntities;
     }
+
+    public boolean getIsFinish() {
+        return isFinish;
+    }
 }
+

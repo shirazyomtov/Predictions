@@ -4,7 +4,7 @@ import DTO.DTOEntityInfo;
 import DTO.DTOPropertyInfo;
 import DTO.DTOSimulationInfo;
 import app.AppController;
-import history.simulation.Simulation;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
@@ -19,6 +19,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import thirdPage.averageValueOfProperty.AverageValueOfProperty;
 import thirdPage.histogramOfPopulation.HistogramOfPopulation;
 
 import java.io.IOException;
@@ -26,10 +28,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ThirdPageController {
 
     private static final String HISTOGRAM_FXML_LIGHT_RESOURCE = "/thirdPage/histogramOfPopulation/histogramOfPopulation.fxml";
+    private static final String AVERAGE_VALUE_FXML_LIGHT_RESOURCE = "/thirdPage/averageValueOfProperty/averageValueOfProperty.fxml";
     @FXML
     private GridPane thirdPageGridPane;
 
@@ -101,6 +105,8 @@ public class ThirdPageController {
 
     private HistogramOfPopulation histogramOfPopulation;
 
+    private AverageValueOfProperty averageValueOfProperty;
+
     private SimpleBooleanProperty isDisplayModePressed;
 
     private SimpleLongProperty currentTicksProperty;
@@ -108,25 +114,42 @@ public class ThirdPageController {
 
     private SimulationTask simulationTask = null;
 
+    private SimpleBooleanProperty isFinishProperty;
+    private Consumer<List<DTOEntityInfo>> updateTableViewConsumer;
+
+
     public ThirdPageController(){
+        this.updateTableViewConsumer = (chosenSimulationEntities) -> {
+            Platform.runLater(() -> {
+                addEntitiesDetails(chosenSimulationEntities);
+            });
+        };
         isDisplayModePressed = new SimpleBooleanProperty(false);
         this.currentTicksProperty = new SimpleLongProperty(0);
         this.currentSecondsProperty = new SimpleLongProperty(0);
+        this.isFinishProperty = new SimpleBooleanProperty(false);
     }
 
     @FXML
     public void initialize() throws Exception {
         loadResourcesStaticData();
-        if(histogramOfPopulation != null){
+        if(histogramOfPopulation != null && averageValueOfProperty!= null){
             staticInfoPane.visibleProperty().bind(isDisplayModePressed);
         }
         currentTickTextField.textProperty().bind(Bindings.format("%,d", currentTicksProperty));
         secondsCounterTextField.textProperty().bind(Bindings.format("%,d", currentSecondsProperty));
+        isFinishProperty.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                updateFinishSimulation();
+            }
+        });
     }
 
     private void loadResourcesStaticData() throws IOException {
         loadResourcesHistogramProperty();
+        loadResourcesAverageValueProperty();
     }
+
 
     private void loadResourcesHistogramProperty() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -135,6 +158,16 @@ public class ThirdPageController {
         InputStream inputStream = url.openStream();
         BarChart barChart = fxmlLoader.load(inputStream);
         histogramOfPopulation = fxmlLoader.getController();
+    }
+
+
+    private void loadResourcesAverageValueProperty() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(AVERAGE_VALUE_FXML_LIGHT_RESOURCE);
+        fxmlLoader.setLocation(url);
+        InputStream inputStream = url.openStream();
+        VBox vBox = fxmlLoader.load(inputStream);
+        averageValueOfProperty = fxmlLoader.getController();
     }
 
     public void setMainController(AppController appController) {
@@ -146,7 +179,7 @@ public class ThirdPageController {
         displayModeComboBox.setVisible(false);
         allDTOSimulationList = simulationInfos;
         executionListView.getItems().clear();
-        // addSimulationsToExecutionListView(simulationInfos);
+        addSimulationsToExecutionListView(simulationInfos);
     }
 
     private void addSimulationsToExecutionListView(List<DTOSimulationInfo> simulationInfos) {
@@ -167,7 +200,7 @@ public class ThirdPageController {
         int selectedIndex = executionListView.getSelectionModel().getSelectedIndex();
 
         if (selectedIndex >= 0) {
-            selectedSimulation = allDTOSimulationList.get(selectedIndex);
+            selectedSimulation = mainController.getEngineManager().getAllPastSimulation().get(selectedIndex);
             setSpecificSimulationDetails();
         }
         else{
@@ -179,10 +212,7 @@ public class ThirdPageController {
         createTaskOfSimulation();
         simulationInfoGridPane.setVisible(true);
         if(selectedSimulation.getFinish()){
-            pauseButton.setVisible(false);
-            resumeButton.setVisible(false);
-            stopButton.setVisible(false);
-            endedSimulationInfoScrollPane.setVisible(true);
+            setFinishSimulationComponentsVisible();
         }
         else{
             pauseButton.setVisible(true);
@@ -192,6 +222,19 @@ public class ThirdPageController {
         }
 
 //        setDetails();
+    }
+
+    private void setFinishSimulationComponentsVisible(){
+        pauseButton.setVisible(false);
+        resumeButton.setVisible(false);
+        stopButton.setVisible(false);
+        endedSimulationInfoScrollPane.setVisible(true);
+    }
+
+    private void setFinishSimulationDetails(){
+        List<DTOEntityInfo> finalDTOEntities = mainController.getEngineManager().getAllDetailsOfEndedSimulation(selectedSimulation.getSimulationId());
+        setEntitiesAndProperties(finalDTOEntities);
+        setEntities(finalDTOEntities);
     }
 
 //    private void setDetails() {
@@ -248,19 +291,22 @@ public class ThirdPageController {
         isDisplayModePressed.set(true);
         staticInfoPane.getChildren().clear();
         String selectedDisplay = displayModeComboBox.getSelectionModel().getSelectedItem();
+        TreeItem<String> selectedItem = entitiesAndPropertiesTreeView.getSelectionModel().getSelectedItem();
+        String propertyName = selectedItem.getValue();
+        String entityName = selectedItem.getParent().getValue();
+        Map<Object, Integer> propertyInfoAboutValues = mainController.getEngineManager().createPropertyValuesMap(selectedSimulation.getSimulationId(), entityName, propertyName);
         if(selectedDisplay != null) {
             switch (selectedDisplay) {
                 case "Histogram of population":
                     staticInfoPane.getChildren().add(histogramOfPopulation.getHistogramBarChart());
-                    TreeItem<String> selectedItem = entitiesAndPropertiesTreeView.getSelectionModel().getSelectedItem();
-                    String propertyName = selectedItem.getValue();
-                    String entityName = selectedItem.getParent().getValue();
-                    Map<Object, Integer> propertyInfoAboutValues = mainController.getEngineManager().createPropertyValuesMap(selectedSimulation.getSimulationId(), entityName, propertyName);
+
                     histogramOfPopulation.createBarChart(propertyInfoAboutValues);
                     break;
                 case "Consistency":
                     break;
                 case "Average value":
+                    staticInfoPane.getChildren().add(averageValueOfProperty.getAverageValueVbox());
+                    averageValueOfProperty.createAverageValueOfProperty(propertyInfoAboutValues);
                     break;
             }
         }
@@ -327,6 +373,7 @@ public class ThirdPageController {
 
     @FXML
     void rerunButtonClicked(ActionEvent event) {
+//        selectedSimulation = mainController.getEngineManager().getAllPastSimulation().get(selectedSimulation.getSimulationId() - 1);
         if(selectedSimulation.getFinish()) {
             mainController.setSecondPageDetails(selectedSimulation.getSimulationId());
             mainController.showSecondPage();
@@ -354,13 +401,30 @@ public class ThirdPageController {
 
     }
 
-    private void createTaskOfSimulation() {
+    public void createTaskOfSimulation() {
         if(simulationTask == null) {
-            simulationTask = new SimulationTask(selectedSimulation.getSimulationId(), mainController.getEngineManager(), currentTicksProperty, currentSecondsProperty);
+            simulationTask = new SimulationTask(selectedSimulation.getSimulationId(), mainController.getEngineManager(), currentTicksProperty, currentSecondsProperty, isFinishProperty, updateTableViewConsumer);
             new Thread(simulationTask).start();
         }
         else {
             simulationTask.setSimulationId(selectedSimulation.getSimulationId());
         }
     }
+
+    private void updateFinishSimulation(){
+        Platform.runLater(() -> {
+            executionListView.getItems().set(selectedSimulation.getSimulationId() - 1, "(Ended) Simulation ID: " + selectedSimulation.getSimulationId() + ", Date: " + selectedSimulation.getSimulationDate());
+//            executionListView.getItems().clear();
+//            addSimulationsToExecutionListView(mainController.getEngineManager().getAllPastSimulation());
+            selectedSimulation = mainController.getEngineManager().getAllPastSimulation().get(selectedSimulation.getSimulationId() - 1);
+            setFinishSimulationComponentsVisible();
+            setFinishSimulationDetails();
+            mainController.setSuccessMessage("The simulation " + selectedSimulation.getSimulationId() + " has ended");
+        });
+    }
+
+    public void setSimulationTask(SimulationTask simulationTask) {
+        this.simulationTask = simulationTask;
+    }
 }
+

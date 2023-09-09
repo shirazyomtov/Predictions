@@ -61,6 +61,7 @@ public  class Simulation implements Serializable, Runnable {
                 (worldInstance.getWorldDefinition().getTermination().getTicks() == null || currentTick<= worldInstance.getWorldDefinition().getTermination().getTicks())) {
             moveEntities();
             activationAction = createActivationActionsList();
+            worldInstance.addAmountOfEntitiesPerTick(currentTick);
             for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
                 for (Action activeAction: activationAction){
                     if (activeAction.getEntityName().equals(entityInstance.getName())){
@@ -102,11 +103,11 @@ public  class Simulation implements Serializable, Runnable {
         }
 
         isFinish = true;
-        if (worldInstance.getWorldDefinition().getTermination().getSecond() != null && currentSecond > worldInstance.getWorldDefinition().getTermination().getSecond()) {
-            message = "The simulation has ended because more than " + worldInstance.getWorldDefinition().getTermination().getSecond() + " seconds have passed";
-        } else if (worldInstance.getWorldDefinition().getTermination().getTicks() != null && currentTick > worldInstance.getWorldDefinition().getTermination().getTicks()) {
-            message = "The simulation has ended because more than " + worldInstance.getWorldDefinition().getTermination().getTicks() + " ticks have passed";
-        }
+//        if (worldInstance.getWorldDefinition().getTermination().getSecond() != null && currentSecond > worldInstance.getWorldDefinition().getTermination().getSecond()) {
+//            message = "The simulation has ended because more than " + worldInstance.getWorldDefinition().getTermination().getSecond() + " seconds have passed";
+//        } else if (worldInstance.getWorldDefinition().getTermination().getTicks() != null && currentTick > worldInstance.getWorldDefinition().getTermination().getTicks()) {
+//            message = "The simulation has ended because more than " + worldInstance.getWorldDefinition().getTermination().getTicks() + " ticks have passed";
+//        }
 
         // todo: functions
     }
@@ -208,7 +209,7 @@ public  class Simulation implements Serializable, Runnable {
     private void moveEntities() {
         Location location = null;
         for (EntityInstance entityInstance: worldInstance.getEntityInstanceList()) {
-             location = worldInstance.getWorldDefinition().getTwoDimensionalGrid().getNewLocation(entityInstance.getLocation());
+             location = worldInstance.getTwoDimensionalGrid().getNewLocation(entityInstance.getLocation());
              if (location != null) {
                  entityInstance.getLocation().setRow(location.getRow());
                  entityInstance.getLocation().setCol(location.getCol());

@@ -30,18 +30,20 @@ public final class WorldDefinition implements Serializable {
 
     private final Map<String, EnvironmentDefinition> environmentDefinition;
 
-    private TwoDimensionalGrid twoDimensionalGrid; // todo
+    private final Integer rows;
+    private final Integer cols;
 
-    private int numberOfThreads;
+    private final int numberOfThreads;
 
     public WorldDefinition(Map<String, EntityDefinitionImpl> entityDefinition, List<RuleImpl> rules, Termination termination,
-                           Map<String, EnvironmentDefinition> environmentDefinition, int rows, int columns, int numberOfThreads)
+                           Map<String, EnvironmentDefinition> environmentDefinition, Integer rows, Integer cols, int numberOfThreads)
     {
         this.entityDefinition = entityDefinition;
         this.rules = rules;
         this.termination = termination;
         this.environmentDefinition = environmentDefinition;
-        this.twoDimensionalGrid = new TwoDimensionalGrid(rows,columns);
+        this.rows = rows;
+        this.cols = cols;
         this.numberOfThreads = numberOfThreads;
     }
 
@@ -91,13 +93,6 @@ public final class WorldDefinition implements Serializable {
         return dtoRuleInfos;
     }
 
-    public TwoDimensionalGrid getTwoDimensionalGrid() {
-        return twoDimensionalGrid;
-    }
-
-    public DTOGrid createDTOGridDetails() {
-        return new DTOGrid(twoDimensionalGrid.getRows().toString(), twoDimensionalGrid.getCols().toString());
-    }
 
     public Type checkTypeOfEnvironmentProperty(String value) {
         if(environmentDefinition.containsKey(value)){
@@ -151,5 +146,17 @@ public final class WorldDefinition implements Serializable {
 
     public int getNumberOfThreads() {
         return numberOfThreads;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols() {
+        return cols;
+    }
+
+    public DTOGrid createDTOGridDetails() {
+        return new DTOGrid(rows.toString(), cols.toString());
     }
 }

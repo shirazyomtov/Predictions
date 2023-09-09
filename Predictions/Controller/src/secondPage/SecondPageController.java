@@ -207,6 +207,7 @@ public class SecondPageController {
         mainController.setSimulationsDetails();
         clearButtonClicked(event);
         mainController.showThirdPage();
+
     }
 
     public BooleanProperty getStartButtonPressedProperty() {

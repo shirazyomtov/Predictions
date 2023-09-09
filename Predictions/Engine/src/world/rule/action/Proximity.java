@@ -62,31 +62,31 @@ public class Proximity extends  Action implements Serializable {
     }
 
     private boolean checkTheProximity(EntityInstance entityInstanceSource, EntityInstance entityInstanceTarget,  WorldInstance worldInstance) throws NumberFormatException, ObjectNotExist, OperationNotCompatibleTypes, FormatException {
-        int row;
-        int rowPositive;
-        int colPositive;
+        float row;
+        float rowPositive;
+        float colPositive;
         String ofString = of.decipher(entityInstanceSource, worldInstance, entityInstanceTarget, null);
-        int ofInt = Integer.parseInt(ofString);
-        int entityInstanceSourceRow = entityInstanceSource.getLocation().getRow();
-        int entityInstanceSourceCol = entityInstanceSource.getLocation().getCol();
-        int entityInstanceTargetRow = entityInstanceTarget.getLocation().getRow();
-        int entityInstanceTargetCol = entityInstanceTarget.getLocation().getCol();
+        float ofInt = Float.parseFloat(ofString);
+        float entityInstanceSourceRow = entityInstanceSource.getLocation().getRow();
+        float entityInstanceSourceCol = entityInstanceSource.getLocation().getCol();
+        float entityInstanceTargetRow = entityInstanceTarget.getLocation().getRow();
+        float entityInstanceTargetCol = entityInstanceTarget.getLocation().getCol();
         for(row = entityInstanceSourceRow - ofInt; row <= entityInstanceSourceRow + ofInt; row++){
             if (row < 0){
-                rowPositive = worldInstance.getWorldDefinition().getTwoDimensionalGrid().getRows() + row;
+                rowPositive = worldInstance.getTwoDimensionalGrid().getRows() + row;
             }
-            else if (row > worldInstance.getWorldDefinition().getTwoDimensionalGrid().getRows() -1){
-                rowPositive = row - worldInstance.getWorldDefinition().getTwoDimensionalGrid().getRows();
+            else if (row > worldInstance.getTwoDimensionalGrid().getRows() -1){
+                rowPositive = row - worldInstance.getTwoDimensionalGrid().getRows();
             }
             else {
                 rowPositive = row;
             }
-            for(int col = entityInstanceSourceCol - ofInt; col<=entityInstanceSourceCol + ofInt; col++){
+            for(float col = entityInstanceSourceCol - ofInt; col<=entityInstanceSourceCol + ofInt; col++){
                 if (col < 0){
-                    colPositive = worldInstance.getWorldDefinition().getTwoDimensionalGrid().getCols() + col;
+                    colPositive = worldInstance.getTwoDimensionalGrid().getCols() + col;
                 }
-                else if (col > worldInstance.getWorldDefinition().getTwoDimensionalGrid().getCols() -1){
-                    colPositive = col - worldInstance.getWorldDefinition().getTwoDimensionalGrid().getCols();
+                else if (col > worldInstance.getTwoDimensionalGrid().getCols() -1){
+                    colPositive = col - worldInstance.getTwoDimensionalGrid().getCols();
                 }
                 else {
                     colPositive = col;

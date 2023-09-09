@@ -13,6 +13,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
@@ -26,6 +28,7 @@ import thirdPage.histogramOfPopulation.HistogramOfPopulation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -84,7 +87,7 @@ public class ThirdPageController {
 
     //Graphs population change
     @FXML
-    private LineChart<?, ?> amountOfEntitiesLineChart;
+    private LineChart<Integer, Integer> amountOfEntitiesLineChart;
 
     @FXML
     private ListView<String> entitiesListView;
@@ -114,9 +117,14 @@ public class ThirdPageController {
 
     private SimulationTask simulationTask = null;
 
+    private FinishSimulationTask finishSimulationTask = null;
+
     private SimpleBooleanProperty isFinishProperty;
     private Consumer<List<DTOEntityInfo>> updateTableViewConsumer;
 
+    private Consumer<List<DTOSimulationInfo>> updateFinishSimulationConsumer;
+
+    private List<Integer> finishSimulations = new ArrayList<>();
 
     public ThirdPageController(){
         this.updateTableViewConsumer = (chosenSimulationEntities) -> {
@@ -124,10 +132,34 @@ public class ThirdPageController {
                 addEntitiesDetails(chosenSimulationEntities);
             });
         };
+        this.updateFinishSimulationConsumer = (allSimulation) -> {
+            Platform.runLater(() -> {
+                shiraz(allSimulation);
+            });
+        };
         isDisplayModePressed = new SimpleBooleanProperty(false);
         this.currentTicksProperty = new SimpleLongProperty(0);
         this.currentSecondsProperty = new SimpleLongProperty(0);
         this.isFinishProperty = new SimpleBooleanProperty(false);
+    }
+
+    private void shiraz(List<DTOSimulationInfo> allSimulation) {
+        boolean flag = false;
+        for(DTOSimulationInfo dtoSimulationInfo: allSimulation){
+            if(dtoSimulationInfo.getFinish()){
+                for (Integer simulation: finishSimulations) {
+                    if (simulation.equals(dtoSimulationInfo.getSimulationId())){
+                        flag = true;
+                    }
+                }
+                if(!flag) {
+                    finishSimulations.add(dtoSimulationInfo.getSimulationId());
+                    executionListView.getItems().set(dtoSimulationInfo.getSimulationId() - 1, "(Ended) Simulation ID: " + dtoSimulationInfo.getSimulationId() + ", Date: " + dtoSimulationInfo.getSimulationDate());
+                    mainController.setSuccessMessage("The simulation " + dtoSimulationInfo.getSimulationId() + " has ended");
+                }
+            }
+            flag = false;
+        }
     }
 
     @FXML
@@ -284,7 +316,36 @@ public class ThirdPageController {
     @FXML
     void entitiesListViewClicked(MouseEvent event) {
         //todo: add a function and data to save the info about amount of each entity in each tick
+//        String entitiesName = entitiesListView.getSelectionModel().getSelectedItem();
+//        Map<Integer, Map<String, Integer>> amountOfAllEntities = mainController.getEngineManager().getAmountOfEntitiesPerTick(selectedSimulation.getSimulationId());
+//        if(entitiesName != null) {
+//            createGraphOfEntityPerTick(amountOfAllEntities, entitiesName);
+//        }
     }
+
+//    private void createGraphOfEntityPerTick(Map<Integer, Map<String, Integer>> amountOfAllEntities, String entitiesName) {
+//        amountOfEntitiesLineChart.getData().clear();
+//        NumberAxis xAxis = new NumberAxis();
+//        NumberAxis yAxis = new NumberAxis();
+//        xAxis.setLabel("Tick"); // Label for X-axis
+//        yAxis.setLabel("Amount"); // Label for Y-axis
+//
+//        XYChart.Series<Integer, Integer> series = new XYChart.Series<>();
+//        series.setName(entitiesName);
+//
+//        for (Map.Entry<Integer, Map<String, Integer>> entry : amountOfAllEntities.entrySet()) {
+//            Integer tick = entry.getKey();
+//            Map<String, Integer> entityData = entry.getValue();
+//
+//            Integer amount = entityData.get(entitiesName);
+//
+//            if (amount != null) {
+//                series.getData().add(new XYChart.Data<>(tick, amount));
+//            }
+//        }
+//
+//        amountOfEntitiesLineChart.getData().add(series);
+//    }
 
     @FXML
     void displayModeComboBoxClicked(ActionEvent event) {
@@ -299,7 +360,6 @@ public class ThirdPageController {
             switch (selectedDisplay) {
                 case "Histogram of population":
                     staticInfoPane.getChildren().add(histogramOfPopulation.getHistogramBarChart());
-
                     histogramOfPopulation.createBarChart(propertyInfoAboutValues);
                     break;
                 case "Consistency":
@@ -413,18 +473,26 @@ public class ThirdPageController {
 
     private void updateFinishSimulation(){
         Platform.runLater(() -> {
-            executionListView.getItems().set(selectedSimulation.getSimulationId() - 1, "(Ended) Simulation ID: " + selectedSimulation.getSimulationId() + ", Date: " + selectedSimulation.getSimulationDate());
-//            executionListView.getItems().clear();
-//            addSimulationsToExecutionListView(mainController.getEngineManager().getAllPastSimulation());
             selectedSimulation = mainController.getEngineManager().getAllPastSimulation().get(selectedSimulation.getSimulationId() - 1);
             setFinishSimulationComponentsVisible();
             setFinishSimulationDetails();
-            mainController.setSuccessMessage("The simulation " + selectedSimulation.getSimulationId() + " has ended");
         });
     }
 
     public void setSimulationTask(SimulationTask simulationTask) {
         this.simulationTask = simulationTask;
+    }
+
+    public void createFinishSimulationTask() {
+        if(finishSimulationTask == null) {
+            finishSimulations.clear();
+            finishSimulationTask = new FinishSimulationTask(updateFinishSimulationConsumer, mainController.getEngineManager());
+            new Thread(finishSimulationTask).start();
+        }
+    }
+
+    public void setFinishSimulationTask(FinishSimulationTask finishSimulationTask) {
+        this.finishSimulationTask = finishSimulationTask;
     }
 }
 

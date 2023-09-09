@@ -84,7 +84,7 @@ public class Replace extends Action implements Serializable {
                         flag = false;
                     }
                 }
-                EntityInstance entityInstanceToReplace = new EntityInstance(entityDefinition.getName(), allProperty,  worldInstance.getWorldDefinition().getTwoDimensionalGrid().createNewLocation());
+                EntityInstance entityInstanceToReplace = new EntityInstance(entityDefinition.getName(), allProperty,  worldInstance.getTwoDimensionalGrid().createNewLocation());
                 worldInstance.addEntityInstanceToEntityInstanceList(entityInstanceToReplace);
                 worldInstance.setCurrentAmountOfEntitiesAfterReplace(entityInstanceToReplace);
                 break;

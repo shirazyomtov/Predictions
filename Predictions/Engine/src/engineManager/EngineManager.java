@@ -7,6 +7,7 @@ import history.simulation.Simulation;
 import world.entity.definition.EntityDefinition;
 import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
+import world.entity.instance.location.Location;
 import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
 import world.propertyInstance.api.Property;
@@ -162,7 +163,8 @@ public class EngineManager implements Serializable{
         List<EntityInstance> entityInstanceList = initEntities();
         Map<String, Integer> initAmountOfEntities = createInitAmountOfEntities();
         Map<String, Integer> currentAmountOfEntities = createInitAmountOfEntities();
-        worldInstance =new WorldInstance(environmentInstanceMap, entityInstanceList, world, initAmountOfEntities, currentAmountOfEntities);
+        worldInstance =new WorldInstance(environmentInstanceMap, entityInstanceList, world, initAmountOfEntities, currentAmountOfEntities, world.getRows(), world.getCols());
+        worldInstance.initLocation();
         Simulation simulation = new Simulation(worldInstance, LocalDateTime.now());
         history = History.getInstance();
         history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
@@ -191,7 +193,7 @@ public class EngineManager implements Serializable{
                 for(PropertyDefinition propertyDefinition: entityDefinition.getProps()){
                     allProperty.put(propertyDefinition.getName(), initProperty(propertyDefinition));
                 }
-                entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty, world.getTwoDimensionalGrid().createNewLocation()));
+                entityInstanceList.add(new EntityInstance(entityDefinition.getName(), allProperty, new Location(0, 0)));
             }
         }
 
@@ -317,35 +319,7 @@ public class EngineManager implements Serializable{
         return history.getSortMapOfSimulations().size();
     }
 
-//    public DTOEntityInfo getQuantityOfEachEntity(int userIntegerInput) {
-//        int count = 0;
-//        boolean flag = false;
-//        Map<String, Integer> entity = new HashMap<>();
-//        DTOEntityInfo dtoEntityInfo = null;
-//
-//        for (EntityInstance entityInstance1 : history.getAllSimulations().get(userIntegerInput).getWorldInstance().getEntityInstanceList()) {
-//            flag = true;
-//            if (!entity.containsKey(entityInstance1.getName())) {
-//                entity.put(entityInstance1.getName(), 1);
-//                for (EntityInstance entityInstance2 : history.getAllSimulations().get(userIntegerInput).getWorldInstance().getEntityInstanceList()) {
-//                    if (entityInstance2.getName().equals(entityInstance1.getName())) {
-//                        count++;
-//                    }
-//                }
-//                int amount = history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityInstance1.getName()).getAmountOfPopulation();
-//                String name = entityInstance1.getName();
-//                dtoEntityInfo = new DTOEntityInfo(amount, count, name, history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(name).getDTOProperties());
-//                count = 0;
-//            }
-//        }
-//
-//        if (!flag) {
-//            for (Map.Entry<String, EntityDefinitionImpl> entityDefinition : history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().entrySet()) {
-//                dtoEntityInfo = new DTOEntityInfo(entityDefinition.getValue().getAmountOfPopulation(), 0, entityDefinition.getKey(), history.getAllSimulations().get(userIntegerInput).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityDefinition.getKey()).getDTOProperties());
-//            }
-//        }
-//        return dtoEntityInfo;
-//    }
+
 
     public void checkIfThereIsEntity(int userIntegerInput) throws Exception{
         WorldInstance worldInstance1 = history.getAllSimulations().get(userIntegerInput).getWorldInstance();
@@ -458,7 +432,7 @@ public class EngineManager implements Serializable{
 
     public void setSpecificEntityAmount(String entityName, int amountOfEntityInstance){
         int currentAmountOfEntity = 0;
-        int spaceSize = world.getTwoDimensionalGrid().getRows() * world.getTwoDimensionalGrid().getCols();
+        int spaceSize = world.getRows() * world.getCols();
         int amountOfAllPopulation = getAmountOfAllEntities();
         int currentAmountOfAllPopulation = amountOfAllPopulation + amountOfEntityInstance;
         if(currentAmountOfAllPopulation > spaceSize){
@@ -590,5 +564,15 @@ public class EngineManager implements Serializable{
         return getAllAmountOfEntities(simulationId);
     }
 
+    public List<DTOSimulationInfo> getDetailsAboutEndSimulation(){
+        List<DTOSimulationInfo> detailsAboutEndSimulation = new ArrayList<>();
+        for (Integer simulationId: history.getAllSimulations().keySet()){
+            detailsAboutEndSimulation.add(new DTOSimulationInfo(simulationId, history.getAllSimulations().get(simulationId).getFormattedDateTime(), history.getAllSimulations().get(simulationId).getIsFinish()));
+        }
+        return detailsAboutEndSimulation;
+    }
 
+    public Map<Integer, Map<String, Integer>> getAmountOfEntitiesPerTick(Integer simulationId) {
+        return history.getAllSimulations().get(simulationId).getWorldInstance().getAmountOfEntitiesPerTick();
+    }
 }

@@ -147,6 +147,7 @@ public class AppController {
 
             engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
             thirdPageController.setSimulationTask(null);
+            thirdPageController.setFinishSimulationTask(null);
             setAllPagesDetails();
             isFileLoaded.set(true);
             isDetailsClicked.set(false);
@@ -214,6 +215,7 @@ public class AppController {
 
 
     public void setSimulationsDetails() {
+        thirdPageController.createFinishSimulationTask();
         thirdPageController.setThirdPageDetails(engineManager.getAllPastSimulation());
         //todo : fix this after the second page logic
     }

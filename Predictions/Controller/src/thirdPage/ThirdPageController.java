@@ -342,10 +342,6 @@ public class ThirdPageController {
 
     private void createGraphOfEntityPerTick(Map<Integer, Map<String, Integer>> amountOfAllEntities, String entitiesName) {
         amountOfEntitiesLineChart.getData().clear();
-//        NumberAxis xAxis = new NumberAxis();
-//        NumberAxis yAxis = new NumberAxis();
-//        xAxis.setLabel("Tick"); // Label for X-axis
-//        yAxis.setLabel("Amount"); // Label for Y-axis
 
         XYChart.Series<String, Integer> series = new XYChart.Series<>();
         series.setName(entitiesName);

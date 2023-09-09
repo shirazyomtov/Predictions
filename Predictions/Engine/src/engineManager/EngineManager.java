@@ -579,4 +579,17 @@ public class EngineManager implements Serializable{
     public Float getAverageTickOfSpecificProperty(Integer simulationId, String entityName, String propertyName){
         return history.getAllSimulations().get(simulationId).getWorldInstance().getAverageTickValueOfSpecificProperty(entityName, propertyName);
     }
+
+    public void pause(Integer simulationId) {
+        Simulation simulation = history.getAllSimulations().get(simulationId);
+        simulation.setPause(true);
+    }
+
+    public void resume(Integer simulationId) {
+        Simulation simulation = history.getAllSimulations().get(simulationId);
+        synchronized(simulation) {
+            simulation.setPause(false);
+            simulation.notifyAll();
+        }
+    }
 }

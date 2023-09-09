@@ -433,12 +433,12 @@ public class ThirdPageController {
 
     @FXML
     void pauseButtonClicked(ActionEvent event) {
-
+        mainController.getEngineManager().pause(selectedSimulation.getSimulationId());
     }
 
     @FXML
     void resumeButtonClicked(ActionEvent event) {
-
+        mainController.getEngineManager().resume(selectedSimulation.getSimulationId());
     }
 
     @FXML

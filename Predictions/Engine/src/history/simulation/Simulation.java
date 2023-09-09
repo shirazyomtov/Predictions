@@ -33,6 +33,8 @@ public  class Simulation implements Serializable, Runnable {
     private Integer currentSecond = 0;
     private int currentTick = 1;
 
+    private boolean pause = false;
+
     public Simulation(WorldInstance worldInstance, LocalDateTime dateTime) {
         this.worldInstance = worldInstance;
         this.dateTime = dateTime;
@@ -59,6 +61,15 @@ public  class Simulation implements Serializable, Runnable {
 
         while ((worldInstance.getWorldDefinition().getTermination().getSecond() == null || currentSecond <= worldInstance.getWorldDefinition().getTermination().getSecond()) &&
                 (worldInstance.getWorldDefinition().getTermination().getTicks() == null || currentTick<= worldInstance.getWorldDefinition().getTermination().getTicks())) {
+            synchronized(this) {
+                while (this.pause) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException var2) {
+                        System.out.println("InterruptedException caught");
+                    }
+                }
+            }
             moveEntities();
             activationAction = createActivationActionsList();
             worldInstance.addAmountOfEntitiesPerTick(currentTick);
@@ -247,5 +258,9 @@ public  class Simulation implements Serializable, Runnable {
 
     public int getCurrentTick() {
         return currentTick;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
     }
 }

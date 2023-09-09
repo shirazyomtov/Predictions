@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import thirdPage.ThirdPageController;
 
 public class SecondPageController {
     private AppController mainController;
@@ -202,10 +203,11 @@ public class SecondPageController {
         //todo: after we add the third screen
         isStartButtonPressed.set(true);
         mainController.getEngineManager().setSimulation();
-        mainController.getEngineManager().getRunSimulation();
+        mainController.getEngineManager().addSimulationTask();
         mainController.setSimulationsDetails();
         clearButtonClicked(event);
         mainController.showThirdPage();
+
     }
 
     public BooleanProperty getStartButtonPressedProperty() {

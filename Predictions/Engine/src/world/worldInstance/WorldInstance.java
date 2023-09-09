@@ -1,8 +1,11 @@
 package world.worldInstance;
 
 import DTO.DTOEnvironmentInfo;
+import DTO.DTOGrid;
 import world.entity.instance.EntityInstance;
+import world.entity.instance.location.Location;
 import world.environment.instance.EnvironmentInstance;
+import world.twoDimensionalGrid.TwoDimensionalGrid;
 import world.worldDefinition.WorldDefinition;
 
 import java.io.Serializable;
@@ -16,17 +19,20 @@ public class WorldInstance implements Serializable {
 
     private WorldDefinition worldDefinition = null;
 
+    private TwoDimensionalGrid twoDimensionalGrid;
     private Map<String, Integer> initAmountOfEntities;
 
     private Map<String, Integer> currentAmountOfEntities;
 
-    private int currentTick = 1;
+    private Map<Integer, Map<String, Integer>> amountOfEntitiesPerTick = new HashMap<>();
 
-    public WorldInstance(Map<String, EnvironmentInstance> environmentInstanceMap, List<EntityInstance> entityInstanceList, WorldDefinition worldDefinition, Map<String, Integer> initAmountOfEntities, Map<String, Integer> currentAmountOfEntities) {
+
+    public WorldInstance(Map<String, EnvironmentInstance> environmentInstanceMap, List<EntityInstance> entityInstanceList, WorldDefinition worldDefinition, Map<String, Integer> initAmountOfEntities, Map<String, Integer> currentAmountOfEntities, int rows, int cols) {
         this.entityInstanceList = entityInstanceList;
         this.worldDefinition = worldDefinition;
         this.initAmountOfEntities = initAmountOfEntities;
         this.currentAmountOfEntities = currentAmountOfEntities;
+        this.twoDimensionalGrid = new TwoDimensionalGrid(rows,cols);
         createEnvironmentMap(environmentInstanceMap);
     }
 
@@ -36,13 +42,6 @@ public class WorldInstance implements Serializable {
         }
     }
 
-    public int getCurrentTick() {
-        return currentTick;
-    }
-
-    public void setCurrentTick(int currentTick) {
-        this.currentTick = currentTick;
-    }
     public Map<String, EnvironmentInstance> getEnvironmentInstanceMap() {
         return environmentInstanceMap;
     }
@@ -79,16 +78,53 @@ public class WorldInstance implements Serializable {
         entityInstanceList.add(entityInstance);
     }
 
-    public void setCurrentAmountOfEntities(Map<String, Integer> currentAmountOfEntities) {
-        this.currentAmountOfEntities = currentAmountOfEntities;
-        //todo: maybe change
-    }
-
     public Map<String, Integer> getInitAmountOfEntities() {
         return initAmountOfEntities;
     }
 
     public Map<String, Integer> getCurrentAmountOfEntities() {
         return currentAmountOfEntities;
+    }
+
+    public void setCurrentAmountOfEntitiesAfterKill(EntityInstance entityToRemove) {
+        currentAmountOfEntities.put(entityToRemove.getName(), currentAmountOfEntities.get(entityToRemove.getName()) - 1);
+    }
+
+    public void setCurrentAmountOfEntitiesAfterReplace(EntityInstance entityToRemove) {
+        currentAmountOfEntities.put(entityToRemove.getName(), currentAmountOfEntities.get(entityToRemove.getName()) + 1);
+    }
+
+        public TwoDimensionalGrid getTwoDimensionalGrid() {
+            return twoDimensionalGrid;
+    }
+
+    public void initLocation(){
+        for(EntityInstance entityInstance: entityInstanceList){
+            entityInstance.setLocation(twoDimensionalGrid.createNewLocation());
+        }
+    }
+
+    public void addAmountOfEntitiesPerTick(Integer tick){
+        Map<String, Integer> amountOfEntitiesInSpecificTick = new HashMap<>();
+        for(String entityName: currentAmountOfEntities.keySet()){
+            amountOfEntitiesInSpecificTick.put(entityName, currentAmountOfEntities.get(entityName));
+        }
+        amountOfEntitiesPerTick.put(tick, amountOfEntitiesInSpecificTick);
+    }
+
+    public Map<Integer, Map<String, Integer>> getAmountOfEntitiesPerTick() {
+        return amountOfEntitiesPerTick;
+    }
+
+    public Float getAverageTickValueOfSpecificProperty(String entityName, String propertyName){
+        float sum = 0;
+        float count = 0;
+        for (EntityInstance entityInstance: entityInstanceList){
+            if(entityInstance.getName().equals(entityName)){
+                sum = sum + entityInstance.getAvgAmountOfTickTheValueDosentChange(propertyName);
+                count++;
+            }
+        }
+        return  sum/count;
     }
 }

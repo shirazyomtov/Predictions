@@ -49,7 +49,7 @@ public  final class XMLReader implements  Serializable {
         List<RuleImpl> ruleIml = defineRules();
         Termination termination = defineTermination();
         Map <String, EnvironmentDefinition> environmentDefinition = defineEnvironment();
-        return new WorldDefinition(entityDefinition, ruleIml, termination, environmentDefinition,world.getPRDGrid().getRows(), world.getPRDGrid().getColumns());
+        return new WorldDefinition(entityDefinition, ruleIml, termination, environmentDefinition,world.getPRDGrid().getRows(), world.getPRDGrid().getColumns(), world.getPRDThreadCount());
     }
 
     private  Map<String, EnvironmentDefinition> defineEnvironment() {

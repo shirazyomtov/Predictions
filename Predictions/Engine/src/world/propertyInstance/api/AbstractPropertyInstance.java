@@ -5,6 +5,8 @@ import world.value.generator.api.ValueGenerator;
 import world.enums.Type;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractPropertyInstance<T> implements Property, Serializable {
 
@@ -18,6 +20,8 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
 
     private Integer timeTheValueDosentChange = 0;
     private boolean valueUpdate = false;
+
+    private List<Integer> valueUpdateList = new ArrayList<>();
 
     public AbstractPropertyInstance(String name, Type propertyType, ValueGenerator<T> value, RangeImpl range) {
         this.name = name;
@@ -63,6 +67,7 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
         }
         if(value != this.value){
             this.value = value;
+            valueUpdateList.add(timeTheValueDosentChange);
             setTimeTheValueDosentChange(0);
             setValueUpdate(true);
         }
@@ -94,5 +99,10 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
     @Override
     public void setValueUpdate(boolean valueUpdate) {
         this.valueUpdate = valueUpdate;
+    }
+
+    @Override
+    public List<Integer> getValueUpdateList() {
+        return valueUpdateList;
     }
 }

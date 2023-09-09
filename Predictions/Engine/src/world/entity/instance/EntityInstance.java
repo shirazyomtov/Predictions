@@ -43,4 +43,17 @@ public class EntityInstance implements Serializable {
     public Location getLocation() {
         return location;
     }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Float getAvgAmountOfTickTheValueDosentChange(String propertyName) {
+        float sum = 0;
+        Property property = allProperty.get(propertyName);
+        for (Integer amount :property.getValueUpdateList()){
+            sum = sum + amount;
+        }
+        return sum/property.getValueUpdateList().size();
+    }
 }

@@ -353,8 +353,8 @@ public class UIManager {
     }
 
     private void runSimulationAndPrintTerminationReason() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        String message = engineManager.getRunSimulation();
-        printIdAndTerminationReason(message);
+//        String message = engineManager.getRunSimulation();
+//        printIdAndTerminationReason(message);
     }
 
     private void printIdAndTerminationReason(String message) {

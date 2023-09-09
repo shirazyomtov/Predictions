@@ -40,7 +40,6 @@ public class TwoDimensionalGrid {
         int row = location.getRow();
         int col = location.getCol();
 
-        // Check and add valid neighboring locations
         if (!twoD_arr[(row + 1) % rows][col]) {
             optionalSides.add(new Location((row + 1) % rows, col));
         }

@@ -4,6 +4,7 @@ import world.enums.Type;
 import world.value.generator.api.ValueGenerator;
 
 import java.io.Serializable;
+import java.util.List;
 
 public interface Property extends Serializable {
     String getName();
@@ -15,4 +16,5 @@ public interface Property extends Serializable {
     void setTimeTheValueDosentChange(Integer timeTheValueDosentChange);
     boolean isValueUpdate();
     void setValueUpdate(boolean valueUpdate);
+    List<Integer> getValueUpdateList();
 }

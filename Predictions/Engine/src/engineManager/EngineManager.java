@@ -575,4 +575,8 @@ public class EngineManager implements Serializable{
     public Map<Integer, Map<String, Integer>> getAmountOfEntitiesPerTick(Integer simulationId) {
         return history.getAllSimulations().get(simulationId).getWorldInstance().getAmountOfEntitiesPerTick();
     }
+
+    public Float getAverageTickOfSpecificProperty(Integer simulationId, String entityName, String propertyName){
+        return history.getAllSimulations().get(simulationId).getWorldInstance().getAverageTickValueOfSpecificProperty(entityName, propertyName);
+    }
 }

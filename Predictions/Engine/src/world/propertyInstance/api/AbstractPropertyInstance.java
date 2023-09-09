@@ -103,6 +103,9 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
 
     @Override
     public List<Integer> getValueUpdateList() {
+        if(valueUpdateList.isEmpty()){
+            valueUpdateList.add(timeTheValueDosentChange);
+        }
         return valueUpdateList;
     }
 }

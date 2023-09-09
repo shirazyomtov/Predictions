@@ -22,6 +22,7 @@ import javafx.scene.layout.GridPane;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import thirdPage.averageTickOfProperty.AverageTickOfProperty;
 import thirdPage.averageValueOfProperty.AverageValueOfProperty;
 import thirdPage.histogramOfPopulation.HistogramOfPopulation;
 
@@ -37,6 +38,9 @@ public class ThirdPageController {
 
     private static final String HISTOGRAM_FXML_LIGHT_RESOURCE = "/thirdPage/histogramOfPopulation/histogramOfPopulation.fxml";
     private static final String AVERAGE_VALUE_FXML_LIGHT_RESOURCE = "/thirdPage/averageValueOfProperty/averageValueOfProperty.fxml";
+
+    private static final String AVERAGE_TICK_PROPERTY_FXML_LIGHT_RESOURCE = "/thirdPage/averageTickOfProperty/averageTickOfProperty.fxml";
+
     @FXML
     private GridPane thirdPageGridPane;
 
@@ -87,7 +91,7 @@ public class ThirdPageController {
 
     //Graphs population change
     @FXML
-    private LineChart<Integer, Integer> amountOfEntitiesLineChart;
+    private LineChart<String, Integer> amountOfEntitiesLineChart;
 
     @FXML
     private ListView<String> entitiesListView;
@@ -109,6 +113,8 @@ public class ThirdPageController {
     private HistogramOfPopulation histogramOfPopulation;
 
     private AverageValueOfProperty averageValueOfProperty;
+
+    private AverageTickOfProperty averageTickOfProperty;
 
     private SimpleBooleanProperty isDisplayModePressed;
 
@@ -134,7 +140,7 @@ public class ThirdPageController {
         };
         this.updateFinishSimulationConsumer = (allSimulation) -> {
             Platform.runLater(() -> {
-                shiraz(allSimulation);
+                updateAllFinishSimulation(allSimulation);
             });
         };
         isDisplayModePressed = new SimpleBooleanProperty(false);
@@ -143,7 +149,7 @@ public class ThirdPageController {
         this.isFinishProperty = new SimpleBooleanProperty(false);
     }
 
-    private void shiraz(List<DTOSimulationInfo> allSimulation) {
+    private void updateAllFinishSimulation(List<DTOSimulationInfo> allSimulation) {
         boolean flag = false;
         for(DTOSimulationInfo dtoSimulationInfo: allSimulation){
             if(dtoSimulationInfo.getFinish()){
@@ -165,7 +171,7 @@ public class ThirdPageController {
     @FXML
     public void initialize() throws Exception {
         loadResourcesStaticData();
-        if(histogramOfPopulation != null && averageValueOfProperty!= null){
+        if(histogramOfPopulation != null && averageValueOfProperty!= null && averageTickOfProperty != null){
             staticInfoPane.visibleProperty().bind(isDisplayModePressed);
         }
         currentTickTextField.textProperty().bind(Bindings.format("%,d", currentTicksProperty));
@@ -180,6 +186,7 @@ public class ThirdPageController {
     private void loadResourcesStaticData() throws IOException {
         loadResourcesHistogramProperty();
         loadResourcesAverageValueProperty();
+        loadResourcesAverageTickProperty();
     }
 
 
@@ -200,6 +207,16 @@ public class ThirdPageController {
         InputStream inputStream = url.openStream();
         VBox vBox = fxmlLoader.load(inputStream);
         averageValueOfProperty = fxmlLoader.getController();
+    }
+
+
+    private void loadResourcesAverageTickProperty() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(AVERAGE_TICK_PROPERTY_FXML_LIGHT_RESOURCE);
+        fxmlLoader.setLocation(url);
+        InputStream inputStream = url.openStream();
+        VBox vBox = fxmlLoader.load(inputStream);
+        averageTickOfProperty = fxmlLoader.getController();
     }
 
     public void setMainController(AppController appController) {
@@ -316,36 +333,36 @@ public class ThirdPageController {
     @FXML
     void entitiesListViewClicked(MouseEvent event) {
         //todo: add a function and data to save the info about amount of each entity in each tick
-//        String entitiesName = entitiesListView.getSelectionModel().getSelectedItem();
-//        Map<Integer, Map<String, Integer>> amountOfAllEntities = mainController.getEngineManager().getAmountOfEntitiesPerTick(selectedSimulation.getSimulationId());
-//        if(entitiesName != null) {
-//            createGraphOfEntityPerTick(amountOfAllEntities, entitiesName);
-//        }
+        String entitiesName = entitiesListView.getSelectionModel().getSelectedItem();
+        Map<Integer, Map<String, Integer>> amountOfAllEntities = mainController.getEngineManager().getAmountOfEntitiesPerTick(selectedSimulation.getSimulationId());
+        if(entitiesName != null) {
+            createGraphOfEntityPerTick(amountOfAllEntities, entitiesName);
+        }
     }
 
-//    private void createGraphOfEntityPerTick(Map<Integer, Map<String, Integer>> amountOfAllEntities, String entitiesName) {
-//        amountOfEntitiesLineChart.getData().clear();
+    private void createGraphOfEntityPerTick(Map<Integer, Map<String, Integer>> amountOfAllEntities, String entitiesName) {
+        amountOfEntitiesLineChart.getData().clear();
 //        NumberAxis xAxis = new NumberAxis();
 //        NumberAxis yAxis = new NumberAxis();
 //        xAxis.setLabel("Tick"); // Label for X-axis
 //        yAxis.setLabel("Amount"); // Label for Y-axis
-//
-//        XYChart.Series<Integer, Integer> series = new XYChart.Series<>();
-//        series.setName(entitiesName);
-//
-//        for (Map.Entry<Integer, Map<String, Integer>> entry : amountOfAllEntities.entrySet()) {
-//            Integer tick = entry.getKey();
-//            Map<String, Integer> entityData = entry.getValue();
-//
-//            Integer amount = entityData.get(entitiesName);
-//
-//            if (amount != null) {
-//                series.getData().add(new XYChart.Data<>(tick, amount));
-//            }
-//        }
-//
-//        amountOfEntitiesLineChart.getData().add(series);
-//    }
+
+        XYChart.Series<String, Integer> series = new XYChart.Series<>();
+        series.setName(entitiesName);
+
+        for (Map.Entry<Integer, Map<String, Integer>> entry : amountOfAllEntities.entrySet()) {
+            Integer tick = entry.getKey();
+            Map<String, Integer> entityData = entry.getValue();
+
+            Integer amount = entityData.get(entitiesName);
+
+            if (amount != null) {
+                series.getData().add(new XYChart.Data<>(tick.toString(), amount));
+            }
+        }
+
+        amountOfEntitiesLineChart.getData().add(series);
+    }
 
     @FXML
     void displayModeComboBoxClicked(ActionEvent event) {
@@ -363,6 +380,8 @@ public class ThirdPageController {
                     histogramOfPopulation.createBarChart(propertyInfoAboutValues);
                     break;
                 case "Consistency":
+                    staticInfoPane.getChildren().add(averageTickOfProperty.getAverageTickOfPropertyVbox());
+                    averageTickOfProperty.setAverageTickOfProperty(mainController.getEngineManager().getAverageTickOfSpecificProperty(selectedSimulation.getSimulationId(), entityName, propertyName));
                     break;
                 case "Average value":
                     staticInfoPane.getChildren().add(averageValueOfProperty.getAverageValueVbox());

@@ -61,6 +61,12 @@ public class SecondPageController {
     @FXML
     private Button clearButton;
 
+    @FXML
+    private TextField rangeEnvironmentTextField;
+
+    @FXML
+    private TextField typeEnvironmentTextField;
+
     private List<String> entitiesNames = new ArrayList<>();
 
     private List<String> environmentsNames = new ArrayList<>();
@@ -89,7 +95,6 @@ public class SecondPageController {
         choseValueVbox.visibleProperty().set(false);
         choseEnvironmentVbox.visibleProperty().set(false);
         entityNameTextField.clear();
-        environmentNameTextField.clear();
         valueTextField.setText("0");
         valueEnvironmentTextField.clear();
     }
@@ -153,7 +158,15 @@ public class SecondPageController {
 
         if (selectedIndex >= 0) {
             String environmentName = environmentsNames.get(selectedIndex);
-            environmentNameTextField.setText(environmentName);
+//            environmentNameTextField.setText(environmentName);
+            DTOEnvironmentInfo dtoEnvironmentInfo = mainController.getEngineManager().getEnvironmentNamesList().get(selectedIndex);
+            typeEnvironmentTextField.setText(dtoEnvironmentInfo.getType());
+            if(dtoEnvironmentInfo.getRange() != null) {
+                rangeEnvironmentTextField.setText(dtoEnvironmentInfo.getRange().getFrom() + " - " + dtoEnvironmentInfo.getRange().getTo());
+            }
+            else{
+                rangeEnvironmentTextField.setText("No range");
+            }
             Object value = mainController.getEngineManager().getValueOfEntity(environmentName);
             if(value != null){
                 valueEnvironmentTextField.setText(value.toString());
@@ -172,7 +185,9 @@ public class SecondPageController {
         try {
             if (!valueEnvironmentTextField.getText().isEmpty()) {
                 String valueOfEnvironment = valueEnvironmentTextField.getText();
-                String environmentName = environmentNameTextField.getText();
+//                String environmentName = environmentNameTextField.getText();
+                int selectedIndex = environmentListView.getSelectionModel().getSelectedIndex();
+                String environmentName = environmentsNames.get(selectedIndex);
                 mainController.getEngineManager().checkValidValueAndSetValue(environmentName, valueOfEnvironment);
                 mainController.setSuccessMessage("The value was saved successfully");
             }

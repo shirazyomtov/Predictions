@@ -35,6 +35,9 @@ public  class Simulation implements Serializable, Runnable {
 
     private boolean pause = false;
 
+    private boolean pauseAfterTick = false;
+    private boolean stop = false;
+
     public Simulation(WorldInstance worldInstance, LocalDateTime dateTime) {
         this.worldInstance = worldInstance;
         this.dateTime = dateTime;
@@ -53,76 +56,84 @@ public  class Simulation implements Serializable, Runnable {
     @Override
     public void run() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         long startMillisSeconds = System.currentTimeMillis();
-        String message = null;
+        if (worldInstance.getWorldDefinition().getTermination().getTerminationByUser())
+        {
+            while (!stop){
+                runSimulation();
+                long currentMilliSeconds = System.currentTimeMillis();
+                currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
+            }
+        }
+        else {
+            while ((worldInstance.getWorldDefinition().getTermination().getSecond() == null || currentSecond <= worldInstance.getWorldDefinition().getTermination().getSecond()) &&
+                    (worldInstance.getWorldDefinition().getTermination().getTicks() == null || currentTick <= worldInstance.getWorldDefinition().getTermination().getTicks())) {
+                if (pauseAfterTick){
+                    pause = true;
+                    pauseAfterTick = false;
+                }
+                runSimulation();
+                long currentMilliSeconds = System.currentTimeMillis();
+                currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
+                // todo stop
+            }
+        }
+        isFinish = true;
+    }
+
+    private void runSimulation() {
         List<Action> activationAction ;
         List<EntityInstance> secondaryEntities = null;
         List<EntityInstance> entitiesToRemove = new ArrayList<>();
         List<Pair<EntityInstance,Action>> replaceActions = new ArrayList<>();
-
-        while ((worldInstance.getWorldDefinition().getTermination().getSecond() == null || currentSecond <= worldInstance.getWorldDefinition().getTermination().getSecond()) &&
-                (worldInstance.getWorldDefinition().getTermination().getTicks() == null || currentTick<= worldInstance.getWorldDefinition().getTermination().getTicks())) {
-            synchronized(this) {
-                while (this.pause) {
-                    try {
-                        this.wait();
-                    } catch (InterruptedException var2) {
-                        System.out.println("InterruptedException caught");
-                    }
+        synchronized(this) {
+            while (this.pause) {
+                try {
+                    this.wait();
+                } catch (InterruptedException var2) {
+                    System.out.println("InterruptedException caught");
                 }
             }
-            moveEntities();
-            activationAction = createActivationActionsList();
-            worldInstance.addAmountOfEntitiesPerTick(currentTick);
-            for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
-                for (Action activeAction: activationAction){
-                    if (activeAction.getEntityName().equals(entityInstance.getName())){
-                        if(activeAction.getSecondaryEntity() == null){
-                            performOperation(activeAction, entityInstance, null, entitiesToRemove, replaceActions, null);
+        }
+        moveEntities();
+        activationAction = createActivationActionsList();
+        worldInstance.addAmountOfEntitiesPerTick(currentTick);
+        for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
+            for (Action activeAction: activationAction){
+                if (activeAction.getEntityName().equals(entityInstance.getName())){
+                    if(activeAction.getSecondaryEntity() == null){
+                        performOperation(activeAction, entityInstance, null, entitiesToRemove, replaceActions, null);
+                    }
+                    else {
+                        secondaryEntities = calculateTotalNumberOfSecondaryInstances(activeAction);
+                        if (!secondaryEntities.isEmpty()) {
+                            for (EntityInstance secondaryEntity : secondaryEntities) {
+                                performOperation(activeAction, entityInstance, secondaryEntity, entitiesToRemove, replaceActions, activeAction.getSecondaryEntity().getSecondaryEntityName());
+                            }
                         }
-                        else {
-                            secondaryEntities = calculateTotalNumberOfSecondaryInstances(activeAction);
-                            if (!secondaryEntities.isEmpty()) {
-                                for (EntityInstance secondaryEntity : secondaryEntities) {
-                                    performOperation(activeAction, entityInstance, secondaryEntity, entitiesToRemove, replaceActions, activeAction.getSecondaryEntity().getSecondaryEntityName());
-                                }
-                            }
-                            else{
-                                performOperation(activeAction, entityInstance, null, entitiesToRemove, replaceActions, activeAction.getSecondaryEntity().getSecondaryEntityName());
-                            }
+                        else{
+                            performOperation(activeAction, entityInstance, null, entitiesToRemove, replaceActions, activeAction.getSecondaryEntity().getSecondaryEntityName());
                         }
                     }
                 }
             }
-
-            for (EntityInstance entityInstanceToRemove : entitiesToRemove) {
-                Kill killAction = new Kill(entityInstanceToRemove.getName(), null);
-                killAction.operation(entityInstanceToRemove, worldInstance, null, null);
-            }
-            for (Pair<EntityInstance, Action> tuple : replaceActions) {
-                if(tuple.getValue() instanceof Replace) {
-                    Replace replaceAction = new Replace(tuple.getKey().getName(), ((Replace) tuple.getValue()).getCreateEntityName(), ((Replace) tuple.getValue()).getMode(), null);
-                    replaceAction.operation(tuple.getKey(), worldInstance, null, null);
-                }
-            }
-
-            entitiesToRemove.clear();
-            replaceActions.clear();
-            updateTickProperty();
-            currentTick = currentTick + 1;
-            long currentMilliSeconds = System.currentTimeMillis();
-            currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
         }
 
-        isFinish = true;
-//        if (worldInstance.getWorldDefinition().getTermination().getSecond() != null && currentSecond > worldInstance.getWorldDefinition().getTermination().getSecond()) {
-//            message = "The simulation has ended because more than " + worldInstance.getWorldDefinition().getTermination().getSecond() + " seconds have passed";
-//        } else if (worldInstance.getWorldDefinition().getTermination().getTicks() != null && currentTick > worldInstance.getWorldDefinition().getTermination().getTicks()) {
-//            message = "The simulation has ended because more than " + worldInstance.getWorldDefinition().getTermination().getTicks() + " ticks have passed";
-//        }
+        for (EntityInstance entityInstanceToRemove : entitiesToRemove) {
+            Kill killAction = new Kill(entityInstanceToRemove.getName(), null);
+            killAction.operation(entityInstanceToRemove, worldInstance, null, null);
+        }
+        for (Pair<EntityInstance, Action> tuple : replaceActions) {
+            if(tuple.getValue() instanceof Replace) {
+                Replace replaceAction = new Replace(tuple.getKey().getName(), ((Replace) tuple.getValue()).getCreateEntityName(), ((Replace) tuple.getValue()).getMode(), null);
+                replaceAction.operation(tuple.getKey(), worldInstance, null, null);
+            }
+        }
 
-        // todo: functions
+        entitiesToRemove.clear();
+        replaceActions.clear();
+        updateTickProperty();
+        currentTick = currentTick + 1;
     }
-
     private List<EntityInstance> calculateTotalNumberOfSecondaryInstances(Action activeAction) throws ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException, EntityNotDefine {
         List<EntityInstance> secondaryEntities;
         int count = 0;
@@ -262,5 +273,9 @@ public  class Simulation implements Serializable, Runnable {
 
     public void setPause(boolean pause) {
         this.pause = pause;
+    }
+
+    public void setPauseAfterTick(boolean pauseAfterTick) {
+        this.pauseAfterTick = pauseAfterTick;
     }
 }

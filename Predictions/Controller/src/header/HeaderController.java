@@ -6,14 +6,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
-import javafx.scene.layout.VBox;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 public class HeaderController {
     private AppController mainController;
@@ -58,6 +52,25 @@ public class HeaderController {
 
     @FXML
     private Label simulationsInQueueLabel;
+
+    private SimpleStringProperty simulationsCompletedProperty;
+
+    private SimpleStringProperty simulationsInProgressProperty;
+
+    private SimpleStringProperty simulationsInQueueProperty;
+
+    public HeaderController(){
+        simulationsCompletedProperty = new SimpleStringProperty("0");
+        simulationsInProgressProperty = new SimpleStringProperty("0");
+        simulationsInQueueProperty = new SimpleStringProperty("0");
+    }
+
+    @FXML
+    private void initialize(){
+        simulationsCompletedLabel.textProperty().bind(simulationsCompletedProperty);
+        simulationsInProgressLabel.textProperty().bind(simulationsInProgressProperty);
+        simulationsInQueueLabel.textProperty().bind(simulationsInQueueProperty);
+    }
 
     @FXML
     void dogsMenuItemClicked(ActionEvent event) {
@@ -133,6 +146,18 @@ public class HeaderController {
 //        resultsToggleButton.selectedProperty().bind(startButtonPressedProperty.not());
 
         //todo:Add later after we press the start button we move directly to result page
+    }
+
+    public void setSimulationsCompletedProperty(String simulationsCompletedProperty) {
+        this.simulationsCompletedProperty.set(simulationsCompletedProperty);
+    }
+
+    public void setSimulationsInProgressProperty(String simulationsInProgressProperty) {
+        this.simulationsInProgressProperty.set(simulationsInProgressProperty);
+    }
+
+    public void setSimulationsInQueueProperty(String simulationsInQueueProperty) {
+        this.simulationsInQueueProperty.set(simulationsInQueueProperty);
     }
 }
 

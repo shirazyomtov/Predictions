@@ -431,9 +431,10 @@ public class EngineManager implements Serializable{
     }
 
     public void setSpecificEntityAmount(String entityName, int amountOfEntityInstance){
-        int currentAmountOfEntity = 0;
+        int currentAmountOfEntity = entitiesAmountByUser.getOrDefault(entityName, 0);
         int spaceSize = world.getRows() * world.getCols();
         int amountOfAllPopulation = getAmountOfAllEntities();
+        amountOfAllPopulation -= currentAmountOfEntity;
         int currentAmountOfAllPopulation = amountOfAllPopulation + amountOfEntityInstance;
         if(currentAmountOfAllPopulation > spaceSize){
             throw new IndexOutOfBoundsException("The maximum number of entity instances you can insert is the size of the space which it " + spaceSize);

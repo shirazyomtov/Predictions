@@ -2,17 +2,20 @@ package header;
 
 import app.AppController;
 import enums.SkinsOptions;
-import javafx.animation.PauseTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
-import javafx.util.Duration;
+import javafx.scene.layout.VBox;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class HeaderController {
-
     private AppController mainController;
     @FXML
     private ToggleGroup MenuBarBtn;
@@ -39,9 +42,6 @@ public class HeaderController {
     private Label predictionsLabel;
 
     @FXML
-    private Button queueManagementButton;
-
-    @FXML
     private ToggleButton resultsToggleButton;
 
     @FXML
@@ -49,6 +49,15 @@ public class HeaderController {
 
     @FXML
     private Label messageLabel;
+
+    @FXML
+    private Label simulationsCompletedLabel;
+
+    @FXML
+    private Label simulationsInProgressLabel;
+
+    @FXML
+    private Label simulationsInQueueLabel;
 
     @FXML
     void dogsMenuItemClicked(ActionEvent event) {

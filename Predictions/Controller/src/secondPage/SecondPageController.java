@@ -158,7 +158,6 @@ public class SecondPageController {
 
         if (selectedIndex >= 0) {
             String environmentName = environmentsNames.get(selectedIndex);
-//            environmentNameTextField.setText(environmentName);
             DTOEnvironmentInfo dtoEnvironmentInfo = mainController.getEngineManager().getEnvironmentNamesList().get(selectedIndex);
             typeEnvironmentTextField.setText(dtoEnvironmentInfo.getType());
             if(dtoEnvironmentInfo.getRange() != null) {
@@ -185,7 +184,6 @@ public class SecondPageController {
         try {
             if (!valueEnvironmentTextField.getText().isEmpty()) {
                 String valueOfEnvironment = valueEnvironmentTextField.getText();
-//                String environmentName = environmentNameTextField.getText();
                 int selectedIndex = environmentListView.getSelectionModel().getSelectedIndex();
                 String environmentName = environmentsNames.get(selectedIndex);
                 mainController.getEngineManager().checkValidValueAndSetValue(environmentName, valueOfEnvironment);

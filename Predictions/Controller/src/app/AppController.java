@@ -63,6 +63,7 @@ public class AppController {
     private ThirdPageController thirdPageController;
     private SkinsOptions skinsOption = SkinsOptions.DEFAULT;
 
+
     public AppController(){
         isFileLoaded = new SimpleBooleanProperty(false);
         xmlPathProperty = new SimpleStringProperty();
@@ -146,6 +147,8 @@ public class AppController {
                 return "";
 
             engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
+            thirdPageController.setAmountOfSimulations(0);
+            thirdPageController.setAmountOfSimulationsEnded(0);
             thirdPageController.setSimulationTask(null);
             thirdPageController.setFinishSimulationTask(null);
             setAllPagesDetails();
@@ -232,5 +235,18 @@ public class AppController {
 
         if(skinsOption != SkinsOptions.DEFAULT)
             scene.getStylesheets().add(skinsOption.getCSS());
+    }
+
+    public void setAmountOfCompletedSimulation(String amount)
+    {
+        headerComponentController.setSimulationsCompletedProperty(amount);
+    }
+
+    public void setAmountOfSimulationsInQueue(String amount){
+        headerComponentController.setSimulationsInQueueProperty(amount);
+    }
+
+    public void setAmountOfSimulationsInProgress(String amount){
+        headerComponentController.setSimulationsInProgressProperty(amount);
     }
 }

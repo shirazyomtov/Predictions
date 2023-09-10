@@ -13,7 +13,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -131,6 +130,11 @@ public class ThirdPageController {
     private Consumer<List<DTOSimulationInfo>> updateFinishSimulationConsumer;
 
     private List<Integer> finishSimulations = new ArrayList<>();
+    private Integer amountOfSimulations = 0;
+    private Integer amountOfSimulationsEnded = 0;
+
+    @FXML
+    private Button futureTickButton;
 
     public ThirdPageController(){
         this.updateTableViewConsumer = (chosenSimulationEntities) -> {
@@ -159,6 +163,9 @@ public class ThirdPageController {
                     }
                 }
                 if(!flag) {
+                    amountOfSimulationsEnded++;
+                    setQueueAndProgressSimulation();
+                    mainController.setAmountOfCompletedSimulation(amountOfSimulationsEnded.toString());
                     finishSimulations.add(dtoSimulationInfo.getSimulationId());
                     executionListView.getItems().set(dtoSimulationInfo.getSimulationId() - 1, "(Ended) Simulation ID: " + dtoSimulationInfo.getSimulationId() + ", Date: " + dtoSimulationInfo.getSimulationDate());
                     mainController.setSuccessMessage("The simulation " + dtoSimulationInfo.getSimulationId() + " has ended");
@@ -267,6 +274,7 @@ public class ThirdPageController {
             pauseButton.setVisible(true);
             resumeButton.setVisible(true);
             stopButton.setVisible(true);
+            rerunButton.setVisible(false);
             endedSimulationInfoScrollPane.setVisible(false);
         }
 
@@ -277,6 +285,7 @@ public class ThirdPageController {
         pauseButton.setVisible(false);
         resumeButton.setVisible(false);
         stopButton.setVisible(false);
+        rerunButton.setVisible(true);
         endedSimulationInfoScrollPane.setVisible(true);
     }
 
@@ -434,16 +443,18 @@ public class ThirdPageController {
     @FXML
     void pauseButtonClicked(ActionEvent event) {
         mainController.getEngineManager().pause(selectedSimulation.getSimulationId());
+        futureTickButton.setVisible(true);
     }
 
     @FXML
     void resumeButtonClicked(ActionEvent event) {
         mainController.getEngineManager().resume(selectedSimulation.getSimulationId());
+        futureTickButton.setVisible(false);
     }
 
     @FXML
     void stopButtonClicked(ActionEvent event) {
-
+        futureTickButton.setVisible(false);
     }
 
     @FXML
@@ -488,6 +499,8 @@ public class ThirdPageController {
 
     private void updateFinishSimulation(){
         Platform.runLater(() -> {
+            futureTickButton.setVisible(false);
+//            rerunButton.setVisible(true);
             selectedSimulation = mainController.getEngineManager().getAllPastSimulation().get(selectedSimulation.getSimulationId() - 1);
             setFinishSimulationComponentsVisible();
             setFinishSimulationDetails();
@@ -499,6 +512,8 @@ public class ThirdPageController {
     }
 
     public void createFinishSimulationTask() {
+        amountOfSimulations++;
+        setQueueAndProgressSimulation();
         if(finishSimulationTask == null) {
             finishSimulations.clear();
             finishSimulationTask = new FinishSimulationTask(updateFinishSimulationConsumer, mainController.getEngineManager());
@@ -509,5 +524,33 @@ public class ThirdPageController {
     public void setFinishSimulationTask(FinishSimulationTask finishSimulationTask) {
         this.finishSimulationTask = finishSimulationTask;
     }
+
+    public void setAmountOfSimulations(Integer amountOfSimulations) {
+        this.amountOfSimulations = amountOfSimulations;
+    }
+
+    public void setAmountOfSimulationsEnded(Integer amountOfSimulationsEnded) {
+        this.amountOfSimulationsEnded = amountOfSimulationsEnded;
+    }
+
+    public void setQueueAndProgressSimulation(){
+        Integer amountOfSimulationInProgress = amountOfSimulations - amountOfSimulationsEnded;
+        Integer amountOfSimulationsInQueue = amountOfSimulationInProgress - mainController.getEngineManager().getAmountOfThreads();;
+        if(amountOfSimulationsInQueue > 0 ) {
+            mainController.setAmountOfSimulationsInQueue(amountOfSimulationsInQueue.toString());
+            mainController.setAmountOfSimulationsInProgress(mainController.getEngineManager().getAmountOfThreads().toString());
+        }
+        else{
+            mainController.setAmountOfSimulationsInQueue("0");
+            mainController.setAmountOfSimulationsInProgress(amountOfSimulationInProgress.toString());
+        }
+    }
+
+
+    @FXML
+    void futureTickButtonClicked(ActionEvent event) {
+        mainController.getEngineManager().futureTick(selectedSimulation.getSimulationId());
+    }
+
 }
 

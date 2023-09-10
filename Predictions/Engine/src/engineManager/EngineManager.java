@@ -592,4 +592,17 @@ public class EngineManager implements Serializable{
             simulation.notifyAll();
         }
     }
+
+    public void futureTick(Integer simulationId) {
+        Simulation simulation = history.getAllSimulations().get(simulationId);
+        synchronized(simulation) {
+            simulation.setPauseAfterTick(true);
+            simulation.setPause(false);
+            simulation.notifyAll();
+        }
+    }
+
+    public Integer getAmountOfThreads(){
+        return world.getNumberOfThreads();
+    }
 }

@@ -27,7 +27,7 @@
     <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <SplitPane dividerPositions="0.5588235294117646" prefHeight="500.0" prefWidth="680.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.rowSpan="2">
+      <SplitPane dividerPositions="0.5822903629536921" prefHeight="500.0" prefWidth="680.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.rowSpan="2">
          <items>
             <GridPane prefHeight="461.0" prefWidth="345.0">
               <columnConstraints>
@@ -86,8 +86,10 @@
             <GridPane prefHeight="461.0" prefWidth="274.0">
               <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="134.60003662109375" minWidth="10.0" prefWidth="126.0000244140625" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="18.800012207031244" minWidth="5.0" prefWidth="10.799975585937489" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="129.0" minWidth="10.0" prefWidth="116.39998779296874" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" minWidth="2.3999999999999773" prefWidth="2.3999999999999773" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
@@ -97,23 +99,29 @@
                <children>
                   <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <children>
-                        <Label alignment="CENTER" prefHeight="21.0" prefWidth="413.0" text="Select a environment name to set a value :" />
-                        <ListView fx:id="environmentListView" onMouseClicked="#environmentNamesListViewClicked" prefHeight="139.0" prefWidth="264.0" />
-                        <VBox fx:id="choseEnvironmentVbox" visible="false">
+                        <Label alignment="CENTER" prefHeight="126.0" prefWidth="135.0" text="Select a environment name to set a value :" wrapText="true" />
+                        <ListView fx:id="environmentListView" onMouseClicked="#environmentNamesListViewClicked" prefHeight="410.0" prefWidth="135.0" />
+                     </children>
+                  </VBox>
+                  <VBox fx:id="choseEnvironmentVbox" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                     <children>
+                        <VBox prefHeight="78.0" prefWidth="129.0">
                            <children>
-                              <HBox alignment="CENTER" prefHeight="60.0" prefWidth="221.0">
-                                 <children>
-                                    <Label prefHeight="50.0" prefWidth="133.0" text="Evironment name :" />
-                                    <TextField fx:id="environmentNameTextField" editable="false" prefHeight="40.0" prefWidth="147.0" />
-                                 </children>
-                              </HBox>
-                              <HBox alignment="CENTER" prefHeight="60.0" prefWidth="214.0">
-                                 <children>
-                                    <Label prefHeight="50.0" prefWidth="129.0" text="Choose value :" />
-                                    <TextField fx:id="valueEnvironmentTextField" prefHeight="40.0" prefWidth="146.0" />
-                                 </children>
-                              </HBox>
-                              <HBox alignment="CENTER" prefHeight="64.0" prefWidth="158.0">
+                              <Label alignment="CENTER" prefHeight="42.0" prefWidth="129.0" text="Type" />
+                              <TextField fx:id="typeEnvironmentTextField" editable="false" />
+                           </children>
+                        </VBox>
+                        <VBox prefHeight="122.0" prefWidth="129.0">
+                           <children>
+                              <Label alignment="CENTER" prefHeight="47.0" prefWidth="129.0" text="Range" />
+                              <TextField fx:id="rangeEnvironmentTextField" editable="false" />
+                           </children>
+                        </VBox>
+                        <VBox prefHeight="138.0" prefWidth="129.0">
+                           <children>
+                              <Label alignment="CENTER" prefHeight="50.0" prefWidth="129.0" text="Enter value" />
+                              <TextField fx:id="valueEnvironmentTextField" />
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                                  <children>
                                     <Button fx:id="saveEnvironmentValueButton" mnemonicParsing="false" onAction="#saveEnvironmentValueButtonClicked" prefHeight="31.0" prefWidth="74.0" text="Save" />
                                  </children>
@@ -121,6 +129,9 @@
                            </children>
                         </VBox>
                      </children>
+                     <GridPane.margin>
+                        <Insets top="80.0" />
+                     </GridPane.margin>
                   </VBox>
                </children>
             </GridPane>

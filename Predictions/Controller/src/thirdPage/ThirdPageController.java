@@ -292,7 +292,7 @@ public class ThirdPageController {
     private void setFinishSimulationDetails(){
         List<DTOEntityInfo> finalDTOEntities = mainController.getEngineManager().getAllDetailsOfEndedSimulation(selectedSimulation.getSimulationId());
         setEntitiesAndProperties(finalDTOEntities);
-        setEntities(finalDTOEntities);
+        setEntities();
     }
 
 //    private void setDetails() {
@@ -331,7 +331,8 @@ public class ThirdPageController {
 
     }
 
-    private void setEntities(List<DTOEntityInfo> finalDTOEntities) {
+    private void setEntities() {
+        List<DTOEntityInfo> finalDTOEntities = mainController.getEngineManager().getCurrentEntities(selectedSimulation.getSimulationId());
         entitiesListView.getItems().clear();
         for(DTOEntityInfo dtoEntityInfo: finalDTOEntities){
             entitiesListView.getItems().add(dtoEntityInfo.getEntityName());
@@ -355,6 +356,9 @@ public class ThirdPageController {
         XYChart.Series<String, Integer> series = new XYChart.Series<>();
         series.setName(entitiesName);
 
+        int jumpInterval = 1000;
+        int currentTick = 0;
+
         for (Map.Entry<Integer, Map<String, Integer>> entry : amountOfAllEntities.entrySet()) {
             Integer tick = entry.getKey();
             Map<String, Integer> entityData = entry.getValue();
@@ -362,7 +366,10 @@ public class ThirdPageController {
             Integer amount = entityData.get(entitiesName);
 
             if (amount != null) {
-                series.getData().add(new XYChart.Data<>(tick.toString(), amount));
+                if (tick >= currentTick) {
+                    series.getData().add(new XYChart.Data<>(tick.toString(), amount));
+                    currentTick += jumpInterval;
+                }
             }
         }
 

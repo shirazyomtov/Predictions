@@ -602,6 +602,16 @@ public class EngineManager implements Serializable{
         }
     }
 
+    public void stop(Integer simulationId){
+        Simulation simulation = history.getAllSimulations().get(simulationId);
+        synchronized(simulation) {
+            simulation.setStop(true);
+            simulation.setPause(false);
+            simulation.notifyAll();
+        }
+
+    }
+
     public void futureTick(Integer simulationId) {
         Simulation simulation = history.getAllSimulations().get(simulationId);
         synchronized(simulation) {

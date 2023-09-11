@@ -9,6 +9,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -103,6 +104,9 @@
                            </columnResizePolicy>
                         </TableView>
                         <Button fx:id="futureTickButton" mnemonicParsing="false" onAction="#futureTickButtonClicked" text="Future tick" visible="false" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+                        <Button fx:id="savePastButton" mnemonicParsing="false" onAction="#savePastButtonClicked" prefHeight="31.0" prefWidth="130.0" text="Save" visible="false" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                        <Spinner fx:id="pastSpinner" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <TextField fx:id="pastValueTextField" GridPane.columnIndex="3" GridPane.rowIndex="3" />
                      </children>
                   </GridPane>
                   <ScrollPane fx:id="endedSimulationInfoScrollPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="600.0">

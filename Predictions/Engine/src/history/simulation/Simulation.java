@@ -59,6 +59,10 @@ public  class Simulation implements Serializable, Runnable {
         if (worldInstance.getWorldDefinition().getTermination().getTerminationByUser())
         {
             while (!stop){
+                if (pauseAfterTick){
+                    pause = true;
+                    pauseAfterTick = false;
+                }
                 runSimulation();
                 long currentMilliSeconds = System.currentTimeMillis();
                 currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
@@ -67,14 +71,18 @@ public  class Simulation implements Serializable, Runnable {
         else {
             while ((worldInstance.getWorldDefinition().getTermination().getSecond() == null || currentSecond <= worldInstance.getWorldDefinition().getTermination().getSecond()) &&
                     (worldInstance.getWorldDefinition().getTermination().getTicks() == null || currentTick <= worldInstance.getWorldDefinition().getTermination().getTicks())) {
-                if (pauseAfterTick){
-                    pause = true;
-                    pauseAfterTick = false;
+                if (!stop) {
+                    if (pauseAfterTick) {
+                        pause = true;
+                        pauseAfterTick = false;
+                    }
+                    runSimulation();
+                    long currentMilliSeconds = System.currentTimeMillis();
+                    currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
                 }
-                runSimulation();
-                long currentMilliSeconds = System.currentTimeMillis();
-                currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
-                // todo stop
+                else {
+                    break;
+                }
             }
         }
         isFinish = true;
@@ -277,5 +285,9 @@ public  class Simulation implements Serializable, Runnable {
 
     public void setPauseAfterTick(boolean pauseAfterTick) {
         this.pauseAfterTick = pauseAfterTick;
+    }
+
+    public void setStop(boolean stop) {
+        this.stop = stop;
     }
 }

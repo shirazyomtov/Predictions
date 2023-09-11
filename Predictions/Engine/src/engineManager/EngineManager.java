@@ -302,7 +302,7 @@ public class EngineManager implements Serializable{
     }
 
     public void removeSimulationFromHistory(){
-       history.removeCurrentSimulation();
+        history.removeCurrentSimulation();
     }
 
     public void checkIfThereSimulation() throws NullPointerException{
@@ -576,6 +576,15 @@ public class EngineManager implements Serializable{
         return history.getAllSimulations().get(simulationId).getWorldInstance().getAmountOfEntitiesPerTick();
     }
 
+    public List<DTOEntityInfo> getCurrentTickAmountOfEntities(Integer simulationId, Integer tick){
+        List<DTOEntityInfo> dtoEntityInfos = new ArrayList<>();
+        Map<String, Integer> entityCount = getAmountOfEntitiesPerTick(simulationId).get(tick);
+        for(String entityName: entityCount.keySet()){
+            addDTOEntityToList(simulationId, dtoEntityInfos, entityCount, entityName);
+        }
+        return dtoEntityInfos;
+    }
+
     public Float getAverageTickOfSpecificProperty(Integer simulationId, String entityName, String propertyName){
         return history.getAllSimulations().get(simulationId).getWorldInstance().getAverageTickValueOfSpecificProperty(entityName, propertyName);
     }
@@ -591,6 +600,16 @@ public class EngineManager implements Serializable{
             simulation.setPause(false);
             simulation.notifyAll();
         }
+    }
+
+    public void stop(Integer simulationId){
+        Simulation simulation = history.getAllSimulations().get(simulationId);
+        synchronized(simulation) {
+            simulation.setStop(true);
+            simulation.setPause(false);
+            simulation.notifyAll();
+        }
+
     }
 
     public void futureTick(Integer simulationId) {

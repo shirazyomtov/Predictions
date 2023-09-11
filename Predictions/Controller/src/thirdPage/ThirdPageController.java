@@ -472,6 +472,7 @@ public class ThirdPageController {
 
     @FXML
     void stopButtonClicked(ActionEvent event) {
+        mainController.getEngineManager().stop(selectedSimulation.getSimulationId());
         futureTickButton.setVisible(false);
     }
 

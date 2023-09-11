@@ -20,6 +20,7 @@ public class SimulationTask extends Task<Boolean> {
 
     private SimpleLongProperty currentTicksProperty;
     private SimpleLongProperty currentSecondsProperty;
+    private boolean past = false;
     public SimulationTask(int simulationId, EngineManager engineManager, SimpleLongProperty currentTicksProperty, SimpleLongProperty currentSecondsProperty, SimpleBooleanProperty isFinishProperty, Consumer<List<DTOEntityInfo>> updateTableViewConsumer){
         this.simulationId = simulationId;
         this.engineManager = engineManager;
@@ -32,6 +33,15 @@ public class SimulationTask extends Task<Boolean> {
     @Override
     protected Boolean call() throws Exception {
         while (true){
+            synchronized(this) {
+                while (this.past) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException var2) {
+                        System.out.println("InterruptedException caught");
+                    }
+                }
+            }
             DTOWorldInfo dtoWorldInfo = engineManager.getDTOWorldInfo(simulationId);
             currentTicksProperty.set(dtoWorldInfo.getCurrentTick());
             currentSecondsProperty.set(dtoWorldInfo.getCurrentSecond());
@@ -44,6 +54,10 @@ public class SimulationTask extends Task<Boolean> {
 
     public void setSimulationId(int simulationId) {
         this.simulationId = simulationId;
+    }
+
+    public void setPast(boolean past) {
+        this.past = past;
     }
 }
 

@@ -136,6 +136,15 @@ public class ThirdPageController {
     @FXML
     private Button futureTickButton;
 
+    @FXML
+    private Button savePastButton;
+
+    @FXML
+    private Spinner<Integer> pastSpinner;
+    @FXML
+    private TextField pastValueTextField;
+    private boolean resumeAfterPastTick = false;
+
     public ThirdPageController(){
         this.updateTableViewConsumer = (chosenSimulationEntities) -> {
             Platform.runLater(() -> {
@@ -181,8 +190,8 @@ public class ThirdPageController {
         if(histogramOfPopulation != null && averageValueOfProperty!= null && averageTickOfProperty != null){
             staticInfoPane.visibleProperty().bind(isDisplayModePressed);
         }
-        currentTickTextField.textProperty().bind(Bindings.format("%,d", currentTicksProperty));
-        secondsCounterTextField.textProperty().bind(Bindings.format("%,d", currentSecondsProperty));
+        currentTickTextField.textProperty().bind(Bindings.format("%d", currentTicksProperty));
+        secondsCounterTextField.textProperty().bind(Bindings.format("%d", currentSecondsProperty));
         isFinishProperty.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 updateFinishSimulation();
@@ -444,10 +453,19 @@ public class ThirdPageController {
     void pauseButtonClicked(ActionEvent event) {
         mainController.getEngineManager().pause(selectedSimulation.getSimulationId());
         futureTickButton.setVisible(true);
+        pastSpinner.setVisible(true);
+        savePastButton.setVisible(true);
     }
 
     @FXML
     void resumeButtonClicked(ActionEvent event) {
+        if(resumeAfterPastTick){
+            synchronized(simulationTask){
+                simulationTask.setPast(false);
+                resumeAfterPastTick = false;
+                simulationTask.notifyAll();
+            }
+        }
         mainController.getEngineManager().resume(selectedSimulation.getSimulationId());
         futureTickButton.setVisible(false);
     }
@@ -550,6 +568,37 @@ public class ThirdPageController {
     @FXML
     void futureTickButtonClicked(ActionEvent event) {
         mainController.getEngineManager().futureTick(selectedSimulation.getSimulationId());
+    }
+
+
+    @FXML
+    void savePastButtonClicked(ActionEvent event) {
+        try {
+            if (!currentTickTextField.getText().isEmpty()) {
+                String currentTickString = currentTickTextField.getText();
+                Float currentTick = Float.parseFloat(currentTickString);
+                Integer spinnerValue = Integer.parseInt(pastValueTextField.getText());
+                if (spinnerValue < 0 || spinnerValue > currentTick) {
+                    throw new Exception();
+                } else {
+                    setPastDetails(spinnerValue);
+                }
+            }
+            else{
+                throw new Exception();
+            }
+        }
+        catch(Exception e){
+            mainController.setErrorMessage("You need to enter a value between 1 " + "to " + currentTickTextField.getText());
+        }
+    }
+
+    private void setPastDetails(Integer spinnerValue) {
+        simulationTask.setPast(true);
+        resumeAfterPastTick = true;
+        currentTicksProperty.set(spinnerValue);
+        List<DTOEntityInfo> currentTickAmountOfEntities = mainController.getEngineManager().getCurrentTickAmountOfEntities(selectedSimulation.getSimulationId(), spinnerValue);
+        addEntitiesDetails(currentTickAmountOfEntities);
     }
 
 }

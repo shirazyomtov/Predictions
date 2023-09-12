@@ -21,6 +21,7 @@ import javafx.scene.layout.GridPane;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.util.converter.IntegerStringConverter;
 import thirdPage.averageTickOfProperty.AverageTickOfProperty;
 import thirdPage.averageValueOfProperty.AverageValueOfProperty;
 import thirdPage.histogramOfPopulation.HistogramOfPopulation;
@@ -203,6 +204,8 @@ public class ThirdPageController {
                 updateFinishSimulation();
             }
         });
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE,0);
+        pastSpinner.setValueFactory(valueFactory);
     }
 
     private void loadResourcesStaticData() throws IOException {
@@ -303,11 +306,16 @@ public class ThirdPageController {
             stopButton.setVisible(true);
             rerunButton.setVisible(false);
             endedSimulationInfoScrollPane.setVisible(false);
+
             if(pauseButtonPressed.get(selectedSimulation.getSimulationId())){
                 futureTickButton.setVisible(true);
+                pastSpinner.setVisible(true);
+                savePastButton.setVisible(true);
             }
             else{
                 futureTickButton.setVisible(false);
+                pastSpinner.setVisible(false);
+                savePastButton.setVisible(false);
             }
         }
 
@@ -486,6 +494,8 @@ public class ThirdPageController {
         resumeButtonPressed.put(selectedSimulation.getSimulationId(), false);
         pauseButtonPressed.put(selectedSimulation.getSimulationId(), true);
         futureTickButton.setVisible(true);
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.parseInt(currentTickTextField.getText()));
+        pastSpinner.setValueFactory(valueFactory);
         pastSpinner.setVisible(true);
         savePastButton.setVisible(true);
     }
@@ -503,6 +513,8 @@ public class ThirdPageController {
         pauseButtonPressed.put(selectedSimulation.getSimulationId(), false);
         resumeButtonPressed.put(selectedSimulation.getSimulationId(), true);
         futureTickButton.setVisible(false);
+        pastSpinner.setVisible(false);
+        savePastButton.setVisible(false);
     }
 
     @FXML
@@ -555,7 +567,6 @@ public class ThirdPageController {
     private void updateFinishSimulation(){
         Platform.runLater(() -> {
             futureTickButton.setVisible(false);
-//            rerunButton.setVisible(true);
             selectedSimulation = mainController.getEngineManager().getAllPastSimulation().get(selectedSimulation.getSimulationId() - 1);
             setFinishSimulationComponentsVisible();
             setFinishSimulationDetails();
@@ -611,21 +622,17 @@ public class ThirdPageController {
     @FXML
     void savePastButtonClicked(ActionEvent event) {
         try {
-            if (!currentTickTextField.getText().isEmpty()) {
-                Float currentTick = Float.valueOf(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()));
-                Integer spinnerValue = Integer.parseInt(pastValueTextField.getText());
-                if (spinnerValue < 0 || spinnerValue > currentTick) {
-                    throw new Exception();
-                } else {
-                    setPastDetails(spinnerValue);
-                }
-            }
-            else{
+            Integer enteredValue = Integer.parseInt(pastSpinner.getEditor().getText());
+            Float currentTick = Float.valueOf(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()));
+            if (enteredValue < 0 || enteredValue > currentTick) {
                 throw new Exception();
+            }
+            else {
+                    setPastDetails(enteredValue);
             }
         }
         catch(Exception e){
-            mainController.setErrorMessage("You need to enter a value between 1 " + "to " + currentTickTextField.getText());
+            mainController.setErrorMessage("You need to enter a value between 1 " + "to " + mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()));
         }
     }
 

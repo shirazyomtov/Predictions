@@ -95,6 +95,7 @@ public  class Simulation implements Serializable, Runnable {
         List<EntityInstance> secondaryEntities = null;
         List<EntityInstance> entitiesToRemove = new ArrayList<>();
         List<Pair<EntityInstance,Action>> replaceActions = new ArrayList<>();
+        worldInstance.addAmountOfEntitiesPerTick(currentTick);
         synchronized(this) {
             while (this.pause) {
                 try {
@@ -106,7 +107,6 @@ public  class Simulation implements Serializable, Runnable {
         }
         moveEntities();
         activationAction = createActivationActionsList();
-        worldInstance.addAmountOfEntitiesPerTick(currentTick);
         for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
             for (Action activeAction: activationAction){
                 if (activeAction.getEntityName().equals(entityInstance.getName())){

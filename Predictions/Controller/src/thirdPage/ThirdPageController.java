@@ -481,6 +481,7 @@ public class ThirdPageController {
     void stopButtonClicked(ActionEvent event) {
         mainController.getEngineManager().stop(selectedSimulation.getSimulationId());
         futureTickButton.setVisible(false);
+
     }
 
     @FXML
@@ -583,8 +584,7 @@ public class ThirdPageController {
     void savePastButtonClicked(ActionEvent event) {
         try {
             if (!currentTickTextField.getText().isEmpty()) {
-                String currentTickString = currentTickTextField.getText();
-                Float currentTick = Float.parseFloat(currentTickString);
+                Float currentTick = Float.valueOf(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()));
                 Integer spinnerValue = Integer.parseInt(pastValueTextField.getText());
                 if (spinnerValue < 0 || spinnerValue > currentTick) {
                     throw new Exception();
@@ -607,6 +607,7 @@ public class ThirdPageController {
         currentTicksProperty.set(spinnerValue);
         List<DTOEntityInfo> currentTickAmountOfEntities = mainController.getEngineManager().getCurrentTickAmountOfEntities(selectedSimulation.getSimulationId(), spinnerValue);
         addEntitiesDetails(currentTickAmountOfEntities);
+        currentSecondsProperty.set(mainController.getEngineManager().getAllSecondsPerTick(selectedSimulation.getSimulationId()).get(spinnerValue));
     }
 
 }

@@ -625,4 +625,8 @@ public class EngineManager implements Serializable{
     public Integer getAmountOfThreads(){
         return world.getNumberOfThreads();
     }
+
+    public Map<Integer, Integer> getAllSecondsPerTick(Integer simulationId){
+        return history.getAllSimulations().get(simulationId).getWorldInstance().getSecondsPerTick();
+    }
 }

@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -145,6 +146,11 @@ public class ThirdPageController {
     private TextField pastValueTextField;
     private boolean resumeAfterPastTick = false;
 
+    private Map<Integer, Boolean> pauseButtonPressed = new HashMap<>();
+
+    private Map<Integer, Boolean> resumeButtonPressed = new HashMap<>();
+
+
     public ThirdPageController(){
         this.updateTableViewConsumer = (chosenSimulationEntities) -> {
             Platform.runLater(() -> {
@@ -240,11 +246,23 @@ public class ThirdPageController {
     }
 
     public void setThirdPageDetails(List<DTOSimulationInfo> simulationInfos) {
+        addSimulationsToMaps(simulationInfos);
         displayModeLabel.setVisible(false);
         displayModeComboBox.setVisible(false);
         allDTOSimulationList = simulationInfos;
         executionListView.getItems().clear();
         addSimulationsToExecutionListView(simulationInfos);
+    }
+
+    private void addSimulationsToMaps(List<DTOSimulationInfo> simulationInfos) {
+        for(DTOSimulationInfo dtoSimulationInfo: simulationInfos){
+            if(!(pauseButtonPressed.containsKey(dtoSimulationInfo.getSimulationId()))){
+                pauseButtonPressed.put(dtoSimulationInfo.getSimulationId(), false);
+            }
+            if(!(resumeButtonPressed.containsKey(dtoSimulationInfo.getSimulationId()))){
+                resumeButtonPressed.put(dtoSimulationInfo.getSimulationId(), false);
+            }
+        }
     }
 
     private void addSimulationsToExecutionListView(List<DTOSimulationInfo> simulationInfos) {
@@ -285,6 +303,12 @@ public class ThirdPageController {
             stopButton.setVisible(true);
             rerunButton.setVisible(false);
             endedSimulationInfoScrollPane.setVisible(false);
+            if(pauseButtonPressed.get(selectedSimulation.getSimulationId())){
+                futureTickButton.setVisible(true);
+            }
+            else{
+                futureTickButton.setVisible(false);
+            }
         }
 
 //        setDetails();
@@ -459,6 +483,8 @@ public class ThirdPageController {
     @FXML
     void pauseButtonClicked(ActionEvent event) {
         mainController.getEngineManager().pause(selectedSimulation.getSimulationId());
+        resumeButtonPressed.put(selectedSimulation.getSimulationId(), false);
+        pauseButtonPressed.put(selectedSimulation.getSimulationId(), true);
         futureTickButton.setVisible(true);
         pastSpinner.setVisible(true);
         savePastButton.setVisible(true);
@@ -474,6 +500,8 @@ public class ThirdPageController {
             }
         }
         mainController.getEngineManager().resume(selectedSimulation.getSimulationId());
+        pauseButtonPressed.put(selectedSimulation.getSimulationId(), false);
+        resumeButtonPressed.put(selectedSimulation.getSimulationId(), true);
         futureTickButton.setVisible(false);
     }
 

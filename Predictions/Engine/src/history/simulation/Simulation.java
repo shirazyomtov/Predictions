@@ -77,7 +77,6 @@ public  class Simulation implements Serializable, Runnable {
                         pause = true;
                         pauseAfterTick = false;
                     }
-                    
                     worldInstance.setSecondsPerTick(currentTick, currentSecond);
                     runSimulation();
                     long currentMilliSeconds = System.currentTimeMillis();

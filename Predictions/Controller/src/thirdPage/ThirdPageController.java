@@ -645,5 +645,9 @@ public class ThirdPageController {
         currentSecondsProperty.set(mainController.getEngineManager().getAllSecondsPerTick(selectedSimulation.getSimulationId()).get(spinnerValue));
     }
 
+    public void resetPauseAndResume() {
+        pauseButtonPressed.clear();
+        resumeButtonPressed.clear();
+    }
 }
 

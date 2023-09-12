@@ -151,6 +151,7 @@ public class AppController {
             thirdPageController.setAmountOfSimulationsEnded(0);
             thirdPageController.setSimulationTask(null);
             thirdPageController.setFinishSimulationTask(null);
+            thirdPageController.resetPauseAndResume();
             setAllPagesDetails();
             isFileLoaded.set(true);
             isDetailsClicked.set(false);

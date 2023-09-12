@@ -63,6 +63,7 @@ public  class Simulation implements Serializable, Runnable {
                     pause = true;
                     pauseAfterTick = false;
                 }
+                worldInstance.setSecondsPerTick(currentTick, currentSecond);
                 runSimulation();
                 long currentMilliSeconds = System.currentTimeMillis();
                 currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
@@ -76,6 +77,8 @@ public  class Simulation implements Serializable, Runnable {
                         pause = true;
                         pauseAfterTick = false;
                     }
+                    
+                    worldInstance.setSecondsPerTick(currentTick, currentSecond);
                     runSimulation();
                     long currentMilliSeconds = System.currentTimeMillis();
                     currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);

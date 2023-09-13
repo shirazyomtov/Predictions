@@ -407,9 +407,14 @@ public class ThirdPageController {
             Integer amount = entityData.get(entitiesName);
 
             if (amount != null) {
-                if (tick >= currentTick) {
+                if(amountOfAllEntities.containsKey(4000)) {
+                    if (tick >= currentTick) {
+                        series.getData().add(new XYChart.Data<>(tick.toString(), amount));
+                        currentTick += jumpInterval;
+                    }
+                }
+                else{
                     series.getData().add(new XYChart.Data<>(tick.toString(), amount));
-                    currentTick += jumpInterval;
                 }
             }
         }

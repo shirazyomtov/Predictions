@@ -21,6 +21,7 @@ import javafx.scene.layout.GridPane;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.util.converter.IntegerStringConverter;
 import thirdPage.averageTickOfProperty.AverageTickOfProperty;
 import thirdPage.averageValueOfProperty.AverageValueOfProperty;
 import thirdPage.histogramOfPopulation.HistogramOfPopulation;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -145,6 +147,11 @@ public class ThirdPageController {
     private TextField pastValueTextField;
     private boolean resumeAfterPastTick = false;
 
+    private Map<Integer, Boolean> pauseButtonPressed = new HashMap<>();
+
+    private Map<Integer, Boolean> resumeButtonPressed = new HashMap<>();
+
+
     public ThirdPageController(){
         this.updateTableViewConsumer = (chosenSimulationEntities) -> {
             Platform.runLater(() -> {
@@ -197,6 +204,8 @@ public class ThirdPageController {
                 updateFinishSimulation();
             }
         });
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE,0);
+        pastSpinner.setValueFactory(valueFactory);
     }
 
     private void loadResourcesStaticData() throws IOException {
@@ -240,11 +249,23 @@ public class ThirdPageController {
     }
 
     public void setThirdPageDetails(List<DTOSimulationInfo> simulationInfos) {
+        addSimulationsToMaps(simulationInfos);
         displayModeLabel.setVisible(false);
         displayModeComboBox.setVisible(false);
         allDTOSimulationList = simulationInfos;
         executionListView.getItems().clear();
         addSimulationsToExecutionListView(simulationInfos);
+    }
+
+    private void addSimulationsToMaps(List<DTOSimulationInfo> simulationInfos) {
+        for(DTOSimulationInfo dtoSimulationInfo: simulationInfos){
+            if(!(pauseButtonPressed.containsKey(dtoSimulationInfo.getSimulationId()))){
+                pauseButtonPressed.put(dtoSimulationInfo.getSimulationId(), false);
+            }
+            if(!(resumeButtonPressed.containsKey(dtoSimulationInfo.getSimulationId()))){
+                resumeButtonPressed.put(dtoSimulationInfo.getSimulationId(), false);
+            }
+        }
     }
 
     private void addSimulationsToExecutionListView(List<DTOSimulationInfo> simulationInfos) {
@@ -285,6 +306,17 @@ public class ThirdPageController {
             stopButton.setVisible(true);
             rerunButton.setVisible(false);
             endedSimulationInfoScrollPane.setVisible(false);
+
+            if(pauseButtonPressed.get(selectedSimulation.getSimulationId())){
+                futureTickButton.setVisible(true);
+                pastSpinner.setVisible(true);
+                savePastButton.setVisible(true);
+            }
+            else{
+                futureTickButton.setVisible(false);
+                pastSpinner.setVisible(false);
+                savePastButton.setVisible(false);
+            }
         }
 
 //        setDetails();
@@ -375,9 +407,14 @@ public class ThirdPageController {
             Integer amount = entityData.get(entitiesName);
 
             if (amount != null) {
-                if (tick >= currentTick) {
+                if(amountOfAllEntities.containsKey(4000)) {
+                    if (tick >= currentTick) {
+                        series.getData().add(new XYChart.Data<>(tick.toString(), amount));
+                        currentTick += jumpInterval;
+                    }
+                }
+                else{
                     series.getData().add(new XYChart.Data<>(tick.toString(), amount));
-                    currentTick += jumpInterval;
                 }
             }
         }
@@ -459,7 +496,11 @@ public class ThirdPageController {
     @FXML
     void pauseButtonClicked(ActionEvent event) {
         mainController.getEngineManager().pause(selectedSimulation.getSimulationId());
+        resumeButtonPressed.put(selectedSimulation.getSimulationId(), false);
+        pauseButtonPressed.put(selectedSimulation.getSimulationId(), true);
         futureTickButton.setVisible(true);
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.parseInt(currentTickTextField.getText()));
+        pastSpinner.setValueFactory(valueFactory);
         pastSpinner.setVisible(true);
         savePastButton.setVisible(true);
     }
@@ -474,13 +515,18 @@ public class ThirdPageController {
             }
         }
         mainController.getEngineManager().resume(selectedSimulation.getSimulationId());
+        pauseButtonPressed.put(selectedSimulation.getSimulationId(), false);
+        resumeButtonPressed.put(selectedSimulation.getSimulationId(), true);
         futureTickButton.setVisible(false);
+        pastSpinner.setVisible(false);
+        savePastButton.setVisible(false);
     }
 
     @FXML
     void stopButtonClicked(ActionEvent event) {
         mainController.getEngineManager().stop(selectedSimulation.getSimulationId());
         futureTickButton.setVisible(false);
+
     }
 
     @FXML
@@ -526,7 +572,6 @@ public class ThirdPageController {
     private void updateFinishSimulation(){
         Platform.runLater(() -> {
             futureTickButton.setVisible(false);
-//            rerunButton.setVisible(true);
             selectedSimulation = mainController.getEngineManager().getAllPastSimulation().get(selectedSimulation.getSimulationId() - 1);
             setFinishSimulationComponentsVisible();
             setFinishSimulationDetails();
@@ -582,22 +627,17 @@ public class ThirdPageController {
     @FXML
     void savePastButtonClicked(ActionEvent event) {
         try {
-            if (!currentTickTextField.getText().isEmpty()) {
-                String currentTickString = currentTickTextField.getText();
-                Float currentTick = Float.parseFloat(currentTickString);
-                Integer spinnerValue = Integer.parseInt(pastValueTextField.getText());
-                if (spinnerValue < 0 || spinnerValue > currentTick) {
-                    throw new Exception();
-                } else {
-                    setPastDetails(spinnerValue);
-                }
-            }
-            else{
+            Integer enteredValue = Integer.parseInt(pastSpinner.getEditor().getText());
+            Float currentTick = Float.valueOf(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()));
+            if (enteredValue < 0 || enteredValue > currentTick) {
                 throw new Exception();
+            }
+            else {
+                    setPastDetails(enteredValue);
             }
         }
         catch(Exception e){
-            mainController.setErrorMessage("You need to enter a value between 1 " + "to " + currentTickTextField.getText());
+            mainController.setErrorMessage("You need to enter a value between 1 " + "to " + mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()));
         }
     }
 
@@ -607,7 +647,12 @@ public class ThirdPageController {
         currentTicksProperty.set(spinnerValue);
         List<DTOEntityInfo> currentTickAmountOfEntities = mainController.getEngineManager().getCurrentTickAmountOfEntities(selectedSimulation.getSimulationId(), spinnerValue);
         addEntitiesDetails(currentTickAmountOfEntities);
+        currentSecondsProperty.set(mainController.getEngineManager().getAllSecondsPerTick(selectedSimulation.getSimulationId()).get(spinnerValue));
     }
 
+    public void resetPauseAndResume() {
+        pauseButtonPressed.clear();
+        resumeButtonPressed.clear();
+    }
 }
 

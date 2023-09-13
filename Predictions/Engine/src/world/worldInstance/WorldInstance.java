@@ -26,6 +26,8 @@ public class WorldInstance implements Serializable {
 
     private Map<Integer, Map<String, Integer>> amountOfEntitiesPerTick = new HashMap<>();
 
+    private Map<Integer, Integer> secondsPerTick = new HashMap<>();
+
 
     public WorldInstance(Map<String, EnvironmentInstance> environmentInstanceMap, List<EntityInstance> entityInstanceList, WorldDefinition worldDefinition, Map<String, Integer> initAmountOfEntities, Map<String, Integer> currentAmountOfEntities, int rows, int cols) {
         this.entityInstanceList = entityInstanceList;
@@ -126,5 +128,13 @@ public class WorldInstance implements Serializable {
             }
         }
         return  sum/count;
+    }
+
+    public void setSecondsPerTick(Integer tick, Integer second) {
+        this.secondsPerTick.put(tick, second);
+    }
+
+    public Map<Integer, Integer> getSecondsPerTick() {
+        return secondsPerTick;
     }
 }

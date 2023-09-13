@@ -22,6 +22,7 @@ import javafx.scene.layout.GridPane;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.util.converter.IntegerStringConverter;
 import thirdPage.averageTickOfProperty.AverageTickOfProperty;
 import thirdPage.averageValueOfProperty.AverageValueOfProperty;
 import thirdPage.histogramOfPopulation.HistogramOfPopulation;
@@ -654,8 +655,8 @@ public class ThirdPageController {
                 throw new Exception();
             }
             else {
-                    setPastDetails(enteredValue);
-                    setAllDetailsForPastAndFutureTick();
+                setPastDetails(enteredValue);
+                setAllDetailsForPastAndFutureTick();
             }
         }
         catch(Exception e){

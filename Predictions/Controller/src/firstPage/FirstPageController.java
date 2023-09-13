@@ -9,6 +9,7 @@ import firstPage.presentDetails.presentTermination.PresentTermination;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import app.AppController;
@@ -40,6 +41,10 @@ public class FirstPageController {
 
     @FXML
     private GridPane firstPageGridPane;
+
+    @FXML
+    private ScrollPane firstPageScrollPane;
+
     @FXML
     private GridPane detailsComponent;
 
@@ -207,4 +212,8 @@ public class FirstPageController {
     public GridPane getFirstPageGridPane() {
         return firstPageGridPane;
     }
+
+//    public Node getFirstPageScrollPane() {
+//        return firstPageScrollPane;
+//    }
 }

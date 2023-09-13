@@ -3,6 +3,7 @@ package thirdPage;
 import DTO.DTOEntityInfo;
 import DTO.DTOPropertyInfo;
 import DTO.DTOSimulationInfo;
+import DTO.DTOWorldInfo;
 import app.AppController;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -21,7 +22,6 @@ import javafx.scene.layout.GridPane;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.util.converter.IntegerStringConverter;
 import thirdPage.averageTickOfProperty.AverageTickOfProperty;
 import thirdPage.averageValueOfProperty.AverageValueOfProperty;
 import thirdPage.histogramOfPopulation.HistogramOfPopulation;
@@ -405,9 +405,12 @@ public class ThirdPageController {
             Map<String, Integer> entityData = entry.getValue();
 
             Integer amount = entityData.get(entitiesName);
+            if(tick.equals(Integer.parseInt(currentTickTextField.getText()))){
+                break;
+            }
 
             if (amount != null) {
-                if(amountOfAllEntities.containsKey(4000)) {
+                if(currentTickTextField.getText().equals("4000")) {
                     if (tick >= currentTick) {
                         series.getData().add(new XYChart.Data<>(tick.toString(), amount));
                         currentTick += jumpInterval;
@@ -524,14 +527,30 @@ public class ThirdPageController {
 
     @FXML
     void stopButtonClicked(ActionEvent event) {
+        if(resumeAfterPastTick){
+            synchronized(simulationTask){
+                simulationTask.setPast(false);
+                resumeAfterPastTick = false;
+                simulationTask.notifyAll();
+            }
+        }
         mainController.getEngineManager().stop(selectedSimulation.getSimulationId());
         futureTickButton.setVisible(false);
-
+        pastSpinner.setVisible(false);
+        savePastButton.setVisible(false);
+        //todo: move to functions
+        pauseButton.setVisible(false);
+        resumeButton.setVisible(false);
+        stopButton.setVisible(false);
+        rerunButton.setVisible(true);
+        currentTicksProperty.set(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()));
+        currentSecondsProperty.set(mainController.getEngineManager().getCurrentSecond(selectedSimulation.getSimulationId()));
+        List<DTOEntityInfo> currentTickAmountOfEntities = mainController.getEngineManager().getCurrentTickAmountOfEntities(selectedSimulation.getSimulationId(), Integer.parseInt(currentTickTextField.getText()));
+        addEntitiesDetails(currentTickAmountOfEntities);
     }
 
     @FXML
     void rerunButtonClicked(ActionEvent event) {
-//        selectedSimulation = mainController.getEngineManager().getAllPastSimulation().get(selectedSimulation.getSimulationId() - 1);
         if(selectedSimulation.getFinish()) {
             mainController.setSecondPageDetails(selectedSimulation.getSimulationId());
             mainController.showSecondPage();
@@ -556,7 +575,6 @@ public class ThirdPageController {
         entitiesListView.getItems().clear();
         entitiesAndPropertiesTreeView.setRoot(null);
         entitiesListView.getItems().clear();
-
     }
 
     public void createTaskOfSimulation() {
@@ -572,6 +590,8 @@ public class ThirdPageController {
     private void updateFinishSimulation(){
         Platform.runLater(() -> {
             futureTickButton.setVisible(false);
+            pastSpinner.setVisible(false);
+            savePastButton.setVisible(false);
             selectedSimulation = mainController.getEngineManager().getAllPastSimulation().get(selectedSimulation.getSimulationId() - 1);
             setFinishSimulationComponentsVisible();
             setFinishSimulationDetails();
@@ -621,6 +641,7 @@ public class ThirdPageController {
     @FXML
     void futureTickButtonClicked(ActionEvent event) {
         mainController.getEngineManager().futureTick(selectedSimulation.getSimulationId());
+        setAllDetailsForPastAndFutureTick();
     }
 
 
@@ -634,6 +655,7 @@ public class ThirdPageController {
             }
             else {
                     setPastDetails(enteredValue);
+                    setAllDetailsForPastAndFutureTick();
             }
         }
         catch(Exception e){
@@ -653,6 +675,12 @@ public class ThirdPageController {
     public void resetPauseAndResume() {
         pauseButtonPressed.clear();
         resumeButtonPressed.clear();
+    }
+
+    private void setAllDetailsForPastAndFutureTick(){
+        endedSimulationInfoScrollPane.setVisible(true);
+        setFinishSimulationDetails();
+        //fix the properties
     }
 }
 

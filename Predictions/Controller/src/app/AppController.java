@@ -2,7 +2,6 @@ package app;
 
 import DTO.DTOEntityInfo;
 import DTO.DTOEnvironmentInfo;
-import animation.FadeAnimation;
 import engineManager.EngineManager;
 import enums.SkinsOptions;
 import firstPage.FirstPageController;

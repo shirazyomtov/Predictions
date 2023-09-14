@@ -30,6 +30,8 @@ public  class Simulation implements Serializable, Runnable {
 
     private Boolean isFinish = false;
 
+    private Boolean isFailed = false;
+
     private Integer currentSecond = 0;
     private int currentTick = 1;
 
@@ -37,6 +39,8 @@ public  class Simulation implements Serializable, Runnable {
 
     private boolean pauseAfterTick = false;
     private boolean stop = false;
+
+    private String message = "";
 
     public Simulation(WorldInstance worldInstance, LocalDateTime dateTime) {
         this.worldInstance = worldInstance;
@@ -56,6 +60,7 @@ public  class Simulation implements Serializable, Runnable {
     @Override
     public void run() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         long startMillisSeconds = System.currentTimeMillis();
+        long time = 0;
         if (worldInstance.getWorldDefinition().getTermination().getTerminationByUser())
         {
             while (!stop){
@@ -64,9 +69,16 @@ public  class Simulation implements Serializable, Runnable {
                     pauseAfterTick = false;
                 }
                 worldInstance.setSecondsPerTick(currentTick, currentSecond);
-                runSimulation();
+                try {
+                    time = runSimulation();
+                }
+                catch (Exception e){
+                    isFinish = true;
+                    isFailed = true;
+                    message = e.getMessage();
+                }
                 long currentMilliSeconds = System.currentTimeMillis();
-                currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
+                currentSecond = (int) ((currentMilliSeconds - time - startMillisSeconds) / 1000);
             }
         }
         else {
@@ -78,9 +90,16 @@ public  class Simulation implements Serializable, Runnable {
                         pauseAfterTick = false;
                     }
                     worldInstance.setSecondsPerTick(currentTick, currentSecond);
-                    runSimulation();
+                    try {
+                        time = runSimulation();
+                    }
+                    catch (Exception e){
+                        isFinish = true;
+                        isFailed = true;
+                        message = e.getMessage();
+                    }
                     long currentMilliSeconds = System.currentTimeMillis();
-                    currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
+                    currentSecond = (int) ((currentMilliSeconds - time - startMillisSeconds) / 1000);
                 }
                 else {
                     break;
@@ -90,12 +109,13 @@ public  class Simulation implements Serializable, Runnable {
         isFinish = true;
     }
 
-    private void runSimulation() {
+    private long runSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine{
         List<Action> activationAction ;
         List<EntityInstance> secondaryEntities = null;
         List<EntityInstance> entitiesToRemove = new ArrayList<>();
         List<Pair<EntityInstance,Action>> replaceActions = new ArrayList<>();
         worldInstance.addAmountOfEntitiesPerTick(currentTick);
+        long beforePauseMilliSeconds = System.currentTimeMillis();
         synchronized(this) {
             while (this.pause) {
                 try {
@@ -105,6 +125,8 @@ public  class Simulation implements Serializable, Runnable {
                 }
             }
         }
+        long afterPauseMilliSeconds = System.currentTimeMillis();
+        long time = afterPauseMilliSeconds - beforePauseMilliSeconds;
         moveEntities();
         activationAction = createActivationActionsList();
         for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
@@ -143,6 +165,7 @@ public  class Simulation implements Serializable, Runnable {
         replaceActions.clear();
         updateTickProperty();
         currentTick = currentTick + 1;
+        return time;
     }
     private List<EntityInstance> calculateTotalNumberOfSecondaryInstances(Action activeAction) throws ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException, EntityNotDefine {
         List<EntityInstance> secondaryEntities;
@@ -291,5 +314,13 @@ public  class Simulation implements Serializable, Runnable {
 
     public void setStop(boolean stop) {
         this.stop = stop;
+    }
+
+    public Boolean getIsFailed() {
+        return isFailed;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

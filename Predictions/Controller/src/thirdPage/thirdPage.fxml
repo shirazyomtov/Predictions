@@ -116,11 +116,11 @@
                   </GridPane>
                   <ScrollPane fx:id="endedSimulationInfoScrollPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="600.0">
                      <content>
-                        <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="654.0">
+                        <AnchorPane fx:id="finishSimulationAnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="654.0">
                            <children>
                               <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="256.0" prefWidth="499.2" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <tabs>
-                                    <Tab text="Graphs population change">
+                                    <Tab closable="false" text="Graphs population change">
                                        <content>
                                           <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="653.0">
                                              <children>
@@ -159,7 +159,7 @@
                                           </AnchorPane>
                                        </content>
                                     </Tab>
-                                    <Tab text="Static information about the properties">
+                                    <Tab closable="false" text="Static information about the properties">
                                        <content>
                                           <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="220.0" prefWidth="650.0">
                                              <children>

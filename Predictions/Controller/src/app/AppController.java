@@ -2,6 +2,7 @@ package app;
 
 import DTO.DTOEntityInfo;
 import DTO.DTOEnvironmentInfo;
+import animation.FadeAnimation;
 import engineManager.EngineManager;
 import enums.SkinsOptions;
 import firstPage.FirstPageController;
@@ -63,7 +64,6 @@ public class AppController {
     private ThirdPageController thirdPageController;
     private SkinsOptions skinsOption = SkinsOptions.DEFAULT;
 
-
     public AppController(){
         isFileLoaded = new SimpleBooleanProperty(false);
         xmlPathProperty = new SimpleStringProperty();
@@ -106,7 +106,7 @@ public class AppController {
         URL url = getClass().getResource(SECOND_PAGE_FXML_LIGHT_RESOURCE);
         fxmlLoader.setLocation(url);
         InputStream inputStream = url.openStream();
-        GridPane gridPane = fxmlLoader.load(inputStream);
+        GridPane scrollPane = fxmlLoader.load(inputStream);
         secondPageController = fxmlLoader.getController();
     }
 

@@ -9,6 +9,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import javafx.fxml.FXML;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
@@ -48,6 +49,9 @@ public class SecondPageController {
 
     @FXML
     private GridPane secondPageGridPane;
+
+    @FXML
+    private ScrollPane secondPageScrollPane;
 
     @FXML
     private TextField valueEnvironmentTextField;
@@ -229,5 +233,9 @@ public class SecondPageController {
 
     public void resetControllers() {
         isStartButtonPressed.set(false);
+    }
+
+    public Node getSecondPageScrollPane() {
+        return secondPageScrollPane;
     }
 }

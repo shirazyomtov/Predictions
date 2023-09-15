@@ -5,10 +5,16 @@ public class DTOSimulationInfo {
     private String simulationDate;
     private Boolean isFinish;
 
-    public DTOSimulationInfo(Integer simulationId, String simulationDate, Boolean isFinish) {
+    private Boolean isFailed;
+
+    private String message;
+
+    public DTOSimulationInfo(Integer simulationId, String simulationDate, Boolean isFinish, Boolean isFailed, String message) {
         this.simulationId = simulationId;
         this.simulationDate = simulationDate;
         this.isFinish = isFinish;
+        this.isFailed = isFailed;
+        this.message = message;
     }
 
     public Integer getSimulationId() {
@@ -21,5 +27,13 @@ public class DTOSimulationInfo {
 
     public Boolean getFinish() {
         return isFinish;
+    }
+
+    public Boolean getFailed() {
+        return isFailed;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

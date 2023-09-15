@@ -542,7 +542,7 @@ public class EngineManager implements Serializable{
     public DTOWorldInfo getDTOWorldInfo(int simulationId) {
         Simulation simulation = history.getAllSimulations().get(simulationId);
         List<DTOEntityInfo> amountOfEntities = getCurrentEntities(simulationId);
-        return new DTOWorldInfo(amountOfEntities, simulation.getCurrentTick(), simulation.getCurrentSecond(), simulation.getIsFinish());
+        return new DTOWorldInfo(amountOfEntities, simulation.getCurrentTick(), simulation.getCurrentSecond(), simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage());
     }
 
     public List<DTOEntityInfo> getCurrentEntities(int simulationId) {
@@ -568,7 +568,7 @@ public class EngineManager implements Serializable{
     public List<DTOSimulationInfo> getDetailsAboutEndSimulation(){
         List<DTOSimulationInfo> detailsAboutEndSimulation = new ArrayList<>();
         for (Integer simulationId: history.getAllSimulations().keySet()){
-            detailsAboutEndSimulation.add(new DTOSimulationInfo(simulationId, history.getAllSimulations().get(simulationId).getFormattedDateTime(), history.getAllSimulations().get(simulationId).getIsFinish()));
+            detailsAboutEndSimulation.add(new DTOSimulationInfo(simulationId, history.getAllSimulations().get(simulationId).getFormattedDateTime(), history.getAllSimulations().get(simulationId).getIsFinish(), history.getAllSimulations().get(simulationId).getIsFailed(), history.getAllSimulations().get(simulationId).getMessage()));
         }
         return detailsAboutEndSimulation;
     }

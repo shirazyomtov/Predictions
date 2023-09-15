@@ -1,7 +1,6 @@
 package DTO;
 
 import java.util.List;
-import java.util.Map;
 
 public class DTOWorldInfo {
 //    private Map<String, Integer> currentAmountOfEntities;
@@ -14,11 +13,14 @@ public class DTOWorldInfo {
 
     private boolean isFinish;
 
-    public DTOWorldInfo(List<DTOEntityInfo> currentAmountOfEntities, int currentTick, int currentSecond, boolean isFinish){
+    private boolean isFailed;
+
+    public DTOWorldInfo(List<DTOEntityInfo> currentAmountOfEntities, int currentTick, int currentSecond, boolean isFinish, boolean isFailed, String message){
         this.currentAmountOfEntities = currentAmountOfEntities;
         this.currentTick = currentTick;
         this.currentSecond = currentSecond;
         this.isFinish = isFinish;
+        this.isFailed = isFailed;
     }
 
     public int getCurrentTick() {
@@ -35,6 +37,10 @@ public class DTOWorldInfo {
 
     public boolean getIsFinish() {
         return isFinish;
+    }
+
+    public boolean getIsFailed() {
+        return isFailed;
     }
 }
 

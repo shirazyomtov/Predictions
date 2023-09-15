@@ -1,0 +1,23 @@
+#future-button{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+    -fx-padding: 5px 10px;
+    -fx-background-image: url('green-arrow-left.png');
+    -fx-background-size: 100% 100%;
+    -fx-background-repeat: no-repeat;
+}
+
+#past-button{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+    -fx-padding: 5px 10px;
+    -fx-background-image: url('green-arrow-right.png');
+    -fx-background-size: 100% 100%;
+    -fx-background-repeat: no-repeat;
+}
+
+.error-label{
+    -fx-text-fill: red;
+}

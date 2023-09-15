@@ -3,12 +3,12 @@ package thirdPage;
 import DTO.DTOEntityInfo;
 import DTO.DTOPropertyInfo;
 import DTO.DTOSimulationInfo;
-import DTO.DTOWorldInfo;
 import app.AppController;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -22,7 +22,6 @@ import javafx.scene.layout.GridPane;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.util.converter.IntegerStringConverter;
 import thirdPage.averageTickOfProperty.AverageTickOfProperty;
 import thirdPage.averageValueOfProperty.AverageValueOfProperty;
 import thirdPage.histogramOfPopulation.HistogramOfPopulation;
@@ -42,6 +41,24 @@ public class ThirdPageController {
     private static final String AVERAGE_VALUE_FXML_LIGHT_RESOURCE = "/thirdPage/averageValueOfProperty/averageValueOfProperty.fxml";
 
     private static final String AVERAGE_TICK_PROPERTY_FXML_LIGHT_RESOURCE = "/thirdPage/averageTickOfProperty/averageTickOfProperty.fxml";
+
+    @FXML
+    private TabPane allEndedSimulationInfoTabPane;
+
+    @FXML
+    private Tab detailsAboutSimulationTab;
+
+    @FXML
+    private Tab graphsPopulationChangeTab;
+
+    @FXML
+    private Tab staticInformationPropertiesTab;
+
+    @FXML
+    private Label simulationDetailsLabel;
+
+    @FXML
+    private Label failedSimulationCauseLabel;
 
     @FXML
     private GridPane thirdPageGridPane;
@@ -110,8 +127,6 @@ public class ThirdPageController {
 
     private DTOSimulationInfo selectedSimulation;
 
-//    private List<DTOEntityInfo> chosenSimulationEntities;
-
     private HistogramOfPopulation histogramOfPopulation;
 
     private AverageValueOfProperty averageValueOfProperty;
@@ -123,6 +138,8 @@ public class ThirdPageController {
     private SimpleLongProperty currentTicksProperty;
     private SimpleLongProperty currentSecondsProperty;
 
+    private SimpleBooleanProperty isFailedProperty;
+
     private SimulationTask simulationTask = null;
 
     private FinishSimulationTask finishSimulationTask = null;
@@ -133,25 +150,20 @@ public class ThirdPageController {
     private Consumer<List<DTOSimulationInfo>> updateFinishSimulationConsumer;
 
     private List<Integer> finishSimulations = new ArrayList<>();
+    private List<Integer> failedSimulations = new ArrayList<>();
     private Integer amountOfSimulations = 0;
     private Integer amountOfSimulationsEnded = 0;
-
     @FXML
-    private Button futureTickButton;
-
+    private Button pastButton;
     @FXML
-    private Button savePastButton;
-
-    @FXML
-    private Spinner<Integer> pastSpinner;
-    @FXML
-    private TextField pastValueTextField;
+    private Button futureButton;
     private boolean resumeAfterPastTick = false;
 
     private Map<Integer, Boolean> pauseButtonPressed = new HashMap<>();
 
     private Map<Integer, Boolean> resumeButtonPressed = new HashMap<>();
 
+    private SimpleStringProperty messageProperty;
 
     public ThirdPageController(){
         this.updateTableViewConsumer = (chosenSimulationEntities) -> {
@@ -168,7 +180,10 @@ public class ThirdPageController {
         this.currentTicksProperty = new SimpleLongProperty(0);
         this.currentSecondsProperty = new SimpleLongProperty(0);
         this.isFinishProperty = new SimpleBooleanProperty(false);
+        this.messageProperty = new SimpleStringProperty("");
+        this.isFailedProperty = new SimpleBooleanProperty(false);
     }
+
 
     private void updateAllFinishSimulation(List<DTOSimulationInfo> allSimulation) {
         boolean flag = false;
@@ -184,8 +199,14 @@ public class ThirdPageController {
                     setQueueAndProgressSimulation();
                     mainController.setAmountOfCompletedSimulation(amountOfSimulationsEnded.toString());
                     finishSimulations.add(dtoSimulationInfo.getSimulationId());
-                    executionListView.getItems().set(dtoSimulationInfo.getSimulationId() - 1, "(Ended) Simulation ID: " + dtoSimulationInfo.getSimulationId() + ", Date: " + dtoSimulationInfo.getSimulationDate());
-                    mainController.setSuccessMessage("The simulation " + dtoSimulationInfo.getSimulationId() + " has ended");
+                    if (!dtoSimulationInfo.getFailed()) {
+                        executionListView.getItems().set(dtoSimulationInfo.getSimulationId() - 1, "(Ended) Simulation ID: " + dtoSimulationInfo.getSimulationId() + ", Date: " + dtoSimulationInfo.getSimulationDate());
+                        mainController.setSuccessMessage("The simulation " + dtoSimulationInfo.getSimulationId() + " has ended");
+                    }
+                    else{
+                        executionListView.getItems().set(dtoSimulationInfo.getSimulationId() - 1, "(Failed) Simulation ID: " + dtoSimulationInfo.getSimulationId() + ", Date: " + dtoSimulationInfo.getSimulationDate());
+                        mainController.setErrorMessage("The simulation " + dtoSimulationInfo.getSimulationId() + " has failed due to: " + dtoSimulationInfo.getMessage());
+                    }
                 }
             }
             flag = false;
@@ -205,8 +226,13 @@ public class ThirdPageController {
                 updateFinishSimulation();
             }
         });
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE,0);
-        pastSpinner.setValueFactory(valueFactory);
+        isFailedProperty.addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                Platform.runLater(() -> {
+                    updateFailedSimulation();
+                });
+            }
+        });
     }
 
     private void loadResourcesStaticData() throws IOException {
@@ -273,7 +299,12 @@ public class ThirdPageController {
         String state;
         for(DTOSimulationInfo dtoSimulationInfo: simulationInfos){
             if(dtoSimulationInfo.getFinish()){
-                state = "(Ended)";
+                if(dtoSimulationInfo.getFailed()){
+                    state = "(Failed)";
+                }
+                else {
+                    state = "(Ended)";
+                }
             }
             else{
                 state = "(Running)";
@@ -299,7 +330,15 @@ public class ThirdPageController {
         createTaskOfSimulation();
         simulationInfoGridPane.setVisible(true);
         if(selectedSimulation.getFinish()){
-            setFinishSimulationComponentsVisible();
+            if(!selectedSimulation.getFailed()) {
+                setFinishSimulationComponentsVisible();
+                setTabOfFinishSimulation();
+            }
+            else{
+                mainController.getEngineManager().stop(selectedSimulation.getSimulationId());
+                setFinishComponentsOfFailedAndEndedSimulation();
+                setTabFailedSimulation();
+            }
         }
         else{
             pauseButton.setVisible(true);
@@ -309,26 +348,27 @@ public class ThirdPageController {
             endedSimulationInfoScrollPane.setVisible(false);
 
             if(pauseButtonPressed.get(selectedSimulation.getSimulationId())){
-                futureTickButton.setVisible(true);
-                pastSpinner.setVisible(true);
-                savePastButton.setVisible(true);
+                futureButton.setVisible(true);
+                pastButton.setVisible(true);
             }
             else{
-                futureTickButton.setVisible(false);
-                pastSpinner.setVisible(false);
-                savePastButton.setVisible(false);
+                futureButton.setVisible(false);
+                pastButton.setVisible(false);
             }
         }
-
-//        setDetails();
     }
 
     private void setFinishSimulationComponentsVisible(){
+        setFinishComponentsOfFailedAndEndedSimulation();
+        endedSimulationInfoScrollPane.setVisible(true);
+        allEndedSimulationInfoTabPane.getTabs().remove(detailsAboutSimulationTab);
+    }
+
+    private void setFinishComponentsOfFailedAndEndedSimulation(){
         pauseButton.setVisible(false);
         resumeButton.setVisible(false);
         stopButton.setVisible(false);
         rerunButton.setVisible(true);
-        endedSimulationInfoScrollPane.setVisible(true);
     }
 
     private void setFinishSimulationDetails(){
@@ -336,19 +376,6 @@ public class ThirdPageController {
         setEntitiesAndProperties(finalDTOEntities);
         setEntities();
     }
-
-//    private void setDetails() {
-//        currentTickTextField.setText(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()).toString());
-//        secondsCounterTextField.setText(mainController.getEngineManager().getCurrentSecond(selectedSimulation.getSimulationId()).toString());
-//        List<DTOEntityInfo> chosenSimulationEntities = mainController.getEngineManager().getAllAmountOfEntities(selectedSimulation.getSimulationId());
-//        addEntitiesDetails(chosenSimulationEntities);
-//        if (selectedSimulation.getFinish()){
-//            List<DTOEntityInfo> finalDTOEntities = mainController.getEngineManager().getAllDetailsOfEndedSimulation(selectedSimulation.getSimulationId());
-//            setEntitiesAndProperties(finalDTOEntities);
-//            setEntities(finalDTOEntities);
-//        }
-//    }
-
 
     private void addEntitiesDetails(List<DTOEntityInfo> chosenSimulationEntities) {
         entitiesTableView.getItems().clear();
@@ -360,6 +387,10 @@ public class ThirdPageController {
 
 
     private void setEntitiesAndProperties(List<DTOEntityInfo> finalDTOEntities) {
+        entitiesAndPropertiesTreeView.setRoot(null);
+        if(displayModeComboBox.getItems() != null){
+            displayModeComboBox.getItems().clear();
+        }
         TreeItem<String> root = new TreeItem<>("Entities");
         for (DTOEntityInfo dtoEntityInfo : finalDTOEntities) {
             TreeItem<String> entityBranch = new TreeItem<>(dtoEntityInfo.getEntityName());
@@ -389,6 +420,7 @@ public class ThirdPageController {
         Map<Integer, Map<String, Integer>> amountOfAllEntities = mainController.getEngineManager().getAmountOfEntitiesPerTick(selectedSimulation.getSimulationId());
         if(entitiesName != null) {
             createGraphOfEntityPerTick(amountOfAllEntities, entitiesName);
+            graphPane.setVisible(true);
         }
     }
 
@@ -411,7 +443,7 @@ public class ThirdPageController {
             }
 
             if (amount != null) {
-                if(currentTickTextField.getText().equals("4000")) {
+                if(Integer.parseInt(currentTickTextField.getText()) > 4000) {
                     if (tick >= currentTick) {
                         series.getData().add(new XYChart.Data<>(tick.toString(), amount));
                         currentTick += jumpInterval;
@@ -432,6 +464,9 @@ public class ThirdPageController {
         staticInfoPane.getChildren().clear();
         String selectedDisplay = displayModeComboBox.getSelectionModel().getSelectedItem();
         TreeItem<String> selectedItem = entitiesAndPropertiesTreeView.getSelectionModel().getSelectedItem();
+        if(selectedItem == null){
+            return;
+        }
         String propertyName = selectedItem.getValue();
         String entityName = selectedItem.getParent().getValue();
         Map<Object, Integer> propertyInfoAboutValues = mainController.getEngineManager().createPropertyValuesMap(selectedSimulation.getSimulationId(), entityName, propertyName);
@@ -502,11 +537,8 @@ public class ThirdPageController {
         mainController.getEngineManager().pause(selectedSimulation.getSimulationId());
         resumeButtonPressed.put(selectedSimulation.getSimulationId(), false);
         pauseButtonPressed.put(selectedSimulation.getSimulationId(), true);
-        futureTickButton.setVisible(true);
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.parseInt(currentTickTextField.getText()));
-        pastSpinner.setValueFactory(valueFactory);
-        pastSpinner.setVisible(true);
-        savePastButton.setVisible(true);
+        futureButton.setVisible(true);
+        pastButton.setVisible(true);
     }
 
     @FXML
@@ -521,9 +553,13 @@ public class ThirdPageController {
         mainController.getEngineManager().resume(selectedSimulation.getSimulationId());
         pauseButtonPressed.put(selectedSimulation.getSimulationId(), false);
         resumeButtonPressed.put(selectedSimulation.getSimulationId(), true);
-        futureTickButton.setVisible(false);
-        pastSpinner.setVisible(false);
-        savePastButton.setVisible(false);
+        futureButton.setVisible(false);
+        pastButton.setVisible(false);
+        endedSimulationInfoScrollPane.setVisible(false);
+        graphPane.setVisible(false);
+        isDisplayModePressed.set(false);
+        displayModeLabel.setVisible(false);
+        displayModeComboBox.setVisible(false);
     }
 
     @FXML
@@ -536,9 +572,8 @@ public class ThirdPageController {
             }
         }
         mainController.getEngineManager().stop(selectedSimulation.getSimulationId());
-        futureTickButton.setVisible(false);
-        pastSpinner.setVisible(false);
-        savePastButton.setVisible(false);
+        futureButton.setVisible(false);
+        pastButton.setVisible(false);
         //todo: move to functions
         pauseButton.setVisible(false);
         resumeButton.setVisible(false);
@@ -548,6 +583,7 @@ public class ThirdPageController {
         currentSecondsProperty.set(mainController.getEngineManager().getCurrentSecond(selectedSimulation.getSimulationId()));
         List<DTOEntityInfo> currentTickAmountOfEntities = mainController.getEngineManager().getCurrentTickAmountOfEntities(selectedSimulation.getSimulationId(), Integer.parseInt(currentTickTextField.getText()));
         addEntitiesDetails(currentTickAmountOfEntities);
+        graphPane.setVisible(false);
     }
 
     @FXML
@@ -580,7 +616,7 @@ public class ThirdPageController {
 
     public void createTaskOfSimulation() {
         if(simulationTask == null) {
-            simulationTask = new SimulationTask(selectedSimulation.getSimulationId(), mainController.getEngineManager(), currentTicksProperty, currentSecondsProperty, isFinishProperty, updateTableViewConsumer);
+            simulationTask = new SimulationTask(selectedSimulation.getSimulationId(), mainController.getEngineManager(), currentTicksProperty, currentSecondsProperty, isFinishProperty, updateTableViewConsumer, isFailedProperty);
             new Thread(simulationTask).start();
         }
         else {
@@ -590,12 +626,13 @@ public class ThirdPageController {
 
     private void updateFinishSimulation(){
         Platform.runLater(() -> {
-            futureTickButton.setVisible(false);
-            pastSpinner.setVisible(false);
-            savePastButton.setVisible(false);
+            futureButton.setVisible(false);
+            pastButton.setVisible(false);
             selectedSimulation = mainController.getEngineManager().getAllPastSimulation().get(selectedSimulation.getSimulationId() - 1);
-            setFinishSimulationComponentsVisible();
-            setFinishSimulationDetails();
+            if(!selectedSimulation.getFailed()) {
+                setFinishSimulationComponentsVisible();
+                setFinishSimulationDetails();
+            }
         });
     }
 
@@ -638,20 +675,18 @@ public class ThirdPageController {
         }
     }
 
-
     @FXML
-    void futureTickButtonClicked(ActionEvent event) {
+    void futureButtonClicked(ActionEvent event) {
         mainController.getEngineManager().futureTick(selectedSimulation.getSimulationId());
         setAllDetailsForPastAndFutureTick();
     }
 
-
     @FXML
-    void savePastButtonClicked(ActionEvent event) {
+    void pastButtonClicked(ActionEvent event) {
         try {
-            Integer enteredValue = Integer.parseInt(pastSpinner.getEditor().getText());
-            Float currentTick = Float.valueOf(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()));
-            if (enteredValue < 0 || enteredValue > currentTick) {
+            Integer currentTick = Integer.parseInt(currentTickTextField.getText());
+            Integer enteredValue = currentTick - 1;
+            if (enteredValue < 1) {
                 throw new Exception();
             }
             else {
@@ -660,17 +695,17 @@ public class ThirdPageController {
             }
         }
         catch(Exception e){
-            mainController.setErrorMessage("You need to enter a value between 1 " + "to " + mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()));
+            mainController.setErrorMessage("You can go back up till tick number 1");
         }
     }
 
-    private void setPastDetails(Integer spinnerValue) {
+    private void setPastDetails(Integer value) {
         simulationTask.setPast(true);
         resumeAfterPastTick = true;
-        currentTicksProperty.set(spinnerValue);
-        List<DTOEntityInfo> currentTickAmountOfEntities = mainController.getEngineManager().getCurrentTickAmountOfEntities(selectedSimulation.getSimulationId(), spinnerValue);
+        currentTicksProperty.set(value);
+        List<DTOEntityInfo> currentTickAmountOfEntities = mainController.getEngineManager().getCurrentTickAmountOfEntities(selectedSimulation.getSimulationId(), value);
         addEntitiesDetails(currentTickAmountOfEntities);
-        currentSecondsProperty.set(mainController.getEngineManager().getAllSecondsPerTick(selectedSimulation.getSimulationId()).get(spinnerValue));
+        currentSecondsProperty.set(mainController.getEngineManager().getAllSecondsPerTick(selectedSimulation.getSimulationId()).get(value));
     }
 
     public void resetPauseAndResume() {
@@ -680,8 +715,30 @@ public class ThirdPageController {
 
     private void setAllDetailsForPastAndFutureTick(){
         endedSimulationInfoScrollPane.setVisible(true);
+        setTabOfFinishSimulation();
         setFinishSimulationDetails();
         //fix the properties
+    }
+
+
+    private void updateFailedSimulation() {
+        setTabFailedSimulation();
+        endedSimulationInfoScrollPane.setVisible(true);
+    }
+
+    private void setTabOfFinishSimulation(){
+        allEndedSimulationInfoTabPane.getTabs().clear();
+        allEndedSimulationInfoTabPane.getTabs().add(graphsPopulationChangeTab);
+        allEndedSimulationInfoTabPane.getTabs().add(staticInformationPropertiesTab);
+    }
+
+    private void setTabFailedSimulation(){
+        endedSimulationInfoScrollPane.setVisible(true);
+        allEndedSimulationInfoTabPane.getTabs().clear();
+        allEndedSimulationInfoTabPane.getTabs().add(detailsAboutSimulationTab);
+        String simulationInfo = "Simulation: id - " + selectedSimulation.getSimulationId() + " date - "+ selectedSimulation.getSimulationDate() + " has failed";
+        simulationDetailsLabel.setText(simulationInfo);
+        failedSimulationCauseLabel.setText("The simulation has failed due to :\n" + selectedSimulation.getMessage());
     }
 }
 

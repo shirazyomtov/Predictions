@@ -1,4 +1,9 @@
-.root, .gradientBack {
+/*.root, .gradientBack {*/
+/*    -fx-background-image: url("dogsBackground.png");*/
+/*    -fx-font-family: "Suez One";*/
+/*}*/
+
+.grid-pane-page, .border-pane{
     -fx-background-image: url("dogsBackground.png");
     -fx-font-family: "Suez One";
 }

@@ -106,6 +106,9 @@ public class ThirdPageController {
     private GridPane simulationInfoGridPane;
 
     @FXML
+    private ScrollPane thirdPageScrollPane;
+
+    @FXML
     private ListView<String> executionListView;
 
     //Graphs population change
@@ -539,6 +542,7 @@ public class ThirdPageController {
         pauseButtonPressed.put(selectedSimulation.getSimulationId(), true);
         futureButton.setVisible(true);
         pastButton.setVisible(true);
+        setAllDetailsForPastAndFutureTick();
     }
 
     @FXML
@@ -602,8 +606,9 @@ public class ThirdPageController {
     }
 
 
-    public Node getThirdPageGridPane() {
-        return thirdPageGridPane;
+
+    public Node getThirdPageScrollPane() {
+        return thirdPageScrollPane;
     }
 
     public void clearAllData() {
@@ -678,7 +683,7 @@ public class ThirdPageController {
     @FXML
     void futureButtonClicked(ActionEvent event) {
         mainController.getEngineManager().futureTick(selectedSimulation.getSimulationId());
-        setAllDetailsForPastAndFutureTick();
+        endedSimulationInfoScrollPane.setVisible(true);
     }
 
     @FXML
@@ -691,7 +696,7 @@ public class ThirdPageController {
             }
             else {
                 setPastDetails(enteredValue);
-                setAllDetailsForPastAndFutureTick();
+                endedSimulationInfoScrollPane.setVisible(true);
             }
         }
         catch(Exception e){
@@ -714,7 +719,6 @@ public class ThirdPageController {
     }
 
     private void setAllDetailsForPastAndFutureTick(){
-        endedSimulationInfoScrollPane.setVisible(true);
         setTabOfFinishSimulation();
         setFinishSimulationDetails();
         //fix the properties

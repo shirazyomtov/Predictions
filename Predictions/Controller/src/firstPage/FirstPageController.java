@@ -209,11 +209,7 @@ public class FirstPageController {
         presentGrid.setVisibleGridPage(false);
     }
 
-    public GridPane getFirstPageGridPane() {
-        return firstPageGridPane;
+    public Node getFirstPageScrollPane() {
+        return firstPageScrollPane;
     }
-
-//    public Node getFirstPageScrollPane() {
-//        return firstPageScrollPane;
-//    }
 }

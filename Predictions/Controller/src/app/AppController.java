@@ -61,6 +61,8 @@ public class AppController {
 
     @FXML
     private ThirdPageController thirdPageController;
+    @FXML
+    private ScrollPane scrollPaneComponent;
     private SkinsOptions skinsOption = SkinsOptions.DEFAULT;
 
     public AppController(){
@@ -95,7 +97,7 @@ public class AppController {
         URL url = getClass().getResource(FIRST_PAGE_FXML_LIGHT_RESOURCE);
         fxmlLoader.setLocation(url);
         InputStream inputStream = url.openStream();
-        GridPane gridPane = fxmlLoader.load(inputStream);
+        ScrollPane gridPane = fxmlLoader.load(inputStream);
         firstPageController = fxmlLoader.getController();
     }
 
@@ -105,7 +107,7 @@ public class AppController {
         URL url = getClass().getResource(SECOND_PAGE_FXML_LIGHT_RESOURCE);
         fxmlLoader.setLocation(url);
         InputStream inputStream = url.openStream();
-        GridPane scrollPane = fxmlLoader.load(inputStream);
+        ScrollPane scrollPane = fxmlLoader.load(inputStream);
         secondPageController = fxmlLoader.getController();
     }
 
@@ -115,7 +117,7 @@ public class AppController {
         URL url = getClass().getResource(THIRD_PAGE_FXML_LIGHT_RESOURCE);
         fxmlLoader.setLocation(url);
         InputStream inputStream = url.openStream();
-        GridPane gridPane = fxmlLoader.load(inputStream);
+        ScrollPane scrollPane = fxmlLoader.load(inputStream);
         thirdPageController = fxmlLoader.getController();
     }
 
@@ -176,17 +178,17 @@ public class AppController {
     }
 
     public void showFirstPage() {
-        borderPaneComponent.setCenter(firstPageController.getFirstPageGridPane());
+        borderPaneComponent.setCenter(firstPageController.getFirstPageScrollPane());
     }
 
     public void showSecondPage() {
         secondPageController.setVisible(true);
-        borderPaneComponent.setCenter(secondPageController.getSecondPageGridPane());
+        borderPaneComponent.setCenter(secondPageController.getSecondPageScrollPane());
     }
 
     public void showThirdPage() {
         thirdPageController.setVisible(true);
-        borderPaneComponent.setCenter(thirdPageController.getThirdPageGridPane());
+        borderPaneComponent.setCenter(thirdPageController.getThirdPageScrollPane());
     }
 
     public void setSuccessMessage(String message) {

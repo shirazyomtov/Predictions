@@ -7,28 +7,32 @@
 <?import javafx.scene.layout.RowConstraints?>
 
 
-<GridPane fx:id="firstPageGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="550.0" prefWidth="700.0" visible="false" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="firstPage.FirstPageController">
-    <columnConstraints>
-        <ColumnConstraints hgrow="NEVER" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="99.0" />
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="101.0" />
-        <ColumnConstraints hgrow="NEVER" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
-        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="109.0" vgrow="ALWAYS" />
-        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="119.0" vgrow="ALWAYS" />
-        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="300.0" vgrow="ALWAYS" />
-        <RowConstraints maxHeight="30.0" minHeight="0.0" prefHeight="30.0" vgrow="NEVER" />
-    </rowConstraints>
-    <children>
-        <SplitPane fx:id="firstPageSplitPane" dividerPositions="0.5444264943457189" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="500.0" prefWidth="680.0" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
-            <items>
-                <fx:include fx:id="detailsComponent" source="detailsOfSystem/detailsOfSystem.fxml" />
-                <ScrollPane fx:id="scrollPaneDetails" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="300.0" />
-            </items>
-        </SplitPane>
-    </children>
-</GridPane>
+<ScrollPane fx:id="firstPageScrollPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="scroll-pane-background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="firstPage.FirstPageController">
+   <content>
+      <GridPane fx:id="firstPageGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="550.0" prefWidth="700.0" styleClass="grid-pane-page" visible="false">
+          <columnConstraints>
+              <ColumnConstraints hgrow="NEVER" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
+              <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
+              <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
+              <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="99.0" />
+              <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="101.0" />
+              <ColumnConstraints hgrow="NEVER" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
+          </columnConstraints>
+          <rowConstraints>
+              <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+              <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="109.0" vgrow="ALWAYS" />
+              <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="119.0" vgrow="ALWAYS" />
+              <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="300.0" vgrow="ALWAYS" />
+              <RowConstraints maxHeight="30.0" minHeight="0.0" prefHeight="30.0" vgrow="NEVER" />
+          </rowConstraints>
+          <children>
+              <SplitPane fx:id="firstPageSplitPane" dividerPositions="0.5444264943457189" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="500.0" prefWidth="680.0" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
+                  <items>
+                      <fx:include fx:id="detailsComponent" source="detailsOfSystem/detailsOfSystem.fxml" />
+                      <ScrollPane fx:id="scrollPaneDetails" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="300.0" />
+                  </items>
+              </SplitPane>
+          </children>
+      </GridPane>
+   </content>
+</ScrollPane>

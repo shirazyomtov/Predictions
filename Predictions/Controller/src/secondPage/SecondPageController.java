@@ -81,10 +81,6 @@ public class SecondPageController {
         this.mainController = appController;
     }
 
-    public Node getSecondPageGridPane() {
-        return secondPageGridPane;
-    }
-
     public void setSecondPageDetails(List<DTOEntityInfo> entitiesDetails, List<DTOEnvironmentInfo> environmentInfos) {
         resetAllText();
         createListEntitiesNames(entitiesDetails);

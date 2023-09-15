@@ -3,6 +3,7 @@ package thirdPage;
 import DTO.DTOEntityInfo;
 import DTO.DTOWorldInfo;
 import engineManager.EngineManager;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.concurrent.Task;
@@ -46,11 +47,13 @@ public class SimulationTask extends Task<Boolean> {
                 }
             }
             DTOWorldInfo dtoWorldInfo = engineManager.getDTOWorldInfo(simulationId);
-            currentTicksProperty.set(dtoWorldInfo.getCurrentTick());
-            currentSecondsProperty.set(dtoWorldInfo.getCurrentSecond());
-            isFailed.set(dtoWorldInfo.getIsFailed());
-            isFinishProperty.set(dtoWorldInfo.getIsFinish());
-            updateTableViewConsumer.accept(dtoWorldInfo.getCurrentAmountOfEntities());
+            Platform.runLater(()-> {
+                currentTicksProperty.set(dtoWorldInfo.getCurrentTick());
+                currentSecondsProperty.set(dtoWorldInfo.getCurrentSecond());
+                isFailed.set(dtoWorldInfo.getIsFailed());
+                isFinishProperty.set(dtoWorldInfo.getIsFinish());
+                updateTableViewConsumer.accept(dtoWorldInfo.getCurrentAmountOfEntities());
+            });
             Thread.sleep(200);
         }
 

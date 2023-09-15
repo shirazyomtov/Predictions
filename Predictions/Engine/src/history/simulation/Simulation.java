@@ -42,6 +42,8 @@ public  class Simulation implements Serializable, Runnable {
 
     private String message = "";
 
+    private long totalTimePause = 0;
+
     public Simulation(WorldInstance worldInstance, LocalDateTime dateTime) {
         this.worldInstance = worldInstance;
         this.dateTime = dateTime;
@@ -60,7 +62,7 @@ public  class Simulation implements Serializable, Runnable {
     @Override
     public void run() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         long startMillisSeconds = System.currentTimeMillis();
-        long time = 0;
+        long pauseTime;
         if (worldInstance.getWorldDefinition().getTermination().getTerminationByUser())
         {
             while (!stop){
@@ -70,7 +72,8 @@ public  class Simulation implements Serializable, Runnable {
                 }
                 worldInstance.setSecondsPerTick(currentTick, currentSecond);
                 try {
-                    time = runSimulation();
+                    pauseTime = runSimulation();
+                    totalTimePause += pauseTime;
                 }
                 catch (Exception e){
                     isFinish = true;
@@ -78,7 +81,7 @@ public  class Simulation implements Serializable, Runnable {
                     message = e.getMessage();
                 }
                 long currentMilliSeconds = System.currentTimeMillis();
-                currentSecond = (int) ((currentMilliSeconds - time - startMillisSeconds) / 1000);
+                currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);
             }
         }
         else {
@@ -91,7 +94,8 @@ public  class Simulation implements Serializable, Runnable {
                     }
                     worldInstance.setSecondsPerTick(currentTick, currentSecond);
                     try {
-                        time = runSimulation();
+                        pauseTime = runSimulation();
+                        totalTimePause += pauseTime;
                     }
                     catch (Exception e){
                         isFinish = true;
@@ -99,7 +103,7 @@ public  class Simulation implements Serializable, Runnable {
                         message = e.getMessage();
                     }
                     long currentMilliSeconds = System.currentTimeMillis();
-                    currentSecond = (int) ((currentMilliSeconds - time - startMillisSeconds) / 1000);
+                    currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);
                 }
                 else {
                     break;

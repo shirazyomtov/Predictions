@@ -682,8 +682,31 @@ public class ThirdPageController {
 
     @FXML
     void futureButtonClicked(ActionEvent event) {
-        mainController.getEngineManager().futureTick(selectedSimulation.getSimulationId());
+        Integer tick = mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId());
+        Integer currentTick = Integer.parseInt(currentTickTextField.getText()) + 1;
+        if(currentTick > tick) {
+            if(resumeAfterPastTick){
+                synchronized(simulationTask){
+                    simulationTask.setPast(false);
+                    resumeAfterPastTick = false;
+                    simulationTask.notifyAll();
+                }
+            }
+            mainController.getEngineManager().futureTick(selectedSimulation.getSimulationId());
+        }
+        else{
+            setPastDetails(currentTick);
+        }
         endedSimulationInfoScrollPane.setVisible(true);
+    }
+
+    private void setPastDetails(Integer value) {
+        simulationTask.setPast(true);
+        resumeAfterPastTick = true;
+        currentTicksProperty.set(value);
+        List<DTOEntityInfo> currentTickAmountOfEntities = mainController.getEngineManager().getCurrentTickAmountOfEntities(selectedSimulation.getSimulationId(), value);
+        addEntitiesDetails(currentTickAmountOfEntities);
+        currentSecondsProperty.set(mainController.getEngineManager().getAllSecondsPerTick(selectedSimulation.getSimulationId()).get(value));
     }
 
     @FXML
@@ -702,15 +725,6 @@ public class ThirdPageController {
         catch(Exception e){
             mainController.setErrorMessage("You can go back up till tick number 1");
         }
-    }
-
-    private void setPastDetails(Integer value) {
-        simulationTask.setPast(true);
-        resumeAfterPastTick = true;
-        currentTicksProperty.set(value);
-        List<DTOEntityInfo> currentTickAmountOfEntities = mainController.getEngineManager().getCurrentTickAmountOfEntities(selectedSimulation.getSimulationId(), value);
-        addEntitiesDetails(currentTickAmountOfEntities);
-        currentSecondsProperty.set(mainController.getEngineManager().getAllSecondsPerTick(selectedSimulation.getSimulationId()).get(value));
     }
 
     public void resetPauseAndResume() {

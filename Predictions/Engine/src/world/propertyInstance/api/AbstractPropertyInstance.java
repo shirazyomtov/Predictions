@@ -6,7 +6,9 @@ import world.enums.Type;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractPropertyInstance<T> implements Property, Serializable {
 
@@ -23,12 +25,24 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
 
     private List<Integer> valueUpdateList = new ArrayList<>();
 
+    private Map<Integer, List<Integer>> valueUpdateListPerTick = new HashMap<>();
+
     public AbstractPropertyInstance(String name, Type propertyType, ValueGenerator<T> value, RangeImpl range) {
         this.name = name;
         this.propertyType = propertyType;
         this.valueGenerator = value;
         this.value = this.valueGenerator.generateValue();
         this.range = range;
+    }
+
+    @Override
+    public void addValueUpdateListPerTick(Integer tick){
+        List<Integer> cloneList = getValueUpdateList();
+        List<Integer> deepClone = new ArrayList<>();
+        for (Integer value : cloneList){
+            deepClone.add(value);
+        }
+        valueUpdateListPerTick.put(tick, deepClone);
     }
 
     @Override
@@ -107,5 +121,10 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
             valueUpdateList.add(timeTheValueDosentChange);
         }
         return valueUpdateList;
+    }
+
+    @Override
+    public RangeImpl getRange() {
+        return range;
     }
 }

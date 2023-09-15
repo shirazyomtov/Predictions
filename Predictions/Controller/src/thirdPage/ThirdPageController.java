@@ -434,6 +434,7 @@ public class ThirdPageController {
         TreeItem<String> selectedItem = entitiesAndPropertiesTreeView.getSelectionModel().getSelectedItem();
         String propertyName = selectedItem.getValue();
         String entityName = selectedItem.getParent().getValue();
+        Integer currentTick = Integer.parseInt(currentTickTextField.getText());
         Map<Object, Integer> propertyInfoAboutValues = mainController.getEngineManager().createPropertyValuesMap(selectedSimulation.getSimulationId(), entityName, propertyName);
         if(selectedDisplay != null) {
             switch (selectedDisplay) {

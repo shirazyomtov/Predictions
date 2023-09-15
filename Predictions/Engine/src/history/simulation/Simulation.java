@@ -2,10 +2,16 @@ package history.simulation;
 
 import exceptions.*;
 import javafx.util.Pair;
+import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
 import world.entity.instance.location.Location;
 import world.enums.ActionType;
+import world.enums.Type;
 import world.propertyInstance.api.Property;
+import world.propertyInstance.impl.BooleanPropertyInstance;
+import world.propertyInstance.impl.FloatPropertyInstance;
+import world.propertyInstance.impl.IntegerPropertyInstance;
+import world.propertyInstance.impl.StringPropertyInstance;
 import world.rule.RuleImpl;
 import world.rule.action.Action;
 import world.rule.action.Kill;
@@ -13,14 +19,13 @@ import world.rule.action.Replace;
 import world.rule.action.condition.AbstractCondition;
 import world.rule.action.condition.MultipleCondition;
 import world.rule.action.condition.SingleCondition;
+import world.value.generator.api.ValueGeneratorFactory;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public  class Simulation implements Serializable, Runnable {
     private WorldInstance worldInstance = null;
@@ -37,6 +42,9 @@ public  class Simulation implements Serializable, Runnable {
 
     private boolean pauseAfterTick = false;
     private boolean stop = false;
+    private long timePause = 0;
+
+    private Map<Integer, List<EntityInstance>> valuesPerTick = new HashMap<>();
 
     public Simulation(WorldInstance worldInstance, LocalDateTime dateTime) {
         this.worldInstance = worldInstance;
@@ -56,6 +64,7 @@ public  class Simulation implements Serializable, Runnable {
     @Override
     public void run() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         long startMillisSeconds = System.currentTimeMillis();
+        long pauseTime;
         if (worldInstance.getWorldDefinition().getTermination().getTerminationByUser())
         {
             while (!stop){
@@ -64,9 +73,10 @@ public  class Simulation implements Serializable, Runnable {
                     pauseAfterTick = false;
                 }
                 worldInstance.setSecondsPerTick(currentTick, currentSecond);
-                runSimulation();
+                pauseTime = runSimulation();
+                timePause = timePause + pauseTime;
                 long currentMilliSeconds = System.currentTimeMillis();
-                currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
+                currentSecond = (int) ((currentMilliSeconds - timePause - startMillisSeconds) / 1000);
             }
         }
         else {
@@ -78,9 +88,10 @@ public  class Simulation implements Serializable, Runnable {
                         pauseAfterTick = false;
                     }
                     worldInstance.setSecondsPerTick(currentTick, currentSecond);
-                    runSimulation();
+                    pauseTime = runSimulation();
+                    timePause = timePause + pauseTime;
                     long currentMilliSeconds = System.currentTimeMillis();
-                    currentSecond = (int) ((currentMilliSeconds - startMillisSeconds) / 1000);
+                    currentSecond = (int) ((currentMilliSeconds - timePause - startMillisSeconds) / 1000);
                 }
                 else {
                     break;
@@ -90,12 +101,13 @@ public  class Simulation implements Serializable, Runnable {
         isFinish = true;
     }
 
-    private void runSimulation() {
+    private long runSimulation() {
         List<Action> activationAction ;
         List<EntityInstance> secondaryEntities = null;
         List<EntityInstance> entitiesToRemove = new ArrayList<>();
         List<Pair<EntityInstance,Action>> replaceActions = new ArrayList<>();
         worldInstance.addAmountOfEntitiesPerTick(currentTick);
+        long beforePauseMilliSeconds = System.currentTimeMillis();
         synchronized(this) {
             while (this.pause) {
                 try {
@@ -105,6 +117,8 @@ public  class Simulation implements Serializable, Runnable {
                 }
             }
         }
+        long afterPauseMilliSeconds = System.currentTimeMillis();
+        long time  = afterPauseMilliSeconds - beforePauseMilliSeconds;
         moveEntities();
         activationAction = createActivationActionsList();
         for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
@@ -139,11 +153,56 @@ public  class Simulation implements Serializable, Runnable {
             }
         }
 
+//        List<EntityInstance> entityInstanceList = new ArrayList<>();
+//        for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
+//            entityInstanceList.add(deepCloneEntity(entityInstance));
+//        }
+//        valuesPerTick.put(currentTick, entityInstanceList);
         entitiesToRemove.clear();
         replaceActions.clear();
         updateTickProperty();
+//        for (EntityInstance entityInstance: worldInstance.getEntityInstanceList()){
+//            for(Property property: entityInstance.getAllProperty().values()){
+//                property.addValueUpdateListPerTick(currentTick);
+//            }
+//        }
         currentTick = currentTick + 1;
+        return time;
     }
+
+//    private EntityInstance deepCloneEntity(EntityInstance entityInstance) {
+//        Map<String, Property> allProperty = new HashMap<>();
+//        for(Property property: entityInstance.getAllProperty().values()){
+//            Property deepCloneProperty = deepCloneProp(property);
+//            allProperty.put(property.getName(), deepCloneProperty);
+//        }
+//      return new  EntityInstance(entityInstance.getName(), allProperty, new Location(entityInstance.getLocation().getRow(), entityInstance.getLocation().getCol()));
+//    }
+
+//    private Property deepCloneProp(Property property) {
+//        Property deepCloneProperty = null;
+//        switch (property.getType()) {
+//            case FLOAT:
+//                deepCloneProperty = new FloatPropertyInstance(property.getName(),
+//                        ValueGeneratorFactory.createFixed((Float) property.getValue()), property.getRange());
+//                break;
+//            case DECIMAL:
+//                deepCloneProperty = new IntegerPropertyInstance(property.getName(),
+//                        ValueGeneratorFactory.createFixed((Integer) property.getValue()), property.getRange());
+//                break;
+//            case BOOLEAN:
+//                deepCloneProperty = new BooleanPropertyInstance(property.getName(),
+//                        ValueGeneratorFactory.createFixed((Boolean) property.getValue()), property.getRange());
+//                break;
+//            case STRING:
+//                deepCloneProperty = new StringPropertyInstance(property.getName(),
+//                        ValueGeneratorFactory.createFixed((String) property.getValue()), property.getRange());
+//                break;
+//
+//        }
+//        return deepCloneProperty;
+//    }
+
     private List<EntityInstance> calculateTotalNumberOfSecondaryInstances(Action activeAction) throws ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException, EntityNotDefine {
         List<EntityInstance> secondaryEntities;
         int count = 0;
@@ -292,4 +351,24 @@ public  class Simulation implements Serializable, Runnable {
     public void setStop(boolean stop) {
         this.stop = stop;
     }
+
+//    public Map<Object, Integer> getPropertyValuesMapPerTick(String entityName, String propertyName, int tick) {
+//        Map<Object, Integer> valuesProperty = new HashMap<>();
+//        for (EntityInstance entityInstance : valuesPerTick.get(tick)) {
+//            if (entityInstance.getName().equals(entityName)) {
+//                for (Property property : entityInstance.getAllProperty().values()) {
+//                    if (property.getName().equals(propertyName)) {
+//                        if (!valuesProperty.containsKey(property.getValue())) {
+//                            valuesProperty.put(property.getValue(), 1);
+//                        } else {
+//                            valuesProperty.put(property.getValue(), valuesProperty.get(property.getValue()) + 1);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        return valuesProperty;
+//    }
+
 }

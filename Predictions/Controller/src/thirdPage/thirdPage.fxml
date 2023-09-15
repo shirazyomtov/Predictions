@@ -118,9 +118,19 @@
                      <content>
                         <AnchorPane fx:id="finishSimulationAnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="654.0">
                            <children>
-                              <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="256.0" prefWidth="499.2" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <TabPane fx:id="allEndedSimulationInfoTabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="256.0" prefWidth="499.2" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <tabs>
-                                    <Tab closable="false" text="Graphs population change">
+                                    <Tab fx:id="detailsAboutSimulationTab" closable="false" text="Details about Simulation">
+                                       <content>
+                                          <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="653.0">
+                                             <children>
+                                                <Label fx:id="simulationDetailsLabel" layoutX="13.0" layoutY="28.0" prefHeight="55.0" prefWidth="458.0" />
+                                                <Label fx:id="failedSimulationCauseLabel" layoutX="14.0" layoutY="83.0" prefHeight="70.0" prefWidth="450.0" wrapText="true" />
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </Tab>
+                                    <Tab fx:id="graphsPopulationChangeTab" closable="false" text="Graphs population change">
                                        <content>
                                           <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="653.0">
                                              <children>
@@ -159,7 +169,7 @@
                                           </AnchorPane>
                                        </content>
                                     </Tab>
-                                    <Tab closable="false" text="Static information about the properties">
+                                    <Tab fx:id="staticInformationPropertiesTab" closable="false" text="Static information about the properties">
                                        <content>
                                           <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="220.0" prefWidth="650.0">
                                              <children>

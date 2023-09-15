@@ -43,6 +43,24 @@ public class ThirdPageController {
     private static final String AVERAGE_TICK_PROPERTY_FXML_LIGHT_RESOURCE = "/thirdPage/averageTickOfProperty/averageTickOfProperty.fxml";
 
     @FXML
+    private TabPane allEndedSimulationInfoTabPane;
+
+    @FXML
+    private Tab detailsAboutSimulationTab;
+
+    @FXML
+    private Tab graphsPopulationChangeTab;
+
+    @FXML
+    private Tab staticInformationPropertiesTab;
+
+    @FXML
+    private Label simulationDetailsLabel;
+
+    @FXML
+    private Label failedSimulationCauseLabel;
+
+    @FXML
     private GridPane thirdPageGridPane;
 
     @FXML
@@ -219,7 +237,9 @@ public class ThirdPageController {
         });
         isFailedProperty.addListener((observable, oldValue, newValue) -> {
             if(newValue){
-                updateFailedSimulation();
+                Platform.runLater(() -> {
+                    updateFailedSimulation();
+                });
             }
         });
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE,0);
@@ -323,9 +343,12 @@ public class ThirdPageController {
         if(selectedSimulation.getFinish()){
             if(!selectedSimulation.getFailed()) {
                 setFinishSimulationComponentsVisible();
+                setTabOfFinishSimulation();
             }
             else{
+                mainController.getEngineManager().stop(selectedSimulation.getSimulationId());
                 setFinishComponentsOfFailedAndEndedSimulation();
+                setTabFailedSimulation();
             }
         }
         else{
@@ -346,13 +369,12 @@ public class ThirdPageController {
                 savePastButton.setVisible(false);
             }
         }
-
-//        setDetails();
     }
 
     private void setFinishSimulationComponentsVisible(){
         setFinishComponentsOfFailedAndEndedSimulation();
         endedSimulationInfoScrollPane.setVisible(true);
+        allEndedSimulationInfoTabPane.getTabs().remove(detailsAboutSimulationTab);
     }
 
     private void setFinishComponentsOfFailedAndEndedSimulation(){
@@ -367,19 +389,6 @@ public class ThirdPageController {
         setEntitiesAndProperties(finalDTOEntities);
         setEntities();
     }
-
-//    private void setDetails() {
-//        currentTickTextField.setText(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()).toString());
-//        secondsCounterTextField.setText(mainController.getEngineManager().getCurrentSecond(selectedSimulation.getSimulationId()).toString());
-//        List<DTOEntityInfo> chosenSimulationEntities = mainController.getEngineManager().getAllAmountOfEntities(selectedSimulation.getSimulationId());
-//        addEntitiesDetails(chosenSimulationEntities);
-//        if (selectedSimulation.getFinish()){
-//            List<DTOEntityInfo> finalDTOEntities = mainController.getEngineManager().getAllDetailsOfEndedSimulation(selectedSimulation.getSimulationId());
-//            setEntitiesAndProperties(finalDTOEntities);
-//            setEntities(finalDTOEntities);
-//        }
-//    }
-
 
     private void addEntitiesDetails(List<DTOEntityInfo> chosenSimulationEntities) {
         entitiesTableView.getItems().clear();
@@ -733,7 +742,23 @@ public class ThirdPageController {
 
 
     private void updateFailedSimulation() {
-        mainController.getEngineManager().stop(selectedSimulation.getSimulationId());
+        setTabFailedSimulation();
+        endedSimulationInfoScrollPane.setVisible(true);
+    }
+
+    private void setTabOfFinishSimulation(){
+        allEndedSimulationInfoTabPane.getTabs().clear();
+        allEndedSimulationInfoTabPane.getTabs().add(graphsPopulationChangeTab);
+        allEndedSimulationInfoTabPane.getTabs().add(staticInformationPropertiesTab);
+    }
+
+    private void setTabFailedSimulation(){
+        endedSimulationInfoScrollPane.setVisible(true);
+        allEndedSimulationInfoTabPane.getTabs().clear();
+        allEndedSimulationInfoTabPane.getTabs().add(detailsAboutSimulationTab);
+        String simulationInfo = "Simulation: id - " + selectedSimulation.getSimulationId() + " date - "+ selectedSimulation.getSimulationDate() + " has failed";
+        simulationDetailsLabel.setText(simulationInfo);
+        failedSimulationCauseLabel.setText("The simulation has failed due to :\n" + selectedSimulation.getMessage());
     }
 }
 

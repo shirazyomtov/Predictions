@@ -260,4 +260,9 @@ public class SecondPageController {
     public Node getSecondPageGridPane() {
         return secondPageGridPane;
     }
+
+    @FXML
+    void startSimulationWithPastDetailsChecked(ActionEvent event) {
+
+    }
 }

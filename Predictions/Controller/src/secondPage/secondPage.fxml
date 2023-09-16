@@ -153,7 +153,7 @@
                            <children>
                               <Button mnemonicParsing="false" onAction="#startAnimationClicked" prefHeight="26.0" prefWidth="250.0" text="Start animation" />
                               <Button mnemonicParsing="false" onAction="#stopAnimationClicked" prefHeight="26.0" prefWidth="250.0" text="Stop animation" />
-                              <CheckBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="40.0" prefWidth="381.0" text="Start simulation with past details" wrapText="true" />
+                              <CheckBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#startSimulationWithPastDetailsChecked" prefHeight="40.0" prefWidth="381.0" text="Start simulation with past details" wrapText="true" />
                            </children>
                            <HBox.margin>
                               <Insets left="5.0" />

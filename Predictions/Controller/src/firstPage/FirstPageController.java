@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import app.AppController;
@@ -58,6 +59,9 @@ public class FirstPageController {
 
     @FXML
     private VBox vboxDetails;
+
+    @FXML
+    private Label entityNameLabel;
 
     private EngineManager engineManager;
 

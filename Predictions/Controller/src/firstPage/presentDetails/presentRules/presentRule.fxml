@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane fx:id="gridPaneRulesDetails" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="480.0" stylesheets="@../presentTermination/presentTermination.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="firstPage.presentDetails.presentRules.PresentRule">
+<GridPane fx:id="gridPaneRulesDetails" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0" prefWidth="480.0" stylesheets="@../presentTermination/presentTermination.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="firstPage.presentDetails.presentRules.PresentRule">
    <columnConstraints>
       <ColumnConstraints />
       <ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
@@ -60,7 +60,7 @@
             </VBox>
          </children>
       </HBox>
-      <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
+      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.vgrow="ALWAYS">
          <children>
             <Label alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="21.0" prefWidth="155.0" text="Select action :" VBox.vgrow="ALWAYS" />
             <ListView fx:id="actionListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseClicked="#showActionClicked" prefHeight="312.0" prefWidth="139.0" VBox.vgrow="ALWAYS" />

@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="gridPaneEntitiesDetails" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="firstPage.presentDetails.presentEntities.PresentEntities">
+<GridPane fx:id="gridPaneEntitiesDetails" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="firstPage.presentDetails.presentEntities.PresentEntities">
    <columnConstraints>
       <ColumnConstraints hgrow="NEVER" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
       <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
@@ -42,17 +42,17 @@
             <Insets />
          </GridPane.margin>
       </Label>
-      <TableView fx:id="entitiesTableView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS">
+      <TableView fx:id="entitiesTableView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="290.0" prefWidth="360.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS">
         <columns>
-          <TableColumn fx:id="nameColumn" editable="false" prefWidth="107.99999845027924" text="Name" />
-          <TableColumn fx:id="typeColumn" editable="false" prefWidth="73.59998321533203" text="Type" />
-            <TableColumn fx:id="rangeColumn" editable="false" prefWidth="112.0" text="Range">
+          <TableColumn fx:id="nameColumn" editable="false" prefWidth="101.60003888607025" text="Name" />
+          <TableColumn fx:id="typeColumn" editable="false" prefWidth="62.39997100830078" sortable="false" text="Type" />
+            <TableColumn fx:id="rangeColumn" editable="false" prefWidth="88.79997253417969" sortable="false" text="Range">
                <columns>
-                  <TableColumn fx:id="fromColumn" prefWidth="48.79998779296875" text="From" />
-                  <TableColumn fx:id="toColumn" prefWidth="68.0" text="To" />
+                  <TableColumn fx:id="fromColumn" editable="false" prefWidth="48.79998779296875" sortable="false" text="From" />
+                  <TableColumn fx:id="toColumn" editable="false" prefWidth="40.80003356933594" sortable="false" text="To" />
                </columns>
             </TableColumn>
-            <TableColumn fx:id="isRandomInitColumn" editable="false" prefWidth="130.0" text="RandomInit" />
+            <TableColumn fx:id="isRandomInitColumn" editable="false" minWidth="40.0" prefWidth="142.4000244140625" sortable="false" text="RandomInit" />
         </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

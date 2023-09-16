@@ -16,6 +16,8 @@ import app.AppController;
 import engineManager.EngineManager;
 import firstPage.detailsOfSystem.DetailsController;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,8 +53,11 @@ public class FirstPageController {
     @FXML
     private SplitPane firstPageSplitPane;
 
+//    @FXML
+//    private ScrollPane scrollPaneDetails;
+
     @FXML
-    private ScrollPane scrollPaneDetails;
+    private VBox vboxDetails;
 
     private EngineManager engineManager;
 
@@ -82,6 +87,10 @@ public class FirstPageController {
         detailsComponentController.setFirstPageController(this);
         bindToIsDetailsClicked();
         setPresentDetailsInvisibleAndSetDetails();
+        firstPageSplitPane.setDividerPositions(0.3);
+        firstPageGridPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+            firstPageSplitPane.setDividerPositions(0.3);
+        });
     }
 
     private void setMainController(AppController mainController) {
@@ -166,33 +175,38 @@ public class FirstPageController {
 
     public void setEntitiesDetails(List<DTOPropertyInfo> allPropertiesOfEntity, String entityName) throws IOException {
         presentEntities.setVisibleEntitiesPage(true);
-        scrollPaneDetails.setContent(presentEntities.getEntitiesGridPane());
+        vboxDetails.getChildren().clear();
+        vboxDetails.getChildren().add(presentEntities.getEntitiesGridPane());
         presentEntities.setAllColumns(allPropertiesOfEntity);
         presentEntities.setEntityNameTextField(entityName);
     }
 
     public void setRulesDetails(DTORuleInfo specificRule) {
         presentRule.setVisibleEntitiesPage(true);
-        scrollPaneDetails.setContent(presentRule.getRulesGridPane());
+        vboxDetails.getChildren().clear();
+        vboxDetails.getChildren().add(presentRule.getRulesGridPane());
         presentRule.setSpecificRuleDetails(specificRule);
     }
 
     public void SetTerminationDetails() {
         presentTermination.setVisibleTerminationPage(true);
-        scrollPaneDetails.setContent(presentTermination.getTerminationGridPane());
+        vboxDetails.getChildren().clear();
+        vboxDetails.getChildren().add(presentTermination.getTerminationGridPane());
         presentTermination.setTerminationDetailsPage(terminationDetails);
     }
 
 
     public void setGridDetails() {
         presentGrid.setVisibleGridPage(true);
-        scrollPaneDetails.setContent(presentGrid.getGridPane());
+        vboxDetails.getChildren().clear();
+        vboxDetails.getChildren().add(presentGrid.getGridPane());
         presentGrid.setGridDetails(gridDetails);
     }
 
     public void setEnvironmentDetails(DTOEnvironmentInfo dtoEnvironmentInfo) {
         presentEnvironment.setVisibleEnvironmentPage(true);
-        scrollPaneDetails.setContent(presentEnvironment.getEnvironmentGridPane());
+        vboxDetails.getChildren().clear();
+        vboxDetails.getChildren().add(presentEnvironment.getEnvironmentGridPane());
         presentEnvironment.setEnvironmentDetailsPage(dtoEnvironmentInfo);
     }
 
@@ -211,5 +225,9 @@ public class FirstPageController {
 
     public Node getFirstPageScrollPane() {
         return firstPageScrollPane;
+    }
+
+    public Node getGridPaneFirstPage() {
+        return firstPageGridPane;
     }
 }

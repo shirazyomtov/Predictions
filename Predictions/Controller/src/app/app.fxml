@@ -3,9 +3,10 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<ScrollPane fx:id="scrollPaneComponent" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.AppController">
+
+<ScrollPane fitToHeight="true" fitToWidth="true" prefWidth="900.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.AppController">
    <content>
-      <BorderPane fx:id="borderPaneComponent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" styleClass="border-pane">
+      <BorderPane fx:id="borderPaneComponent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="700.0" prefWidth="900.0" styleClass="border-pane">
           <top>
               <fx:include fx:id="headerComponent" source="../header/header.fxml" />
           </top>

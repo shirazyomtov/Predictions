@@ -92,6 +92,9 @@ public class FirstPageController {
         bindToIsDetailsClicked();
         setPresentDetailsInvisibleAndSetDetails();
         firstPageSplitPane.setDividerPositions(0.3);
+        firstPageSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
+            firstPageSplitPane.setDividerPositions(0.3);
+        });
         firstPageGridPane.widthProperty().addListener((observable, oldValue, newValue) -> {
             firstPageSplitPane.setDividerPositions(0.3);
         });

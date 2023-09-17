@@ -92,8 +92,8 @@ public class WorldInstance implements Serializable {
         currentAmountOfEntities.put(entityToRemove.getName(), currentAmountOfEntities.get(entityToRemove.getName()) - 1);
     }
 
-    public void setCurrentAmountOfEntitiesAfterReplace(EntityInstance entityToRemove) {
-        currentAmountOfEntities.put(entityToRemove.getName(), currentAmountOfEntities.get(entityToRemove.getName()) + 1);
+    public void setCurrentAmountOfEntitiesAfterReplace(EntityInstance entityToReplace) {
+        currentAmountOfEntities.put(entityToReplace.getName(), currentAmountOfEntities.getOrDefault(entityToReplace.getName(), 0) + 1);
     }
 
         public TwoDimensionalGrid getTwoDimensionalGrid() {

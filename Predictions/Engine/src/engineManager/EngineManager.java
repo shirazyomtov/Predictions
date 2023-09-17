@@ -188,7 +188,7 @@ public class EngineManager implements Serializable{
     private List<EntityInstance> initEntities() {
         List<EntityInstance> entityInstanceList = new ArrayList<>();
         for (EntityDefinition entityDefinition: world.getEntityDefinition().values()){
-            for (int count = 0; count < entitiesAmountByUser.get(entityDefinition.getName()); count++){
+            for (int count = 0; count < entitiesAmountByUser.getOrDefault(entityDefinition.getName(), 0); count++){
                 Map<String, Property> allProperty = new HashMap<>();
                 for(PropertyDefinition propertyDefinition: entityDefinition.getProps()){
                     allProperty.put(propertyDefinition.getName(), initProperty(propertyDefinition));
@@ -510,7 +510,7 @@ public class EngineManager implements Serializable{
     }
 
     private void addDTOEntityToList(int simulationId, List<DTOEntityInfo> entityInfos, Map<String, Integer> entityCount, String entityName) {
-        int initAmount = history.getAllSimulations().get(simulationId).getWorldInstance().getInitAmountOfEntities().get(entityName);
+        int initAmount = history.getAllSimulations().get(simulationId).getWorldInstance().getInitAmountOfEntities().getOrDefault(entityName, 0);
         List<DTOPropertyInfo> dtoPropertyInfos = history.getAllSimulations().get(simulationId).getWorldInstance().getWorldDefinition().getEntityDefinition().get(entityName).getDTOProperties();
         DTOEntityInfo dtoEntityInfo;
         dtoEntityInfo = new DTOEntityInfo(initAmount, entityCount.getOrDefault(entityName, 0), entityName, dtoPropertyInfos);

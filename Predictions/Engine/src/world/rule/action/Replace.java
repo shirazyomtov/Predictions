@@ -7,6 +7,11 @@ import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
 import world.enums.ActionType;
 import world.propertyInstance.api.Property;
+import world.propertyInstance.impl.BooleanPropertyInstance;
+import world.propertyInstance.impl.FloatPropertyInstance;
+import world.propertyInstance.impl.IntegerPropertyInstance;
+import world.propertyInstance.impl.StringPropertyInstance;
+import world.value.generator.api.ValueGeneratorFactory;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
@@ -49,6 +54,7 @@ public class Replace extends Action implements Serializable {
 
     private void createEntityInstanceFromDerived(EntityInstance entity, WorldInstance worldInstance) {
         List <Property> samePropertyName = new ArrayList<>();
+        Property propertyToAdd;
         for (Property property: entity.getAllProperty().values()){
             EntityInstance createEntity = worldInstance.isEntityExists(createEntityName);
             if (createEntity != null) {
@@ -59,11 +65,47 @@ public class Replace extends Action implements Serializable {
                     }
                 }
             }
+            else {
+                EntityDefinition createEntityDefinition = worldInstance.getWorldDefinition().isEntityExists(createEntityName);
+                if (createEntityDefinition != null) {
+                    for (PropertyDefinition createEntityPropertyDefinition : createEntityDefinition.getProps()) {
+                        if (createEntityPropertyDefinition.getName().equals(property.getName()) && createEntityPropertyDefinition.getType().equals(property.getType())) {
+                            propertyToAdd = deepCloneProp(createEntityPropertyDefinition, property.getValue());
+                            samePropertyName.add(propertyToAdd);
+                        }
+                    }
+                }
+            }
         }
         createEntityInstanceFromScratch(worldInstance, samePropertyName);
     }
 
-    private void createEntityInstanceFromScratch(WorldInstance worldInstance, List<Property> samePropertyName) {
+    private Property deepCloneProp(PropertyDefinition property, Object value) {
+        Property deepCloneProperty = null;
+        switch (property.getType()) {
+            case FLOAT:
+                deepCloneProperty = new FloatPropertyInstance(property.getName(),
+                        ValueGeneratorFactory.createFixed((Float)value), property.getRange());
+                break;
+            case DECIMAL:
+                deepCloneProperty = new IntegerPropertyInstance(property.getName(),
+                        ValueGeneratorFactory.createFixed((Integer) value), property.getRange());
+                break;
+            case BOOLEAN:
+                deepCloneProperty = new BooleanPropertyInstance(property.getName(),
+                        ValueGeneratorFactory.createFixed((Boolean) value), property.getRange());
+                break;
+            case STRING:
+                deepCloneProperty = new StringPropertyInstance(property.getName(),
+                        ValueGeneratorFactory.createFixed((String) value), property.getRange());
+                break;
+
+        }
+        return deepCloneProperty;
+    }
+
+
+        private void createEntityInstanceFromScratch(WorldInstance worldInstance, List<Property> samePropertyName) {
         boolean flag = false;
         for (EntityDefinition entityDefinition: worldInstance.getWorldDefinition().getEntityDefinition().values()){
             if(entityDefinition.getName().equals(createEntityName)){
@@ -75,6 +117,7 @@ public class Replace extends Action implements Serializable {
                     else {
                         for (Property property: samePropertyName){
                             if (property.getName().equals(propertyDefinition.getName())){
+                                allProperty.put(property.getName(), property);
                                 flag = true;
                             }
                         }

@@ -21,13 +21,15 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL url = getClass().getResource(APP_FXML_LIGHT_RESOURCE);
         fxmlLoader.setLocation(url);
-        BorderPane root = fxmlLoader.load(url.openStream());
+        ScrollPane root = fxmlLoader.load(url.openStream());
         AppController appController  = fxmlLoader.getController();
         appController.setPrimaryStage(primaryStage);
 
         primaryStage.setTitle("Predictions");
         Scene scene = new Scene(root, 900, 700);
         primaryStage.setScene(scene);
+        primaryStage.setMinWidth(300);
+//        primaryStage.setMinHeight(300);
         primaryStage.show();
 
     }

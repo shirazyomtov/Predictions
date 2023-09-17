@@ -8,56 +8,56 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="presentDetailsGridPane" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="333.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="firstPage.detailsOfSystem.DetailsController">
-  <columnConstraints>
-      <ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
-    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="89.0" />
-    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="143.0" />
-      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="80.0" />
-      <ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
-      <RowConstraints maxHeight="129.0" minHeight="10.0" prefHeight="105.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="100.0" minHeight="10.0" prefHeight="100.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="129.0" minHeight="10.0" prefHeight="105.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="207.0" minHeight="10.0" prefHeight="118.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="207.0" minHeight="10.0" prefHeight="118.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
-  </rowConstraints>
+<GridPane fx:id="presentDetailsGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="200.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="firstPage.detailsOfSystem.DetailsController">
+<columnConstraints>
+<ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
+<ColumnConstraints hgrow="NEVER" maxWidth="1.7976931348623157E308" prefWidth="89.0" />
+<ColumnConstraints hgrow="NEVER" maxWidth="1.7976931348623157E308" prefWidth="143.0" />
+<ColumnConstraints hgrow="NEVER" maxWidth="1.7976931348623157E308" prefWidth="80.0" />
+<ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
+</columnConstraints>
+<rowConstraints>
+<RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+<RowConstraints maxHeight="129.0" minHeight="10.0" prefHeight="105.0" vgrow="ALWAYS" />
+<RowConstraints maxHeight="100.0" minHeight="10.0" prefHeight="100.0" vgrow="ALWAYS" />
+<RowConstraints maxHeight="129.0" minHeight="10.0" prefHeight="105.0" vgrow="ALWAYS" />
+<RowConstraints maxHeight="207.0" minHeight="10.0" prefHeight="118.0" vgrow="ALWAYS" />
+<RowConstraints maxHeight="207.0" minHeight="10.0" prefHeight="118.0" vgrow="ALWAYS" />
+<RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+</rowConstraints>
+<children>
+<AnchorPane maxHeight="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5">
    <children>
-      <AnchorPane maxHeight="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5">
-         <children>
-            <Label alignment="CENTER" layoutY="32.0" prefHeight="21.0" prefWidth="40.0" text="Grid" />
-            <Button fx:id="gridShowButton" alignment="CENTER" layoutX="157.0" layoutY="27.0" mnemonicParsing="false" onAction="#gridShowButtonClicked" text="Show" />
-         </children>
-      </AnchorPane>
-      <AnchorPane maxHeight="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
-         <children>
-            <Label layoutY="26.0" prefHeight="22.0" prefWidth="90.0" text="Entities" />
-            <ComboBox fx:id="entitiesComboBox" layoutX="104.0" layoutY="21.0" prefHeight="31.0" prefWidth="120.0" />
-            <Button fx:id="entitiesShowButton" alignment="CENTER" layoutX="242.0" layoutY="21.0" mnemonicParsing="false" onAction="#showEntitiesButtonClicked" text="Show" />
-         </children>
-      </AnchorPane>
-      <AnchorPane maxHeight="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
-         <children>
-            <Button fx:id="rulesShowButton" alignment="CENTER" layoutX="242.0" layoutY="17.0" mnemonicParsing="false" onAction="#rulesShowButtonClicked" text="Show" />
-            <Label layoutY="24.0" prefHeight="22.0" prefWidth="89.0" text="Rules" />
-            <ComboBox fx:id="rulesComboBox" layoutX="105.0" layoutY="19.0" prefHeight="31.0" prefWidth="120.0" />
-         </children>
-      </AnchorPane>
-      <AnchorPane maxHeight="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3">
-         <children>
-            <Label layoutY="26.0" prefHeight="22.0" prefWidth="106.0" text="Environment " />
-            <Button fx:id="environmentShowButton" alignment="CENTER" layoutX="242.0" layoutY="21.0" mnemonicParsing="false" onAction="#environmentShowButtonClicked" text="Show" />
-            <ComboBox fx:id="environmentComboBox" layoutX="105.0" layoutY="21.0" prefHeight="31.0" prefWidth="120.0" />
-         </children>
-      </AnchorPane>
-      <AnchorPane maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4">
-         <children>
-            <Label layoutX="-1.0" layoutY="32.0" prefHeight="22.0" prefWidth="106.0" text="Termination " />
-            <Button fx:id="terminationShowButton" alignment="CENTER" layoutX="157.0" layoutY="27.0" mnemonicParsing="false" onAction="#terminationShowButtonClicked" text="Show" />
-         </children>
-      </AnchorPane>
+      <Label alignment="CENTER" layoutY="32.0" prefHeight="21.0" prefWidth="40.0" text="Grid" />
+      <Button fx:id="gridShowButton" alignment="CENTER" layoutX="157.0" layoutY="27.0" mnemonicParsing="false" onAction="#gridShowButtonClicked" text="Show" />
    </children>
-</GridPane>
+</AnchorPane>
+<AnchorPane maxHeight="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+   <children>
+      <Label layoutY="26.0" prefHeight="22.0" prefWidth="90.0" text="Entities" />
+      <ComboBox fx:id="entitiesComboBox" layoutX="104.0" layoutY="21.0" prefHeight="31.0" prefWidth="120.0" />
+      <Button fx:id="entitiesShowButton" alignment="CENTER" layoutX="242.0" layoutY="21.0" mnemonicParsing="false" onAction="#showEntitiesButtonClicked" text="Show" />
+   </children>
+</AnchorPane>
+<AnchorPane maxHeight="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+   <children>
+      <Button fx:id="rulesShowButton" alignment="CENTER" layoutX="242.0" layoutY="17.0" mnemonicParsing="false" onAction="#rulesShowButtonClicked" text="Show" />
+      <Label layoutY="24.0" prefHeight="22.0" prefWidth="89.0" text="Rules" />
+      <ComboBox fx:id="rulesComboBox" layoutX="105.0" layoutY="19.0" prefHeight="31.0" prefWidth="120.0" />
+   </children>
+</AnchorPane>
+<AnchorPane maxHeight="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3">
+   <children>
+      <Label layoutY="26.0" prefHeight="22.0" prefWidth="106.0" text="Environment " />
+      <Button fx:id="environmentShowButton" alignment="CENTER" layoutX="242.0" layoutY="21.0" mnemonicParsing="false" onAction="#environmentShowButtonClicked" text="Show" />
+      <ComboBox fx:id="environmentComboBox" layoutX="105.0" layoutY="21.0" prefHeight="31.0" prefWidth="120.0" />
+   </children>
+</AnchorPane>
+<AnchorPane maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4">
+   <children>
+      <Label layoutX="-1.0" layoutY="32.0" prefHeight="22.0" prefWidth="106.0" text="Termination " />
+      <Button fx:id="terminationShowButton" alignment="CENTER" layoutX="157.0" layoutY="27.0" mnemonicParsing="false" onAction="#terminationShowButtonClicked" text="Show" />
+   </children>
+</AnchorPane>
+</children>
+  </GridPane>

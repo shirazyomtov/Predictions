@@ -55,27 +55,17 @@ public class Replace extends Action implements Serializable {
     private void createEntityInstanceFromDerived(EntityInstance entity, WorldInstance worldInstance) {
         List <Property> samePropertyName = new ArrayList<>();
         Property propertyToAdd;
-        for (Property property: entity.getAllProperty().values()){
-            EntityInstance createEntity = worldInstance.isEntityExists(createEntityName);
-            if (createEntity != null) {
-                for (Property createEntityProperty : createEntity.getAllProperty().values()){
-                    if(createEntityProperty.getName().equals(property.getName()) && createEntityProperty.getType().equals(property.getType())){
-                        createEntityProperty.setValue(property.getValue());
-                        samePropertyName.add(createEntityProperty);
+        for (Property property: entity.getAllProperty().values()) {
+            EntityDefinition createEntityDefinition = worldInstance.getWorldDefinition().isEntityExists(createEntityName);
+            if (createEntityDefinition != null) {
+                for (PropertyDefinition createEntityPropertyDefinition : createEntityDefinition.getProps()) {
+                    if (createEntityPropertyDefinition.getName().equals(property.getName()) && createEntityPropertyDefinition.getType().equals(property.getType())) {
+                        propertyToAdd = deepCloneProp(createEntityPropertyDefinition, property.getValue());
+                        samePropertyName.add(propertyToAdd);
                     }
                 }
             }
-            else {
-                EntityDefinition createEntityDefinition = worldInstance.getWorldDefinition().isEntityExists(createEntityName);
-                if (createEntityDefinition != null) {
-                    for (PropertyDefinition createEntityPropertyDefinition : createEntityDefinition.getProps()) {
-                        if (createEntityPropertyDefinition.getName().equals(property.getName()) && createEntityPropertyDefinition.getType().equals(property.getType())) {
-                            propertyToAdd = deepCloneProp(createEntityPropertyDefinition, property.getValue());
-                            samePropertyName.add(propertyToAdd);
-                        }
-                    }
-                }
-            }
+
         }
         createEntityInstanceFromScratch(worldInstance, samePropertyName);
     }
@@ -119,6 +109,7 @@ public class Replace extends Action implements Serializable {
                             if (property.getName().equals(propertyDefinition.getName())){
                                 allProperty.put(property.getName(), property);
                                 flag = true;
+                                break;
                             }
                         }
                         if (!flag){

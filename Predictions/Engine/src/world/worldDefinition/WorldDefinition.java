@@ -1,7 +1,9 @@
 package world.worldDefinition;
 
 import DTO.*;
+import world.entity.definition.EntityDefinition;
 import world.entity.definition.EntityDefinitionImpl;
+import world.entity.instance.EntityInstance;
 import world.enums.Type;
 import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
@@ -158,5 +160,15 @@ public final class WorldDefinition implements Serializable {
 
     public DTOGrid createDTOGridDetails() {
         return new DTOGrid(rows.toString(), cols.toString());
+    }
+
+    public EntityDefinition isEntityExists(String createEntityName) {
+        for(EntityDefinition entityDefinition1: entityDefinition.values()){
+            if(entityDefinition1.getName().equals(createEntityName)){
+                return entityDefinition1;
+            }
+        }
+
+        return null;
     }
 }

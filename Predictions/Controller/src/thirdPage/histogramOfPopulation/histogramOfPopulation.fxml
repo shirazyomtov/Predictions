@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 
-<BarChart fx:id="histogramBarChart" prefHeight="254.0" prefWidth="249.0" title="Histogram of popualtion" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="thirdPage.histogramOfPopulation.HistogramOfPopulation">
-  <xAxis>
-    <CategoryAxis label="Value" side="BOTTOM" />
-  </xAxis>
-  <yAxis>
-    <NumberAxis label="amount" side="LEFT" />
-  </yAxis>
-</BarChart>
+
+<ScrollPane fx:id="scrollPaneHistogram" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="thirdPage.histogramOfPopulation.HistogramOfPopulation">
+   <content>
+      <TableView fx:id="histogramOfPopulationTableView" prefHeight="211.0" prefWidth="353.0">
+        <columns>
+          <TableColumn fx:id="valueColumn" prefWidth="75.0" text="Value" />
+          <TableColumn fx:id="amountColumn" prefWidth="75.0" text="Amount" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </content>
+</ScrollPane>

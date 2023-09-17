@@ -5,10 +5,9 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
-
 <VBox fx:id="averageValueVbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="350.0" spacing="10.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="thirdPage.averageValueOfProperty.AverageValueOfProperty">
    <children>
-      <Label alignment="CENTER" prefHeight="70.0" prefWidth="356.0" text="Average value of the property in the final population" />
+      <Label alignment="CENTER" prefHeight="79.0" prefWidth="330.0" text="Average value of the property in the final population" wrapText="true" />
       <TextField fx:id="averageValueTextField" editable="false" prefHeight="29.0" prefWidth="350.0" />
    </children>
    <padding>

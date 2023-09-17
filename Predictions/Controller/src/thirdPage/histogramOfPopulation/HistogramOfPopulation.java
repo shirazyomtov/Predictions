@@ -1,31 +1,40 @@
 package thirdPage.histogramOfPopulation;
 
+import DTO.DTOHistogram;
 import javafx.fxml.FXML;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.XYChart;
+import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.util.List;
 import java.util.Map;
 
 public class HistogramOfPopulation {
 
     @FXML
-    private BarChart<Object, Number> histogramBarChart;
+    private TableColumn<DTOHistogram, Object> valueColumn;
 
-    public BarChart<Object, Number> getHistogramBarChart() {
-        return histogramBarChart;
+    @FXML
+    private TableColumn<DTOHistogram, Integer> amountColumn;
+
+    @FXML
+    private TableView<DTOHistogram> histogramOfPopulationTableView;
+
+    @FXML
+    private ScrollPane scrollPaneHistogram;
+
+    public Node getHistogramScrollPane() {
+        return scrollPaneHistogram;
     }
 
-    public void createBarChart(Map<Object, Integer> propertyInfoAboutValues) {
-        histogramBarChart.getData().clear();
-        XYChart.Series<Object, Number> series = new XYChart.Series<>();
+    public void createTableView(List<DTOHistogram> histogramList) {
+        histogramOfPopulationTableView.getItems().clear();
 
-        for (Map.Entry<Object, Integer> entry : propertyInfoAboutValues.entrySet()) {
-            Object xValue = entry.getKey();
-            Integer yValue = entry.getValue();
-            series.getData().add(new XYChart.Data<>(xValue.toString(), yValue));
-        }
+        valueColumn.setCellValueFactory(new PropertyValueFactory<>("value")); // Map.Entry key
+        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount")); // Map.Entry value
 
-        histogramBarChart.getData().add(series);
-
+        histogramOfPopulationTableView.getItems().addAll(histogramList);
     }
 }

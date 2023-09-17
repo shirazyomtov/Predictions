@@ -1,6 +1,7 @@
 package thirdPage;
 
 import DTO.DTOEntityInfo;
+import DTO.DTOHistogram;
 import DTO.DTOPropertyInfo;
 import DTO.DTOSimulationInfo;
 import app.AppController;
@@ -12,7 +13,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
@@ -113,7 +113,7 @@ public class ThirdPageController {
 
     //Graphs population change
     @FXML
-    private LineChart<String, Integer> amountOfEntitiesLineChart;
+    private LineChart<Integer, Integer> amountOfEntitiesLineChart;
 
     @FXML
     private ListView<String> entitiesListView;
@@ -250,7 +250,7 @@ public class ThirdPageController {
         URL url = getClass().getResource(HISTOGRAM_FXML_LIGHT_RESOURCE);
         fxmlLoader.setLocation(url);
         InputStream inputStream = url.openStream();
-        BarChart barChart = fxmlLoader.load(inputStream);
+        ScrollPane scrollPane = fxmlLoader.load(inputStream);
         histogramOfPopulation = fxmlLoader.getController();
     }
 
@@ -430,7 +430,7 @@ public class ThirdPageController {
     private void createGraphOfEntityPerTick(Map<Integer, Map<String, Integer>> amountOfAllEntities, String entitiesName) {
         amountOfEntitiesLineChart.getData().clear();
 
-        XYChart.Series<String, Integer> series = new XYChart.Series<>();
+        XYChart.Series<Integer, Integer> series = new XYChart.Series<>();
         series.setName(entitiesName);
 
         int jumpInterval = 1000;
@@ -446,14 +446,14 @@ public class ThirdPageController {
             }
 
             if (amount != null) {
-                if(Integer.parseInt(currentTickTextField.getText()) > 4000) {
+                if(Integer.parseInt(currentTickTextField.getText()) > 3000) {
                     if (tick >= currentTick) {
-                        series.getData().add(new XYChart.Data<>(tick.toString(), amount));
+                        series.getData().add(new XYChart.Data<>(tick, amount));
                         currentTick += jumpInterval;
                     }
                 }
                 else{
-                    series.getData().add(new XYChart.Data<>(tick.toString(), amount));
+                    series.getData().add(new XYChart.Data<>(tick, amount));
                 }
             }
         }
@@ -476,8 +476,9 @@ public class ThirdPageController {
         if(selectedDisplay != null) {
             switch (selectedDisplay) {
                 case "Histogram of population":
-                    staticInfoPane.getChildren().add(histogramOfPopulation.getHistogramBarChart());
-                    histogramOfPopulation.createBarChart(propertyInfoAboutValues);
+                    staticInfoPane.getChildren().add(histogramOfPopulation.getHistogramScrollPane());
+                    List<DTOHistogram> histograms= createDTOHistogram(propertyInfoAboutValues);
+                    histogramOfPopulation.createTableView(histograms);
                     break;
                 case "Consistency":
                     staticInfoPane.getChildren().add(averageTickOfProperty.getAverageTickOfPropertyVbox());
@@ -489,6 +490,15 @@ public class ThirdPageController {
                     break;
             }
         }
+    }
+
+    private List<DTOHistogram> createDTOHistogram(Map<Object, Integer> propertyInfoAboutValues) {
+        List<DTOHistogram> histogramsList = new ArrayList<>();
+        for(Object object: propertyInfoAboutValues.keySet()){
+            histogramsList.add(new DTOHistogram(object, propertyInfoAboutValues.get(object)));
+        }
+
+        return histogramsList;
     }
 
     @FXML
@@ -698,6 +708,10 @@ public class ThirdPageController {
             setPastDetails(currentTick);
         }
         endedSimulationInfoScrollPane.setVisible(true);
+        graphPane.setVisible(false);
+        isDisplayModePressed.set(false);
+        displayModeComboBox.setVisible(false);
+        displayModeLabel.setVisible(false);
     }
 
     private void setPastDetails(Integer value) {
@@ -720,6 +734,10 @@ public class ThirdPageController {
             else {
                 setPastDetails(enteredValue);
                 endedSimulationInfoScrollPane.setVisible(true);
+                graphPane.setVisible(false);
+                isDisplayModePressed.set(false);
+                displayModeComboBox.setVisible(false);
+                displayModeLabel.setVisible(false);
             }
         }
         catch(Exception e){

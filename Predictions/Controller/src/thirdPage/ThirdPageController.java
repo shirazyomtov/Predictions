@@ -472,7 +472,8 @@ public class ThirdPageController {
         }
         String propertyName = selectedItem.getValue();
         String entityName = selectedItem.getParent().getValue();
-        Map<Object, Integer> propertyInfoAboutValues = mainController.getEngineManager().createPropertyValuesMap(selectedSimulation.getSimulationId(), entityName, propertyName);
+        Integer currentTick = Integer.parseInt(currentTickTextField.getText());
+        Map<Object, Integer> propertyInfoAboutValues = mainController.getEngineManager().createPropertyValuesMap(selectedSimulation.getSimulationId(), entityName, propertyName, currentTick);
         if(selectedDisplay != null) {
             switch (selectedDisplay) {
                 case "Histogram of population":
@@ -481,7 +482,7 @@ public class ThirdPageController {
                     break;
                 case "Consistency":
                     staticInfoPane.getChildren().add(averageTickOfProperty.getAverageTickOfPropertyVbox());
-                    averageTickOfProperty.setAverageTickOfProperty(mainController.getEngineManager().getAverageTickOfSpecificProperty(selectedSimulation.getSimulationId(), entityName, propertyName));
+                    averageTickOfProperty.setAverageTickOfProperty(mainController.getEngineManager().getAverageTickOfSpecificProperty(selectedSimulation.getSimulationId(), entityName, propertyName, currentTick));
                     break;
                 case "Average value":
                     staticInfoPane.getChildren().add(averageValueOfProperty.getAverageValueVbox());

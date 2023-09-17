@@ -97,11 +97,11 @@ public class EngineManager implements Serializable{
         world.checkValidationValue(environmentName, value, environmentValuesByUser);
     }
 
-    public void setSimulation(){
+    public void setSimulation(boolean bonus){
         Map<String, EnvironmentInstance> environmentInstanceMap = environmentValuesByUser;
 
         setRandomEnvironmentValues(environmentInstanceMap);
-        setSimulationDetailsAndAddToHistory(environmentInstanceMap);
+        setSimulationDetailsAndAddToHistory(environmentInstanceMap, bonus);
     }
 
     private void setRandomEnvironmentValues(Map<String, EnvironmentInstance> environmentInstanceMap) {
@@ -158,7 +158,7 @@ public class EngineManager implements Serializable{
         }
     }
 
-    private void setSimulationDetailsAndAddToHistory(Map<String, EnvironmentInstance> environmentInstanceMap) {
+    private void setSimulationDetailsAndAddToHistory(Map<String, EnvironmentInstance> environmentInstanceMap, boolean bonus) {
         numberOfTimesUserSelectSimulation++;
         List<EntityInstance> entityInstanceList = initEntities();
         Map<String, Integer> initAmountOfEntities = createInitAmountOfEntities();
@@ -166,6 +166,7 @@ public class EngineManager implements Serializable{
         worldInstance =new WorldInstance(environmentInstanceMap, entityInstanceList, world, initAmountOfEntities, currentAmountOfEntities, world.getRows(), world.getCols());
         worldInstance.initLocation();
         Simulation simulation = new Simulation(worldInstance, LocalDateTime.now());
+        simulation.setBonus(bonus);
         history = History.getInstance();
         history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
         history.addSimulation(simulation);
@@ -348,24 +349,10 @@ public class EngineManager implements Serializable{
 
     }
 
-    public Map<Object, Integer> createPropertyValuesMap(int simulationId, String entityName, String propertyName) {
-        WorldInstance currentWorld = history.getAllSimulations().get(simulationId).getWorldInstance();
-        Map<Object, Integer> valuesProperty = new HashMap<>();
-        for (EntityInstance entityInstance : currentWorld.getEntityInstanceList()) {
-            if (entityInstance.getName().equals(entityName)) {
-                for (Property property : entityInstance.getAllProperty().values()) {
-                    if (property.getName().equals(propertyName)) {
-                        if (!valuesProperty.containsKey(property.getValue())) {
-                            valuesProperty.put(property.getValue(), 1);
-                        } else {
-                            valuesProperty.put(property.getValue(), valuesProperty.get(property.getValue()) + 1);
-                        }
-                    }
-                }
-            }
-        }
+    public Map<Object, Integer> createPropertyValuesMap(int simulationId, String entityName, String propertyName, int tick) {
+        Simulation simulation = history.getAllSimulations().get(simulationId);
+        return simulation.getPropertyValuesMapPerTick(entityName, propertyName, tick);
 
-        return valuesProperty;
     }
 
     public void loadFileAndSetHistory(String filePath, EngineManager engineManager) throws IOException, ClassNotFoundException{
@@ -586,8 +573,8 @@ public class EngineManager implements Serializable{
         return dtoEntityInfos;
     }
 
-    public Float getAverageTickOfSpecificProperty(Integer simulationId, String entityName, String propertyName){
-        return history.getAllSimulations().get(simulationId).getWorldInstance().getAverageTickValueOfSpecificProperty(entityName, propertyName);
+    public Float getAverageTickOfSpecificProperty(Integer simulationId, String entityName, String propertyName, int tick){
+        return history.getAllSimulations().get(simulationId).getAverageTickValueOfSpecificProperty(entityName, propertyName, tick);
     }
 
     public void pause(Integer simulationId) {

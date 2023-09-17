@@ -1,6 +1,7 @@
 package world.propertyInstance.api;
 
 import world.enums.Type;
+import world.range.RangeImpl;
 import world.value.generator.api.ValueGenerator;
 
 import java.io.Serializable;
@@ -16,5 +17,9 @@ public interface Property extends Serializable {
     void setTimeTheValueDosentChange(Integer timeTheValueDosentChange);
     boolean isValueUpdate();
     void setValueUpdate(boolean valueUpdate);
-    List<Integer> getValueUpdateList();
+    List<Integer> getValueUpdateListBonus(int tick);
+    List<Integer> getValueUpdateListWithoutBonus();
+
+    void addValueUpdateListPerTick(int tick);
+    RangeImpl getRange();
 }

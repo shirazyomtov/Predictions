@@ -118,18 +118,6 @@ public class WorldInstance implements Serializable {
         return amountOfEntitiesPerTick;
     }
 
-    public Float getAverageTickValueOfSpecificProperty(String entityName, String propertyName){
-        float sum = 0;
-        float count = 0;
-        for (EntityInstance entityInstance: entityInstanceList){
-            if(entityInstance.getName().equals(entityName)){
-                sum = sum + entityInstance.getAvgAmountOfTickTheValueDosentChange(propertyName);
-                count++;
-            }
-        }
-        return  sum/count;
-    }
-
     public void setSecondsPerTick(Integer tick, Integer second) {
         this.secondsPerTick.put(tick, second);
     }

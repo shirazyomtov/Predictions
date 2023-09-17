@@ -4,6 +4,7 @@ import world.entity.instance.location.Location;
 import world.propertyInstance.api.Property;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 public class EntityInstance implements Serializable {
@@ -48,12 +49,19 @@ public class EntityInstance implements Serializable {
         this.location = location;
     }
 
-    public Float getAvgAmountOfTickTheValueDosentChange(String propertyName) {
+    public Float getAvgAmountOfTickTheValueDosentChange(String propertyName, int tick, boolean bonus) {
         float sum = 0;
         Property property = allProperty.get(propertyName);
-        for (Integer amount :property.getValueUpdateList()){
+        List<Integer> propertyValueList;
+        if (bonus){
+            propertyValueList = property.getValueUpdateListBonus(tick);
+        }
+        else{
+            propertyValueList = property.getValueUpdateListWithoutBonus();
+        }
+        for (Integer amount : propertyValueList){
             sum = sum + amount;
         }
-        return sum/property.getValueUpdateList().size();
+        return sum/propertyValueList.size();
     }
 }

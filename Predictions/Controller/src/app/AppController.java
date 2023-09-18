@@ -81,6 +81,7 @@ public class AppController {
             secondPageController.setMainController(this);
             secondPageController.resetControllers();
             thirdPageController.setMainController(this);
+            turnOffAnimations();
         }
     }
 
@@ -249,5 +250,15 @@ public class AppController {
 
     public void setAmountOfSimulationsInProgress(String amount){
         headerComponentController.setSimulationsInProgressProperty(amount);
+    }
+
+    public void activeAnimations() {
+        firstPageController.startAnimationInFirstPage();
+        secondPageController.startAnimationInSecondPage();
+    }
+
+    public void turnOffAnimations() {
+        firstPageController.stopAnimationInFirstPage();
+        secondPageController.stopAnimationInSecondPage();
     }
 }

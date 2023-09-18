@@ -26,6 +26,8 @@ public class FirstPageGridAnimation {
     private FadeTransition colsTextFieldFadeTransition;
     private Paint gridColor;
 
+    private Timeline timeline;
+
     public FirstPageGridAnimation(Label rowsLabel, Label colsLabel, Label gridLabel, TextField rowsTextField, TextField colsTextField) {
         this.rowsLabel = rowsLabel;
         this.colsLabel = colsLabel;
@@ -34,10 +36,25 @@ public class FirstPageGridAnimation {
         this.colsTextField = colsTextField;
         startColor = Color.BLUE;
         endColor = Color.RED;
+        this.rowsColor = rowsLabel.getTextFill();
+        this.colColor = colsLabel.getTextFill();
+        this.gridColor = gridLabel.getTextFill();
         initializeColorAnimations(rowsLabel);
         initializeColorAnimations(colsLabel);
         initializeColorAnimations(gridLabel);
         initializeTransitions();
+        Duration animationInterval = Duration.seconds(2);
+        timeline = new Timeline(
+                new KeyFrame(animationInterval, event -> {
+                    rowsTextFieldFadeTransition.playFromStart();
+                    colsTextFieldFadeTransition.playFromStart();
+                    rowsLabelAnimation.playFromStart();
+                    colsLabelAnimation.playFromStart();
+                    gridLabelAnimation.playFromStart();
+
+                })
+        );
+        timeline.setCycleCount(Timeline.INDEFINITE);
     }
 
     private void initializeColorAnimations(Label label) {
@@ -92,6 +109,7 @@ public class FirstPageGridAnimation {
         gridLabelAnimation.play();
         rowsTextFieldFadeTransition.play();
         colsTextFieldFadeTransition.play();
+        timeline.play();
     }
 
     public void stopAnimations() {
@@ -104,6 +122,7 @@ public class FirstPageGridAnimation {
         rowsTextFieldFadeTransition.stop();
         colsTextFieldFadeTransition.stop();
         resetNodesToOriginalState();
+        timeline.stop();
     }
 
     private void resetNodesToOriginalState() {

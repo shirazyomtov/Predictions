@@ -53,6 +53,9 @@ public class HeaderController {
     @FXML
     private Label simulationsInQueueLabel;
 
+    @FXML
+    private Menu animationsMenu;
+
     private SimpleStringProperty simulationsCompletedProperty;
 
     private SimpleStringProperty simulationsInProgressProperty;
@@ -158,6 +161,16 @@ public class HeaderController {
 
     public void setSimulationsInQueueProperty(String simulationsInQueueProperty) {
         this.simulationsInQueueProperty.set(simulationsInQueueProperty);
+    }
+
+    @FXML
+    void withAnimationMenuItemClicked(ActionEvent event) {
+        mainController.activeAnimations();
+    }
+
+    @FXML
+    void withoutAnimationMenuItemClicked(ActionEvent event) {
+        mainController.turnOffAnimations();
     }
 }
 

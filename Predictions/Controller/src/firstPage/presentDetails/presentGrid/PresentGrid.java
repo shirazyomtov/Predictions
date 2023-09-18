@@ -2,7 +2,6 @@ package firstPage.presentDetails.presentGrid;
 
 import DTO.DTOGrid;
 import animations.FirstPageGridAnimation;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -40,19 +39,22 @@ public class PresentGrid {
         return gridPaneGridDetails;
     }
 
-    public void setGridDetails(DTOGrid gridDetails) {
-        rowsTextField.setText(gridDetails.getRows());
-        colsTextField.setText(gridDetails.getCols());
+    @FXML
+    public void initialize(){
         firstPageGridAnimation = new FirstPageGridAnimation(rowsLabel, colsLabel, gridPaneLabel, rowsTextField, colsTextField);
     }
 
-    @FXML
-    void startAnimationGridButtonClicked(ActionEvent event) {
+    public void setGridDetails(DTOGrid gridDetails) {
+        rowsTextField.setText(gridDetails.getRows());
+        colsTextField.setText(gridDetails.getCols());
+    }
+
+
+    public void startAnimationGrid() {
         firstPageGridAnimation.playAnimations();
     }
 
-    @FXML
-    void stopAnimationGridButtonClicked(ActionEvent event) {
+    public void stopAnimationGrid() {
         firstPageGridAnimation.stopAnimations();
     }
 }

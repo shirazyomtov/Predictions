@@ -1,7 +1,9 @@
 package animations;
 
 import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
 import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -19,6 +21,7 @@ public class FirstPageTerminationAnimation {
     private final TextField secondsTextField;
     private FadeTransition ticksTextFieldFadeTransition;
     private FadeTransition secondsTextFieldFadeTransition;
+    private Timeline timeline;
 
     public FirstPageTerminationAnimation(Label terminationLabel, Label secondsLabel, Label ticksLabel, TextField ticksTextField, TextField secondsTextField) {
         this.terminationLabel = terminationLabel;
@@ -30,6 +33,17 @@ public class FirstPageTerminationAnimation {
         rotateTransitionSecondsLabel = applyRotateTransition(secondsLabel, -10);
         rotateTransitionTicksLabel = applyRotateTransition(ticksLabel, 20);
         initializeTransitions();
+        Duration animationInterval = Duration.seconds(1.5);
+        timeline = new Timeline(
+                new KeyFrame(animationInterval, event -> {
+                    ticksTextFieldFadeTransition.playFromStart();
+                    secondsTextFieldFadeTransition.playFromStart();
+                    rotateTransitionTerminationLabel.playFromStart();
+                    rotateTransitionSecondsLabel.playFromStart();
+                    rotateTransitionTicksLabel.playFromStart();
+                })
+        );
+        timeline.setCycleCount(Timeline.INDEFINITE);
     }
 
     private RotateTransition applyRotateTransition(Label label, double angle) {
@@ -60,6 +74,7 @@ public class FirstPageTerminationAnimation {
         rotateTransitionTicksLabel.play();
         ticksTextFieldFadeTransition.play();
         secondsTextFieldFadeTransition.play();
+        timeline.play();
     }
 
     public void stopAnimations() {
@@ -73,5 +88,6 @@ public class FirstPageTerminationAnimation {
         secondsTextFieldFadeTransition.stop();
         ticksTextField.setOpacity(1.0);
         secondsTextField.setOpacity(1.0);
+        timeline.stop();
     }
 }

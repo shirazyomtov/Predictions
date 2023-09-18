@@ -237,4 +237,14 @@ public class FirstPageController {
     public Node getGridPaneFirstPage() {
         return firstPageGridPane;
     }
+
+    public void startAnimationInFirstPage() {
+        presentGrid.startAnimationGrid();
+        presentTermination.startAnimationTermination();
+    }
+
+    public void stopAnimationInFirstPage() {
+        presentGrid.stopAnimationGrid();
+        presentTermination.stopAnimationTermination();
+    }
 }

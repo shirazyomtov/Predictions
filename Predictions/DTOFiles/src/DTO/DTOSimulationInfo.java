@@ -7,13 +7,16 @@ public class DTOSimulationInfo {
 
     private Boolean isFailed;
 
+    private Boolean isBonusActive;
+
     private String message;
 
-    public DTOSimulationInfo(Integer simulationId, String simulationDate, Boolean isFinish, Boolean isFailed, String message) {
+    public DTOSimulationInfo(Integer simulationId, String simulationDate, Boolean isFinish, Boolean isFailed, Boolean isBonusActive, String message) {
         this.simulationId = simulationId;
         this.simulationDate = simulationDate;
         this.isFinish = isFinish;
         this.isFailed = isFailed;
+        this.isBonusActive = isBonusActive;
         this.message = message;
     }
 
@@ -35,5 +38,9 @@ public class DTOSimulationInfo {
 
     public String getMessage() {
         return message;
+    }
+
+    public Boolean getBonusActive() {
+        return isBonusActive;
     }
 }

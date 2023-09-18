@@ -6,6 +6,10 @@ import world.entity.instance.EntityInstance;
 import world.entity.instance.location.Location;
 import world.enums.ActionType;
 import world.propertyInstance.api.Property;
+import world.propertyInstance.impl.BooleanPropertyInstance;
+import world.propertyInstance.impl.FloatPropertyInstance;
+import world.propertyInstance.impl.IntegerPropertyInstance;
+import world.propertyInstance.impl.StringPropertyInstance;
 import world.rule.RuleImpl;
 import world.rule.action.Action;
 import world.rule.action.Kill;
@@ -13,14 +17,13 @@ import world.rule.action.Replace;
 import world.rule.action.condition.AbstractCondition;
 import world.rule.action.condition.MultipleCondition;
 import world.rule.action.condition.SingleCondition;
+import world.value.generator.api.ValueGeneratorFactory;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public  class Simulation implements Serializable, Runnable {
     private WorldInstance worldInstance = null;
@@ -43,6 +46,11 @@ public  class Simulation implements Serializable, Runnable {
     private String message = "";
 
     private long totalTimePause = 0;
+    private Map<Integer, List<EntityInstance>> valuesPerTick = new HashMap<>();
+
+    private boolean bonus = false;
+
+    private boolean futureTickWithBonus4 = false;
 
     public Simulation(WorldInstance worldInstance, LocalDateTime dateTime) {
         this.worldInstance = worldInstance;
@@ -168,8 +176,102 @@ public  class Simulation implements Serializable, Runnable {
         entitiesToRemove.clear();
         replaceActions.clear();
         updateTickProperty();
+        if(bonus) {
+            List<EntityInstance> entityInstanceList = new ArrayList<>();
+            for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
+                entityInstanceList.add(deepCloneEntity(entityInstance));
+            }
+            valuesPerTick.put(currentTick, entityInstanceList);
+
+            for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
+                for (Property property : entityInstance.getAllProperty().values())
+                {
+                    property.addValueUpdateListPerTick(currentTick);
+                }
+            }
+
+        }
         currentTick = currentTick + 1;
         return time;
+    }
+
+        private EntityInstance deepCloneEntity(EntityInstance entityInstance) {
+        Map<String, Property> allProperty = new HashMap<>();
+        for(Property property: entityInstance.getAllProperty().values()){
+            Property deepCloneProperty = deepCloneProp(property);
+            allProperty.put(property.getName(), deepCloneProperty);
+        }
+        return new  EntityInstance(entityInstance.getName(), allProperty, new Location(entityInstance.getLocation().getRow(), entityInstance.getLocation().getCol()));
+    }
+
+        private Property deepCloneProp(Property property) {
+        Property deepCloneProperty = null;
+        switch (property.getType()) {
+            case FLOAT:
+                deepCloneProperty = new FloatPropertyInstance(property.getName(),
+                        ValueGeneratorFactory.createFixed((Float) property.getValue()), property.getRange());
+                break;
+            case DECIMAL:
+                deepCloneProperty = new IntegerPropertyInstance(property.getName(),
+                        ValueGeneratorFactory.createFixed((Integer) property.getValue()), property.getRange());
+                break;
+            case BOOLEAN:
+                deepCloneProperty = new BooleanPropertyInstance(property.getName(),
+                        ValueGeneratorFactory.createFixed((Boolean) property.getValue()), property.getRange());
+                break;
+            case STRING:
+                deepCloneProperty = new StringPropertyInstance(property.getName(),
+                        ValueGeneratorFactory.createFixed((String) property.getValue()), property.getRange());
+                break;
+
+        }
+        deepCloneProperty.setValueUpdatePerTick(property.getValueUpdatePerTick());
+        return deepCloneProperty;
+    }
+
+        public Map<Object, Integer> getPropertyValuesMapPerTick(String entityName, String propertyName, int tick) {
+        Map<Object, Integer> valuesProperty = new HashMap<>();
+        List<EntityInstance> entityInstanceListValuesPerTick;
+        if(bonus && !futureTickWithBonus4) {
+            entityInstanceListValuesPerTick = valuesPerTick.get(tick);
+        }
+        else {
+            entityInstanceListValuesPerTick = worldInstance.getEntityInstanceList();
+        }
+        for (EntityInstance entityInstance : entityInstanceListValuesPerTick) {
+            if (entityInstance.getName().equals(entityName)) {
+                for (Property property : entityInstance.getAllProperty().values()) {
+                    if (property.getName().equals(propertyName)) {
+                        if (!valuesProperty.containsKey(property.getValue())) {
+                            valuesProperty.put(property.getValue(), 1);
+                        } else {
+                            valuesProperty.put(property.getValue(), valuesProperty.get(property.getValue()) + 1);
+                        }
+                    }
+                }
+            }
+        }
+
+        return valuesProperty;
+    }
+
+    public Float getAverageTickValueOfSpecificProperty(String entityName, String propertyName, int tick){
+        float sum = 0;
+        float count = 0;
+        List<EntityInstance> entityInstanceListValuesPerTick;
+        if(bonus && !futureTickWithBonus4) {
+            entityInstanceListValuesPerTick = valuesPerTick.get(tick);
+        }
+        else {
+            entityInstanceListValuesPerTick = worldInstance.getEntityInstanceList();
+        }
+        for (EntityInstance entityInstance: entityInstanceListValuesPerTick){
+            if(entityInstance.getName().equals(entityName)){
+                sum = sum + entityInstance.getAvgAmountOfTickTheValueDosentChange(propertyName, tick, bonus, futureTickWithBonus4);
+                count++;
+            }
+        }
+        return  sum/count;
     }
     private List<EntityInstance> calculateTotalNumberOfSecondaryInstances(Action activeAction) throws ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException, EntityNotDefine {
         List<EntityInstance> secondaryEntities;
@@ -326,5 +428,17 @@ public  class Simulation implements Serializable, Runnable {
 
     public String getMessage() {
         return message;
+    }
+
+    public void setBonus(boolean bonus) {
+        this.bonus = bonus;
+    }
+
+    public boolean getIsBonus() {
+        return bonus;
+    }
+
+    public void setFutureTickWithBonus4(boolean futureTickWithBonus4) {
+        this.futureTickWithBonus4 = futureTickWithBonus4;
     }
 }

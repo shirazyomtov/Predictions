@@ -6,7 +6,9 @@ import world.enums.Type;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractPropertyInstance<T> implements Property, Serializable {
 
@@ -21,7 +23,8 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
     private Integer timeTheValueDosentChange = 0;
     private boolean valueUpdate = false;
 
-    private List<Integer> valueUpdateList = new ArrayList<>();
+    private List<Integer> valueUpdateListWithoutBonus = new ArrayList<>();
+    private Map<Integer, List<Integer>> valueUpdatePerTick = new HashMap<>();
 
     public AbstractPropertyInstance(String name, Type propertyType, ValueGenerator<T> value, RangeImpl range) {
         this.name = name;
@@ -67,7 +70,7 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
         }
         if(value != this.value){
             this.value = value;
-            valueUpdateList.add(timeTheValueDosentChange);
+            valueUpdateListWithoutBonus.add(timeTheValueDosentChange + 1);
             setTimeTheValueDosentChange(0);
             setValueUpdate(true);
         }
@@ -102,10 +105,46 @@ public abstract class AbstractPropertyInstance<T> implements Property, Serializa
     }
 
     @Override
-    public List<Integer> getValueUpdateList() {
-        if(valueUpdateList.isEmpty()){
-            valueUpdateList.add(timeTheValueDosentChange);
+    public RangeImpl getRange() {
+        return range;
+    }
+
+    @Override
+    public void addValueUpdateListPerTick(int tick){
+        List<Integer> valueUpdateListPerTick = new ArrayList<>();
+        for(Integer value: getCurrentList()){
+            valueUpdateListPerTick.add(value);
         }
-        return valueUpdateList;
+        if(timeTheValueDosentChange != 0) {
+            valueUpdateListPerTick.add(timeTheValueDosentChange);
+        }
+        valueUpdatePerTick.put(tick, valueUpdateListPerTick);
+    }
+
+    private List<Integer> getCurrentList() {
+        return valueUpdateListWithoutBonus;
+    }
+
+    @Override
+    public List<Integer> getValueUpdateListWithoutBonus() {
+        if(timeTheValueDosentChange != 0) {
+            valueUpdateListWithoutBonus.add(timeTheValueDosentChange);
+        }
+        return valueUpdateListWithoutBonus;
+    }
+
+    @Override
+    public List<Integer> getValueUpdateListBonus(int tick) {
+        return valueUpdatePerTick.get(tick);
+    }
+
+    @Override
+    public void setValueUpdatePerTick(Map<Integer, List<Integer>> valueUpdatePerTick) {
+        this.valueUpdatePerTick = valueUpdatePerTick;
+    }
+
+    @Override
+    public Map<Integer, List<Integer>> getValueUpdatePerTick() {
+        return valueUpdatePerTick;
     }
 }

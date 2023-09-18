@@ -37,7 +37,7 @@ public class SecondPageAnimation {
 
 
     private void initializeFadeTransitions() {
-        Duration fadeDuration = Duration.seconds(1);
+        Duration fadeDuration = Duration.seconds(2);
         choseValueVboxFadeTransition = createFadeTransition(choseValueVbox, fadeDuration);
         choseEnvironmentVboxFadeTransition = createFadeTransition(choseEnvironmentVbox, fadeDuration);
     }

@@ -11,15 +11,12 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import javafx.fxml.FXML;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import thirdPage.ThirdPageController;
@@ -73,7 +70,8 @@ public class SecondPageController {
 
     @FXML
     private TextField typeEnvironmentTextField;
-
+    @FXML
+    private CheckBox startSimulationWithPastDetailsCheckBox;
     private SecondPageAnimation secondPageAnimation;
 
     private List<String> entitiesNames = new ArrayList<>();
@@ -81,6 +79,8 @@ public class SecondPageController {
     private List<String> environmentsNames = new ArrayList<>();
 
     private BooleanProperty isStartButtonPressed = new SimpleBooleanProperty(false);
+
+    private boolean bonus = false;
 
     @FXML
     public void initialize(){
@@ -225,7 +225,7 @@ public class SecondPageController {
     void startButtonClicked(ActionEvent event) throws EntityNotDefine, ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException {
         //todo: after we add the third screen
         isStartButtonPressed.set(true);
-        mainController.getEngineManager().setSimulation();
+        mainController.getEngineManager().setSimulation(bonus);
         mainController.getEngineManager().addSimulationTask();
         mainController.setSimulationsDetails();
         clearButtonClicked(event);
@@ -251,7 +251,7 @@ public class SecondPageController {
 
     @FXML
     void startSimulationWithPastDetailsChecked(ActionEvent event) {
-
+        bonus = startSimulationWithPastDetailsCheckBox.isSelected();
     }
 
     public void startAnimationInSecondPage() {

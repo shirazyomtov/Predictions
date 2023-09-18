@@ -23,11 +23,17 @@ public class AverageValueOfProperty {
             averageValueTextField.setText(String.valueOf(0.0));
         }
 
-        int sum = 0;
-        for (int value : propertyInfoAboutValues.values()) {
-            sum += value;
+        Float sum = 0.0F;
+        Integer count = 0;
+        Float value;
+        for (Integer amount : propertyInfoAboutValues.values()) {
+            count += amount ;
+        }
+        for (Object valueObject : propertyInfoAboutValues.keySet()) {
+            value = (Float)valueObject;
+            sum += value * propertyInfoAboutValues.get(valueObject);
         }
 
-        averageValueTextField.setText(String.valueOf((double) sum / propertyInfoAboutValues.size()));
+        averageValueTextField.setText(String.valueOf( sum / count));
     }
 }

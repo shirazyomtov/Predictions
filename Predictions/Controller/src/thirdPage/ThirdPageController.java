@@ -472,8 +472,9 @@ public class ThirdPageController {
         }
         String propertyName = selectedItem.getValue();
         String entityName = selectedItem.getParent().getValue();
-        Map<Object, Integer> propertyInfoAboutValues = mainController.getEngineManager().createPropertyValuesMap(selectedSimulation.getSimulationId(), entityName, propertyName);
+        Integer currentTick = Integer.parseInt(currentTickTextField.getText());
         if(selectedDisplay != null) {
+            Map<Object, Integer> propertyInfoAboutValues = mainController.getEngineManager().createPropertyValuesMap(selectedSimulation.getSimulationId(), entityName, propertyName, currentTick);
             switch (selectedDisplay) {
                 case "Histogram of population":
                     staticInfoPane.getChildren().add(histogramOfPopulation.getHistogramScrollPane());
@@ -482,7 +483,7 @@ public class ThirdPageController {
                     break;
                 case "Consistency":
                     staticInfoPane.getChildren().add(averageTickOfProperty.getAverageTickOfPropertyVbox());
-                    averageTickOfProperty.setAverageTickOfProperty(mainController.getEngineManager().getAverageTickOfSpecificProperty(selectedSimulation.getSimulationId(), entityName, propertyName));
+                    averageTickOfProperty.setAverageTickOfProperty(mainController.getEngineManager().getAverageTickOfSpecificProperty(selectedSimulation.getSimulationId(), entityName, propertyName, currentTick));
                     break;
                 case "Average value":
                     staticInfoPane.getChildren().add(averageValueOfProperty.getAverageValueVbox());
@@ -551,7 +552,9 @@ public class ThirdPageController {
         resumeButtonPressed.put(selectedSimulation.getSimulationId(), false);
         pauseButtonPressed.put(selectedSimulation.getSimulationId(), true);
         futureButton.setVisible(true);
-        pastButton.setVisible(true);
+        if(selectedSimulation.getBonusActive()) {
+            pastButton.setVisible(true);
+        }
         setAllDetailsForPastAndFutureTick();
     }
 
@@ -694,7 +697,7 @@ public class ThirdPageController {
     void futureButtonClicked(ActionEvent event) {
         Integer tick = mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId());
         Integer currentTick = Integer.parseInt(currentTickTextField.getText()) + 1;
-        if(currentTick > tick) {
+        if(currentTick >= tick) {
             if(resumeAfterPastTick){
                 synchronized(simulationTask){
                     simulationTask.setPast(false);
@@ -702,6 +705,7 @@ public class ThirdPageController {
                     simulationTask.notifyAll();
                 }
             }
+
             mainController.getEngineManager().futureTick(selectedSimulation.getSimulationId());
         }
         else{
@@ -715,6 +719,7 @@ public class ThirdPageController {
     }
 
     private void setPastDetails(Integer value) {
+        mainController.getEngineManager().setFutuerBonus(selectedSimulation.getSimulationId());
         simulationTask.setPast(true);
         resumeAfterPastTick = true;
         currentTicksProperty.set(value);
@@ -753,7 +758,6 @@ public class ThirdPageController {
     private void setAllDetailsForPastAndFutureTick(){
         setTabOfFinishSimulation();
         setFinishSimulationDetails();
-        //fix the properties
     }
 
 

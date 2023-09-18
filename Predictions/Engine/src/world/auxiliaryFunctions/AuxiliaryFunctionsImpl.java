@@ -48,6 +48,7 @@ public final class AuxiliaryFunctionsImpl {
     }
 
     public static Float percent(String value, EntityInstance primaryEntity, WorldInstance worldInstance, String propertyName, EntityInstance secondEntity, String secondEntityName) throws ObjectNotExist, OperationNotCompatibleTypes, FormatException, ClassCastException{
+        Float valueReturn = null;
         int index = value.indexOf(",");
         String expression1 = value.substring(0, index).trim();
         String expression2 = value.substring(index + 1).trim();
@@ -63,7 +64,13 @@ public final class AuxiliaryFunctionsImpl {
         }
         String value1 = expressionIml1.decipher(primaryEntity, worldInstance, secondEntity, secondEntityName);
         String value2 = expressionIml2.decipher(primaryEntity, worldInstance, secondEntity, secondEntityName);
-        return (Float.parseFloat(value1) * Float.parseFloat(value2)) / 100;
+        try {
+            valueReturn = (Float.parseFloat(value1) * Float.parseFloat(value2)) / 100;
+        }
+        catch (Exception exception){
+            throw new ClassCastException("One of the arguments you provided in the percent function is not a number");
+        }
+        return valueReturn;
 
     }
 
@@ -71,8 +78,8 @@ public final class AuxiliaryFunctionsImpl {
         return checkFormat(value, worldInstance, true, typePropertyName, primaryEntity, secondEntity, secondEntityName);
     }
     public static Integer ticks(String value,  WorldInstance worldInstance, EntityInstance primaryEntity, EntityInstance secondEntity, String secondEntityName) throws FormatException, ObjectNotExist, ClassCastException, OperationNotCompatibleTypes {
-       Object propertyValue = checkFormat(value, worldInstance, false, null, primaryEntity, secondEntity, secondEntityName);
-       return (Integer) propertyValue;
+        Object propertyValue = checkFormat(value, worldInstance, false, null, primaryEntity, secondEntity, secondEntityName);
+        return (Integer) propertyValue;
     }
 
 
@@ -84,14 +91,8 @@ public final class AuxiliaryFunctionsImpl {
         EntityInstance entityInstance = null;
         String entity = value.substring(0, index).trim();
         String property = value.substring(index + 1).trim();
-        if(typePropertyName != null){
-            Type type = worldInstance.isEntityExists(entity).getAllProperty().get(property).getType();
-            if(!checkSameType(typePropertyName, type)){
-                throw new OperationNotCompatibleTypes(typePropertyName.toString(), type.toString());
-            }
-        }
         if(entity.equals(primaryEntity.getName())) {
-             entityInstance = primaryEntity;
+            entityInstance = primaryEntity;
         }
 
         else if (secondEntity != null){

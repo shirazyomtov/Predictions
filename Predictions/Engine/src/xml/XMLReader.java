@@ -13,10 +13,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public  final class XMLReader implements  Serializable {
     private final  String JAXB_XML_GAME_PACKAGE_NAME = "jaxb.schema.generated";
@@ -86,7 +83,7 @@ public  final class XMLReader implements  Serializable {
 
     private  Map<String, EntityDefinitionImpl> defineEntities()
     {
-        Map<String, EntityDefinitionImpl> entityDefinition = new HashMap<>();
+        Map<String, EntityDefinitionImpl> entityDefinition = new LinkedHashMap<>();
         for (PRDEntity entity: world.getPRDEntities().getPRDEntity())
         {
             List<PropertyDefinition> allProperties = defineProperties(entity);

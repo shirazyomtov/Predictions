@@ -38,6 +38,11 @@ public class PresentTermination {
 
     private FirstPageTerminationAnimation firstPageTerminationAnimation;
 
+    @FXML
+    public void initialize(){
+        firstPageTerminationAnimation = new FirstPageTerminationAnimation(terminationLabel, secondsLabel, ticksLabel, ticksTextField, secondsTextField);
+    }
+
     public void setTerminationDetailsPage(DTOTerminationInfo terminationDetails) {
         terminationLabel.setVisible(true);
         if(terminationDetails.getTicks() != null) {
@@ -51,7 +56,6 @@ public class PresentTermination {
         if(terminationDetails.getTicks() == null && terminationDetails.getSecond() == null && terminationDetails.getTerminationByUser()){
             terminationLabel.setText("The termination is by the user");
         }
-        firstPageTerminationAnimation = new FirstPageTerminationAnimation(terminationLabel, secondsLabel, ticksLabel, ticksTextField, secondsTextField);
     }
 
     public void setVisibleTerminationPage(boolean state) {
@@ -62,13 +66,12 @@ public class PresentTermination {
         return gridPaneTerminationDetails;
     }
 
-    @FXML
-    void startAnimationGridButtonClicked(ActionEvent event) {
+
+    public void startAnimationTermination() {
         firstPageTerminationAnimation.playAnimations();
     }
 
-    @FXML
-    void stopAnimationGridButtonClicked(ActionEvent event) {
+    public void stopAnimationTermination() {
         firstPageTerminationAnimation.stopAnimations();
     }
 }

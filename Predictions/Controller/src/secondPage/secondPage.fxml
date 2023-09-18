@@ -148,10 +148,8 @@
                         <HBox fillHeight="false" layoutY="439.0" maxWidth="1.7976931348623157E308" prefHeight="50.0" prefWidth="835.0">
                             <children>
                                 <Button fx:id="clearButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clearButtonClicked" prefHeight="40.0" prefWidth="162.0" text="Clear" />
-                                <HBox fx:id="animationHbox" alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="55.0" prefWidth="587.0" spacing="10.0">
+                                <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="55.0" prefWidth="587.0" spacing="10.0">
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#startAnimationClicked" prefHeight="26.0" prefWidth="250.0" text="Start animation" />
-                                        <Button mnemonicParsing="false" onAction="#stopAnimationClicked" prefHeight="26.0" prefWidth="250.0" text="Stop animation" />
                                         <CheckBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#startSimulationWithPastDetailsChecked" prefHeight="40.0" prefWidth="381.0" text="Start simulation with past details" wrapText="true" />
                                     </children>
                                     <HBox.margin>

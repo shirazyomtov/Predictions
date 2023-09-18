@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -18,14 +17,13 @@
   </columnConstraints>
   <rowConstraints>
     <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
-      <RowConstraints maxHeight="78.19999999999999" minHeight="10.0" prefHeight="43.00000000000001" vgrow="NEVER" />
       <RowConstraints maxHeight="99.2" minHeight="10.0" prefHeight="85.4" vgrow="SOMETIMES" />
     <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="152.0" vgrow="ALWAYS" />
       <RowConstraints maxHeight="263.0" minHeight="10.0" prefHeight="117.60003051757815" vgrow="SOMETIMES" />
     <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
   </rowConstraints>
    <children>
-      <HBox fx:id="ticksHbox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="15.0" visible="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS">
+      <HBox fx:id="ticksHbox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="15.0" visible="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
          <children>
             <Label fx:id="ticksLabel" alignment="CENTER" prefHeight="45.0" prefWidth="113.0" text="Ticks :">
                <HBox.margin>
@@ -42,7 +40,7 @@
             </VBox>
          </children>
       </HBox>
-      <HBox fx:id="secondHbox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="15.0" visible="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS">
+      <HBox fx:id="secondHbox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="15.0" visible="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS">
          <children>
             <Label fx:id="secondsLabel" alignment="CENTER" prefHeight="45.0" prefWidth="113.0" text="Seconds :">
                <HBox.margin>
@@ -59,8 +57,6 @@
             </VBox>
          </children>
       </HBox>
-      <Label fx:id="terminationLabel" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="23.0" prefWidth="418.0" styleClass="termination-label" text="Termination :" visible="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
-      <Button mnemonicParsing="false" onAction="#startAnimationGridButtonClicked" prefHeight="26.0" prefWidth="158.0" text="Start animation" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Button mnemonicParsing="false" onAction="#stopAnimationGridButtonClicked" prefHeight="26.0" prefWidth="153.0" text="Stop animation" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+      <Label fx:id="terminationLabel" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="23.0" prefWidth="418.0" styleClass="termination-label" text="Termination :" visible="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
    </children>
 </GridPane>

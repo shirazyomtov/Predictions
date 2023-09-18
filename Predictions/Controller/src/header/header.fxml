@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane id="gridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="875.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="header.HeaderController">
+<GridPane id="gridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="875.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="header.HeaderController">
       <columnConstraints>
           <ColumnConstraints hgrow="NEVER" maxWidth="5.0" minWidth="30.0" prefWidth="5.0" />
           <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
@@ -86,6 +86,12 @@
                           <MenuItem fx:id="dogsMenuItem" mnemonicParsing="false" onAction="#dogsMenuItemClicked" text="Dogs" />
                       </items>
                   </Menu>
+            <Menu fx:id="animationsMenu" mnemonicParsing="false" text="Animations">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#withoutAnimationMenuItemClicked" text="WithoutAnimation" />
+                  <MenuItem mnemonicParsing="false" onAction="#withAnimationMenuItemClicked" text="WithAnimation" />
+               </items>
+            </Menu>
               </menus>
               <GridPane.margin>
                   <Insets />

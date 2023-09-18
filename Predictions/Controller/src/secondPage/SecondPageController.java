@@ -2,6 +2,7 @@ package secondPage;
 
 import DTO.DTOEntityInfo;
 import DTO.DTOEnvironmentInfo;
+import animations.FirstPageTerminationAnimation;
 import animations.SecondPageAnimation;
 import app.AppController;
 import engineManager.EngineManager;
@@ -73,9 +74,6 @@ public class SecondPageController {
     @FXML
     private TextField typeEnvironmentTextField;
 
-    @FXML
-    private HBox animationHbox;
-
     private SecondPageAnimation secondPageAnimation;
 
     private List<String> entitiesNames = new ArrayList<>();
@@ -83,6 +81,11 @@ public class SecondPageController {
     private List<String> environmentsNames = new ArrayList<>();
 
     private BooleanProperty isStartButtonPressed = new SimpleBooleanProperty(false);
+
+    @FXML
+    public void initialize(){
+        secondPageAnimation = new SecondPageAnimation(choseValueVbox, choseEnvironmentVbox);
+    }
 
     public void setMainController(AppController appController) {
         this.mainController = appController;
@@ -96,7 +99,6 @@ public class SecondPageController {
         createListEnvironmentsNames(environmentInfos);
         environmentListView.getItems().clear();
         environmentListView.getItems().addAll(environmentsNames);
-        secondPageAnimation = new SecondPageAnimation(choseValueVbox, choseEnvironmentVbox);
     }
 
     private void resetAllText() {
@@ -105,7 +107,6 @@ public class SecondPageController {
         entityNameTextField.clear();
         valueTextField.setText("0");
         valueEnvironmentTextField.clear();
-        animationHbox.setVisible(false);
     }
 
 
@@ -119,7 +120,6 @@ public class SecondPageController {
     @FXML
     void entitiesNamesListViewClicked(MouseEvent event) {
         choseValueVbox.visibleProperty().set(true);
-        animationHbox.setVisible(true);
         int selectedIndex = entitiesNamesListView.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
             String entityName = entitiesNames.get(selectedIndex);
@@ -164,7 +164,6 @@ public class SecondPageController {
     @FXML
     void environmentNamesListViewClicked(MouseEvent event) {
         choseEnvironmentVbox.visibleProperty().set(true);
-        animationHbox.setVisible(true);
         int selectedIndex = environmentListView.getSelectionModel().getSelectedIndex();
 
         if (selectedIndex >= 0) {
@@ -246,17 +245,6 @@ public class SecondPageController {
         return secondPageScrollPane;
     }
 
-
-    @FXML
-    void startAnimationClicked(ActionEvent event) {
-        secondPageAnimation.playAnimation();
-    }
-
-    @FXML
-    void stopAnimationClicked(ActionEvent event) {
-        secondPageAnimation.stopAnimation();
-    }
-
     public Node getSecondPageGridPane() {
         return secondPageGridPane;
     }
@@ -264,5 +252,13 @@ public class SecondPageController {
     @FXML
     void startSimulationWithPastDetailsChecked(ActionEvent event) {
 
+    }
+
+    public void startAnimationInSecondPage() {
+        secondPageAnimation.playAnimation();
+    }
+
+    public void stopAnimationInSecondPage() {
+        secondPageAnimation.stopAnimation();
     }
 }

@@ -87,6 +87,7 @@ public  class Simulation implements Serializable, Runnable {
                     isFinish = true;
                     isFailed = true;
                     message = e.getMessage();
+                    break;
                 }
                 long currentMilliSeconds = System.currentTimeMillis();
                 currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);
@@ -109,6 +110,7 @@ public  class Simulation implements Serializable, Runnable {
                         isFinish = true;
                         isFailed = true;
                         message = e.getMessage();
+                        break;
                     }
                     long currentMilliSeconds = System.currentTimeMillis();
                     currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);

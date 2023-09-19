@@ -35,7 +35,7 @@ public class EngineManager implements Serializable{
     private WorldInstance worldInstance = null;
 
     Map <String, EnvironmentInstance> environmentValuesByUser = new HashMap<>();
-    Map <String, Integer> entitiesAmountByUser = new HashMap<>();
+    Map <String, Integer> entitiesAmountByUser = new LinkedHashMap<>();
 
     public void loadXMLAAndCheckValidation(String xmlPath) throws Exception {
         try {
@@ -178,7 +178,7 @@ public class EngineManager implements Serializable{
 
 
     private Map<String, Integer> createInitAmountOfEntities() {
-        Map<String, Integer> mapOfInitAmountOfEntities = new HashMap<>();
+        Map<String, Integer> mapOfInitAmountOfEntities = new LinkedHashMap<>();
         for(String entityName: entitiesAmountByUser.keySet()){
             mapOfInitAmountOfEntities.put(entityName, entitiesAmountByUser.get(entityName));
         }
@@ -464,7 +464,7 @@ public class EngineManager implements Serializable{
         return history.getAllSimulations().get(simulationId).getCurrentSecond();
     }
     private Map<String, Integer> getCurrentAmountOfEntities(int simulationId){
-        Map<String, Integer> entityCount = new HashMap<>();
+        Map<String, Integer> entityCount = new LinkedHashMap<>();
         for (EntityInstance entityInstance : history.getAllSimulations().get(simulationId).getWorldInstance().getEntityInstanceList()) {
             String entityName = entityInstance.getName();
             entityCount.put(entityName, entityCount.getOrDefault(entityName, 0) + 1);

@@ -124,6 +124,12 @@ public class ThirdPageController {
     @FXML
     private Pane staticInfoPane;
 
+    @FXML
+    private SplitPane thirdPageSplitPane;
+
+    @FXML
+    private SplitPane rightSplitPaneThirdPage;
+
     private AppController mainController;
 
     private List<DTOSimulationInfo> allDTOSimulationList;
@@ -235,6 +241,20 @@ public class ThirdPageController {
                     updateFailedSimulation();
                 });
             }
+        });
+        thirdPageSplitPane.setDividerPositions(0.2);
+        thirdPageSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
+            thirdPageSplitPane.setDividerPositions(0.2);
+        });
+        thirdPageSplitPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+            thirdPageSplitPane.setDividerPositions(0.2);
+        });
+        rightSplitPaneThirdPage.setDividerPositions(0.4);
+        rightSplitPaneThirdPage.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
+            rightSplitPaneThirdPage.setDividerPositions(0.4);
+        });
+        rightSplitPaneThirdPage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            rightSplitPaneThirdPage.setDividerPositions(0.4);
         });
     }
 
@@ -764,6 +784,10 @@ public class ThirdPageController {
     private void updateFailedSimulation() {
         setTabFailedSimulation();
         endedSimulationInfoScrollPane.setVisible(true);
+        pauseButton.setVisible(false);
+        resumeButton.setVisible(false);
+        stopButton.setVisible(false);
+        rerunButton.setVisible(true);
     }
 
     private void setTabOfFinishSimulation(){

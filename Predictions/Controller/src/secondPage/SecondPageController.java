@@ -72,6 +72,10 @@ public class SecondPageController {
     private TextField typeEnvironmentTextField;
     @FXML
     private CheckBox startSimulationWithPastDetailsCheckBox;
+
+    @FXML
+    private SplitPane secondPageSplitPane;
+
     private SecondPageAnimation secondPageAnimation;
 
     private List<String> entitiesNames = new ArrayList<>();
@@ -99,6 +103,13 @@ public class SecondPageController {
         createListEnvironmentsNames(environmentInfos);
         environmentListView.getItems().clear();
         environmentListView.getItems().addAll(environmentsNames);
+        secondPageSplitPane.setDividerPositions(0.5);
+        secondPageSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
+            secondPageSplitPane.setDividerPositions(0.5);
+        });
+        secondPageSplitPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+            secondPageSplitPane.setDividerPositions(0.5);
+        });
     }
 
     private void resetAllText() {

@@ -142,6 +142,10 @@ public class PresentRule {
             TreeItem<String> branchAmountOfElseActions = addBranch("Amount of actions in else", dtoCondition.getAmountOfActionElse());
             actionDetailsTreeView.getRoot().getChildren().add(branchAmountOfElseActions);
         }
+        else {
+            TreeItem<String> branchAmountOfElseActions = addBranch("Amount of actions in else", "0");
+            actionDetailsTreeView.getRoot().getChildren().add(branchAmountOfElseActions);
+        }
     }
 
     private void setMultipleCondition(DTOActionInfo selectedAction) {

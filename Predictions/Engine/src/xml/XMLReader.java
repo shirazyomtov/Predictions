@@ -83,7 +83,7 @@ public  final class XMLReader implements  Serializable {
 
     private  Map<String, EntityDefinitionImpl> defineEntities()
     {
-        Map<String, EntityDefinitionImpl> entityDefinition = new LinkedHashMap<>();
+        Map<String, EntityDefinitionImpl> entityDefinition = new HashMap<>();
         for (PRDEntity entity: world.getPRDEntities().getPRDEntity())
         {
             List<PropertyDefinition> allProperties = defineProperties(entity);

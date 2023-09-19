@@ -107,7 +107,7 @@ public class WorldInstance implements Serializable {
     }
 
     public void addAmountOfEntitiesPerTick(Integer tick){
-        Map<String, Integer> amountOfEntitiesInSpecificTick = new LinkedHashMap<>();
+        Map<String, Integer> amountOfEntitiesInSpecificTick = new HashMap<>();
         for(String entityName: currentAmountOfEntities.keySet()){
             amountOfEntitiesInSpecificTick.put(entityName, currentAmountOfEntities.get(entityName));
         }

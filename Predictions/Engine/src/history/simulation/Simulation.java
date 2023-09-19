@@ -149,7 +149,7 @@ public  class Simulation implements Serializable, Runnable {
                     }
                     else {
                         secondaryEntities = calculateTotalNumberOfSecondaryInstances(activeAction);
-                        if (!secondaryEntities.isEmpty()) {
+                        if (secondaryEntities != null) {
                             for (EntityInstance secondaryEntity : secondaryEntities) {
                                 performOperation(activeAction, entityInstance, secondaryEntity, entitiesToRemove, replaceActions, activeAction.getSecondaryEntity().getSecondaryEntityName());
                             }
@@ -274,31 +274,33 @@ public  class Simulation implements Serializable, Runnable {
         return  sum/count;
     }
     private List<EntityInstance> calculateTotalNumberOfSecondaryInstances(Action activeAction) throws ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException, EntityNotDefine {
+        List<EntityInstance> secondaryEntitiesPassedCondition = null;
         List<EntityInstance> secondaryEntities;
-        int count = 0;
         Integer numberOfSecondaryInstance;
-        if (activeAction.getSecondaryEntity().getCount().equals("ALL")){
-            secondaryEntities = getAllInstanceOfSpecificEntity(activeAction);
+        if(activeAction.getSecondaryEntity().getCondition() != null) {
+            secondaryEntitiesPassedCondition = getAllEntitiesThatPassedTheCondition(getAllInstanceOfSpecificEntity(activeAction), activeAction);
         }
-        else {
-            for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()){
-                if(entityInstance.getName().equals(activeAction.getSecondaryEntity().getSecondaryEntityName())){
-                    count++;
+        else{
+            secondaryEntitiesPassedCondition = getAllInstanceOfSpecificEntity(activeAction);
+        }
+        if(!secondaryEntitiesPassedCondition.isEmpty()) {
+            if (activeAction.getSecondaryEntity().getCount().equals("ALL")) {
+                secondaryEntities = secondaryEntitiesPassedCondition;
+            }
+            else {
+                numberOfSecondaryInstance = Integer.parseInt(activeAction.getSecondaryEntity().getCount());
+                if (numberOfSecondaryInstance > secondaryEntitiesPassedCondition.size()) {
+                    secondaryEntities = secondaryEntitiesPassedCondition;
+                } else {
+                    secondaryEntities = getRandomInstancesOfSpecificEntity(secondaryEntitiesPassedCondition, numberOfSecondaryInstance);
                 }
             }
-            numberOfSecondaryInstance = Integer.parseInt(activeAction.getSecondaryEntity().getCount());
-            if (numberOfSecondaryInstance > count){
-                secondaryEntities = getAllInstanceOfSpecificEntity(activeAction); // todo
-            }
-            else{
-                secondaryEntities = getRandomInstancesOfSpecificEntity(getAllInstanceOfSpecificEntity(activeAction), numberOfSecondaryInstance);
-            }
-            if(activeAction.getSecondaryEntity().getCondition() != null) {
-                secondaryEntities = getAllEntitiesThatPassedTheCondition(secondaryEntities, activeAction);
-            }
-        }
 
-        return  secondaryEntities;
+            return secondaryEntities;
+        }
+        else {
+            return null;
+        }
     }
 
     private List<EntityInstance> getAllEntitiesThatPassedTheCondition(List<EntityInstance> secondaryEntities, Action activeAction) throws ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException, EntityNotDefine {
@@ -379,14 +381,24 @@ public  class Simulation implements Serializable, Runnable {
     }
 
     private void performOperation(Action action, EntityInstance entityInstance, EntityInstance secondaryEntity, List<EntityInstance> entitiesToRemove,  List<Pair<EntityInstance,Action>> replaceActions, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        Action action1;
+        List<Action> action1;
         if (!action.getActionType().equals(ActionType.KILL) && !action.getActionType().equals(ActionType.REPLACE)) {
             action1 = action.operation(entityInstance, worldInstance, secondaryEntity, secondEntityName);
             if(action1 != null) {
-                if (action1.getActionType().equals(ActionType.KILL)) {
-                    entitiesToRemove.add(entityInstance);
-                } else if (action1.getActionType().equals(ActionType.REPLACE)) {
-                    replaceActions.add(new Pair<>(entityInstance ,action1));
+                for (Action actionFromList : action1) {
+                    if (actionFromList.getActionType().equals(ActionType.KILL)) {
+                        if (actionFromList.getEntityName().equals(entityInstance.getName())) {
+                            entitiesToRemove.add(entityInstance);
+                        } else if (secondaryEntity != null) {
+                            entitiesToRemove.add(secondaryEntity);
+                        }
+                    } else if (actionFromList.getActionType().equals(ActionType.REPLACE)) {
+                        if (actionFromList.getEntityName().equals(entityInstance.getName())) {
+                            replaceActions.add(new Pair<>(entityInstance, actionFromList));
+                        } else if (secondaryEntity != null) {
+                            replaceActions.add(new Pair<>(secondaryEntity, actionFromList));
+                        }
+                    }
                 }
             }
         }

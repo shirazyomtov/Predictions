@@ -14,6 +14,8 @@ public class EntityInstance implements Serializable {
 
     private Location location;
 
+    private boolean isKill = false;
+
     public EntityInstance(String name, Map<String, Property> allProperty, Location location) {
         this.name = name;
         this.allProperty = allProperty;
@@ -63,5 +65,13 @@ public class EntityInstance implements Serializable {
             sum = sum + amount;
         }
         return sum/propertyValueList.size();
+    }
+
+    public void setKill(boolean kill) {
+        isKill = kill;
+    }
+
+    public boolean isKill() {
+        return isKill;
     }
 }

@@ -31,9 +31,9 @@ public class MultipleCondition extends AbstractCondition implements Serializable
     }
 
     @Override
-    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         boolean flag;
-        Action killOrReplace = null ;
+        List<Action> killOrReplace = null ;
         flag = checkCondition(entity, conditions, logical, worldInstance, secondaryEntity, secondEntityName);
         if (countOr + countAnd != countTotalCondition) {
             killOrReplace = performThenOrElse(flag, entity, worldInstance, secondaryEntity, secondEntityName);

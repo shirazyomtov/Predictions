@@ -13,6 +13,7 @@ import world.rule.action.Action;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Multiply extends BinaryAction implements Serializable {
 
@@ -22,7 +23,7 @@ public class Multiply extends BinaryAction implements Serializable {
 
 
     @Override
-    public Action operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity, secondEntityName);
         if (entityInstance != null) {
             String valueArg1;

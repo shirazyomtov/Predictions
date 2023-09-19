@@ -9,6 +9,7 @@ import world.rule.action.secondaryEntity.SecondaryEntity;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.WeakHashMap;
 
 public abstract class Action implements ActionOperation, Serializable {
@@ -18,6 +19,7 @@ public abstract class Action implements ActionOperation, Serializable {
     private final ActionType actionType;
 
     private SecondaryEntity secondaryEntity = null;
+
     protected Action(String entityName, ActionType actionType, PRDAction.PRDSecondaryEntity prdSecondaryEntity) {
         this.entityName = entityName;
         this.actionType = actionType;
@@ -26,7 +28,7 @@ public abstract class Action implements ActionOperation, Serializable {
         }
     }
 
-    public abstract Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine;
+    public abstract List<Action> operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine;
 
     public String getEntityName() {
         return entityName;

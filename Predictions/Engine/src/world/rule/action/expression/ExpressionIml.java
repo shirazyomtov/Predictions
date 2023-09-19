@@ -114,7 +114,7 @@ public class ExpressionIml implements Expression, Serializable {
                     String entity = value.substring(0, index).trim();
                     String property = value.substring(index + 1).trim();
                     if (entity.equals(primaryEntity.getName())) {
-                        type1 = checkProperty(primaryEntity, propertyName);
+                        type1 = checkProperty(primaryEntity, property);
                     }
                     if (type1 == null) {
                         type1 = Type.STRING;

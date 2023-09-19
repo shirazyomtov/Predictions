@@ -29,8 +29,9 @@ public class Proximity extends  Action implements Serializable {
     }
 
     @Override
-    public Action operation(EntityInstance sourceEntity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> operation(EntityInstance sourceEntity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         EntityInstance entityInstance = checkAndGetAppropriateInstance(sourceEntity, secondaryEntity, secondEntityName);
+        List<Action> actionReturn = new ArrayList<>();
         if (entityInstance != null) {
             boolean isProximity = false;
             EntityInstance proximityEntityInstance = null;
@@ -49,12 +50,17 @@ public class Proximity extends  Action implements Serializable {
                         if (!action.getActionType().equals(ActionType.KILL) && !action.getActionType().equals(ActionType.REPLACE)) {
                             action.operation(entityInstance, worldInstance, proximityEntityInstance, proximityEntityInstance.getName());
                         } else {
-                            return action;
+                            actionReturn.add(action);
                         }
                     }
                 }
             }
-            return null;
+            if(!actionReturn.isEmpty()){
+                return actionReturn;
+            }
+            else {
+                return null;
+            }
         }
         else{
             return null;

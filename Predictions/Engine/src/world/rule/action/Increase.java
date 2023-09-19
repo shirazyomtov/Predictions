@@ -13,6 +13,7 @@ import world.rule.action.expression.ExpressionIml;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Increase extends Action implements Serializable {
 
@@ -27,7 +28,7 @@ public class Increase extends Action implements Serializable {
 
 
     @Override
-    public Action operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity , String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity , String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity, secondEntityName);
         if (entityInstance != null) {
             String by;

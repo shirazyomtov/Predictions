@@ -35,9 +35,9 @@ public class Replace extends Action implements Serializable {
     }
 
     @Override
-    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity, secondEntityName);
-        if (entityInstance != null) {
+        if (entityInstance != null && !entityInstance.isKill()) {
             if (mode.equals("scratch")) {
                 createEntityInstanceFromScratch(worldInstance, null);
             } else if (mode.equals("derived")) {

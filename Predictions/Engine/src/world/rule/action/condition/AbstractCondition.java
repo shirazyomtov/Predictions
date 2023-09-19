@@ -37,14 +37,15 @@ public abstract class AbstractCondition extends Action implements Serializable {
         return singularity;
     }
 
-    public Action performThenOrElse(boolean flag, EntityInstance entityInstance, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> performThenOrElse(boolean flag, EntityInstance entityInstance, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+       List<Action> actionReturn = new ArrayList<>();
         if(flag){
             if(thenActions != null) {
                 for (Action actionThen : thenActions) {
                     if (!actionThen.getActionType().equals(ActionType.KILL) && !actionThen.getActionType().equals(ActionType.REPLACE)) {
                         actionThen.operation(entityInstance, worldInstance, secondaryEntity, secondEntityName);
                     } else {
-                        return actionThen;
+                        actionReturn.add(actionThen);
                     }
                 }
             }
@@ -56,12 +57,17 @@ public abstract class AbstractCondition extends Action implements Serializable {
                         actionElse.operation(entityInstance, worldInstance, secondaryEntity, secondEntityName);
                     }
                     else {
-                        return actionElse;
+                        actionReturn.add(actionElse);
                     }
                 }
             }
         }
-        return null;
+        if(!actionReturn.isEmpty()){
+            return actionReturn;
+        }
+        else {
+            return null;
+        }
     }
 
     public static AbstractCondition createCondition(PRDCondition prdCondition, String entityName){

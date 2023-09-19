@@ -13,6 +13,7 @@ import world.rule.action.expression.ExpressionIml;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 public class SingleCondition extends AbstractCondition implements Serializable {
@@ -29,9 +30,9 @@ public class SingleCondition extends AbstractCondition implements Serializable {
     }
 
     @Override
-    public Action operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         Boolean flag = false;
-        Action killOrReplace = null;
+        List<Action> killOrReplace = null;
         flag = checkIfConditionIsTrue(entity, worldInstance, secondaryEntity, secondEntityName);
         if(flag != null) {
             killOrReplace = performThenOrElse(flag, entity, worldInstance, secondaryEntity, secondEntityName);

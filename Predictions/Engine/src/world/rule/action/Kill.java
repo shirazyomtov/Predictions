@@ -15,7 +15,7 @@ public class Kill extends Action implements Serializable {
         super(entityName, ActionType.KILL, prdSecondaryEntity);
     }
     @Override
-    public List<Action> operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws EntityNotDefine {
+    public List<Action> operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName, List<EntityInstance> proximity) throws EntityNotDefine {
         EntityInstance entityPrimary = checkAndGetAppropriateInstance(entity, secondaryEntity, secondEntityName);
         if(entityPrimary != null) {
             EntityInstance entityToRemove = null;

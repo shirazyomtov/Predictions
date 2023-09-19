@@ -30,12 +30,12 @@ public class SingleCondition extends AbstractCondition implements Serializable {
     }
 
     @Override
-    public List<Action> operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName,List<EntityInstance> proximity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         Boolean flag = false;
         List<Action> killOrReplace = null;
         flag = checkIfConditionIsTrue(entity, worldInstance, secondaryEntity, secondEntityName);
         if(flag != null) {
-            killOrReplace = performThenOrElse(flag, entity, worldInstance, secondaryEntity, secondEntityName);
+            killOrReplace = performThenOrElse(flag, entity, worldInstance, secondaryEntity, secondEntityName, proximity);
             return killOrReplace;
         }
         else{

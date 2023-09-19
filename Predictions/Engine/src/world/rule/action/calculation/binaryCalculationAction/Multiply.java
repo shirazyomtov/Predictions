@@ -23,7 +23,7 @@ public class Multiply extends BinaryAction implements Serializable {
 
 
     @Override
-    public List<Action> operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> operation(EntityInstance primaryEntity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName, List<EntityInstance> proximity) throws ObjectNotExist, NumberFormatException, ClassCastException, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         EntityInstance entityInstance = checkAndGetAppropriateInstance(primaryEntity, secondaryEntity, secondEntityName);
         if (entityInstance != null) {
             String valueArg1;

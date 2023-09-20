@@ -160,6 +160,8 @@ public class ThirdPageController {
 
     private Consumer<Integer> pauseResumeStop;
 
+    private Consumer<Boolean> resetPauseResumeStop;
+
     private List<Integer> finishSimulations = new ArrayList<>();
     private List<Integer> failedSimulations = new ArrayList<>();
     private Integer amountOfSimulations = 0;
@@ -192,6 +194,11 @@ public class ThirdPageController {
                 setStateOfSimulationInQueue(currentTick);
             });
         };
+        this.resetPauseResumeStop = (state)->{
+            Platform.runLater(()->{
+                resetRunningComponentsVisible();
+            });
+        };
 
         isDisplayModePressed = new SimpleBooleanProperty(false);
         this.currentTicksProperty = new SimpleLongProperty(0);
@@ -201,17 +208,23 @@ public class ThirdPageController {
         this.isFailedProperty = new SimpleBooleanProperty(false);
     }
 
+    private void resetRunningComponentsVisible() {
+        pauseButton.setVisible(false);
+        resumeButton.setVisible(false);
+        stopButton.setVisible(false);
+    }
+
     private void setStateOfSimulationInQueue(Integer currentTick) {
-        if(currentTick > 1) {
+        if (currentTick > 1) {
             pauseButton.setVisible(true);
             resumeButton.setVisible(true);
             stopButton.setVisible(true);
-        }
-        else {
+        } else {
             pauseButton.setVisible(false);
             resumeButton.setVisible(false);
             stopButton.setVisible(false);
         }
+
     }
 
 
@@ -704,7 +717,7 @@ public class ThirdPageController {
 
     public void createTaskOfSimulation() {
         if(simulationTask == null) {
-            simulationTask = new SimulationTask(selectedSimulation.getSimulationId(), mainController.getEngineManager(), currentTicksProperty, currentSecondsProperty, isFinishProperty, updateTableViewConsumer, isFailedProperty, pauseResumeStop);
+            simulationTask = new SimulationTask(selectedSimulation.getSimulationId(), mainController.getEngineManager(), currentTicksProperty, currentSecondsProperty, isFinishProperty, updateTableViewConsumer, isFailedProperty, pauseResumeStop, resetPauseResumeStop);
             new Thread(simulationTask).start();
         }
         else {

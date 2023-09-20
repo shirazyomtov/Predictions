@@ -71,7 +71,7 @@ public class EnvironmentDefinition implements Serializable {
 
     public void checkValidationBoolEnvironment(String value) throws IllegalArgumentException {
         if(!value.equals("true") && !value.equals("false")){
-            throw new IllegalArgumentException("You must enter a boolean value that matches the type environment " + name);
+            throw new IllegalArgumentException("You must enter true or false in lower letters in the environment " + name);
         }
     }
 }

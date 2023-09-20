@@ -158,6 +158,8 @@ public class ThirdPageController {
 
     private Consumer<List<DTOSimulationInfo>> updateFinishSimulationConsumer;
 
+    private Consumer<Integer> pauseResumeStop;
+
     private List<Integer> finishSimulations = new ArrayList<>();
     private List<Integer> failedSimulations = new ArrayList<>();
     private Integer amountOfSimulations = 0;
@@ -185,12 +187,31 @@ public class ThirdPageController {
                 updateAllFinishSimulation(allSimulation);
             });
         };
+        this.pauseResumeStop = (currentTick) -> {
+            Platform.runLater(() -> {
+                setStateOfSimulationInQueue(currentTick);
+            });
+        };
+
         isDisplayModePressed = new SimpleBooleanProperty(false);
         this.currentTicksProperty = new SimpleLongProperty(0);
         this.currentSecondsProperty = new SimpleLongProperty(0);
         this.isFinishProperty = new SimpleBooleanProperty(false);
         this.messageProperty = new SimpleStringProperty("");
         this.isFailedProperty = new SimpleBooleanProperty(false);
+    }
+
+    private void setStateOfSimulationInQueue(Integer currentTick) {
+        if(currentTick > 1) {
+            pauseButton.setVisible(true);
+            resumeButton.setVisible(true);
+            stopButton.setVisible(true);
+        }
+        else {
+            pauseButton.setVisible(false);
+            resumeButton.setVisible(false);
+            stopButton.setVisible(false);
+        }
     }
 
 
@@ -364,9 +385,6 @@ public class ThirdPageController {
             }
         }
         else{
-            pauseButton.setVisible(true);
-            resumeButton.setVisible(true);
-            stopButton.setVisible(true);
             rerunButton.setVisible(false);
             endedSimulationInfoScrollPane.setVisible(false);
 
@@ -447,12 +465,17 @@ public class ThirdPageController {
         String entitiesName = entitiesListView.getSelectionModel().getSelectedItem();
         Map<Integer, Map<String, Integer>> amountOfAllEntities = mainController.getEngineManager().getAmountOfEntitiesPerTick(selectedSimulation.getSimulationId());
         if(entitiesName != null) {
-            createGraphOfEntityPerTick(amountOfAllEntities, entitiesName);
+            if(selectedSimulation.getBonusActive()){
+                createGraphOfEntityPerTickWithBonus(amountOfAllEntities, entitiesName);
+            }
+            else {
+                createGraphOfEntityPerTickWithoutBonus(amountOfAllEntities, entitiesName);
+            }
             graphPane.setVisible(true);
         }
     }
 
-    private void createGraphOfEntityPerTick(Map<Integer, Map<String, Integer>> amountOfAllEntities, String entitiesName) {
+    private void createGraphOfEntityPerTickWithBonus(Map<Integer, Map<String, Integer>> amountOfAllEntities, String entitiesName){
         amountOfEntitiesLineChart.getData().clear();
 
         XYChart.Series<Integer, Integer> series = new XYChart.Series<>();
@@ -481,6 +504,27 @@ public class ThirdPageController {
 
             if(tick.equals(Integer.parseInt(currentTickTextField.getText()))){
                 break;
+            }
+        }
+
+        series.getData().add(new XYChart.Data<>(Integer.parseInt(currentTickTextField.getText()), amountOfAllEntities.get(Integer.parseInt(currentTickTextField.getText())).get(entitiesName)));
+        amountOfEntitiesLineChart.getData().add(series);
+    }
+
+    private void createGraphOfEntityPerTickWithoutBonus(Map<Integer, Map<String, Integer>> amountOfAllEntities, String entitiesName) {
+        amountOfEntitiesLineChart.getData().clear();
+
+        XYChart.Series<Integer, Integer> series = new XYChart.Series<>();
+        series.setName(entitiesName);
+
+        for (Map.Entry<Integer, Map<String, Integer>> entry : amountOfAllEntities.entrySet()) {
+            Integer tick = entry.getKey();
+            Map<String, Integer> entityData = entry.getValue();
+
+            Integer amount = entityData.get(entitiesName);
+
+            if (amount != null) {
+                    series.getData().add(new XYChart.Data<>(tick, amount));
             }
         }
 
@@ -660,7 +704,7 @@ public class ThirdPageController {
 
     public void createTaskOfSimulation() {
         if(simulationTask == null) {
-            simulationTask = new SimulationTask(selectedSimulation.getSimulationId(), mainController.getEngineManager(), currentTicksProperty, currentSecondsProperty, isFinishProperty, updateTableViewConsumer, isFailedProperty);
+            simulationTask = new SimulationTask(selectedSimulation.getSimulationId(), mainController.getEngineManager(), currentTicksProperty, currentSecondsProperty, isFinishProperty, updateTableViewConsumer, isFailedProperty, pauseResumeStop);
             new Thread(simulationTask).start();
         }
         else {

@@ -75,6 +75,7 @@ public  class Simulation implements Serializable, Runnable {
         {
             while (!stop){
                 if (pauseAfterTick){
+                    worldInstance.addAmountOfEntitiesPerTick(currentTick);
                     pause = true;
                     pauseAfterTick = false;
                 }
@@ -98,6 +99,7 @@ public  class Simulation implements Serializable, Runnable {
                     (worldInstance.getWorldDefinition().getTermination().getTicks() == null || currentTick <= worldInstance.getWorldDefinition().getTermination().getTicks())) {
                 if (!stop) {
                     if (pauseAfterTick) {
+                        worldInstance.addAmountOfEntitiesPerTick(currentTick);
                         pause = true;
                         pauseAfterTick = false;
                     }
@@ -129,7 +131,12 @@ public  class Simulation implements Serializable, Runnable {
         List<EntityInstance> secondaryEntities = null;
         List<EntityInstance> entitiesToRemove = new ArrayList<>();
         List<Pair<EntityInstance,Action>> replaceActions = new ArrayList<>();
-        worldInstance.addAmountOfEntitiesPerTick(currentTick);
+        if(bonus) {
+            worldInstance.addAmountOfEntitiesPerTick(currentTick);
+        }
+        else if(currentTick % 5000 == 0 || currentTick == 1){
+            worldInstance.addAmountOfEntitiesPerTick(currentTick);
+        }
         long beforePauseMilliSeconds = System.currentTimeMillis();
         synchronized(this) {
             while (this.pause) {
@@ -463,4 +470,5 @@ public  class Simulation implements Serializable, Runnable {
     public void setFutureTickWithBonus4(boolean futureTickWithBonus4) {
         this.futureTickWithBonus4 = futureTickWithBonus4;
     }
+
 }

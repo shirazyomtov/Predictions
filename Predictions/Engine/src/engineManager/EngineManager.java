@@ -572,12 +572,24 @@ public class EngineManager implements Serializable{
             }
         }
         catch (Exception e){
-            Map<String, Integer> entityCount = getAmountOfEntitiesPerTick(simulationId).get(tick - 1);
+            Map<String, Integer> entityCount = getTheHigherKey(getAmountOfEntitiesPerTick(simulationId));
             for (String entityName : entityCount.keySet()) {
                 addDTOEntityToList(simulationId, dtoEntityInfos, entityCount, entityName);
             }
         }
         return dtoEntityInfos;
+    }
+
+    private Map<String, Integer> getTheHigherKey(Map<Integer, Map<String, Integer>> map){
+        int highestKey = 0;
+
+        for (Integer key : map.keySet()) {
+            if (key > highestKey) {
+                highestKey = key;
+            }
+        }
+
+        return map.get(highestKey);
     }
 
     public Float getAverageTickOfSpecificProperty(Integer simulationId, String entityName, String propertyName, int tick){

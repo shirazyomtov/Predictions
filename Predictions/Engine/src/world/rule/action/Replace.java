@@ -5,6 +5,7 @@ import jaxb.schema.generated.PRDAction;
 import world.entity.definition.EntityDefinition;
 import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
+import world.entity.instance.location.Location;
 import world.enums.ActionType;
 import world.propertyInstance.api.Property;
 import world.propertyInstance.impl.BooleanPropertyInstance;
@@ -35,16 +36,16 @@ public class Replace extends Action implements Serializable {
     }
 
     @Override
-    public List<Action> operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> operation(EntityInstance entity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName, List<EntityInstance> proximity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         EntityInstance entityInstance = checkAndGetAppropriateInstance(entity, secondaryEntity, secondEntityName);
         if (entityInstance != null && !entityInstance.isKill()) {
+            Kill killAction = new Kill(entityInstance.getName(), null);
+            killAction.operation(entityInstance, worldInstance, null, null, proximity);
             if (mode.equals("scratch")) {
-                createEntityInstanceFromScratch(worldInstance, null);
+                createEntityInstanceFromScratch(worldInstance, null, entityInstance);
             } else if (mode.equals("derived")) {
                 createEntityInstanceFromDerived(entityInstance, worldInstance);
             }
-            Kill killAction = new Kill(entityInstance.getName(), null);
-            killAction.operation(entityInstance, worldInstance, null, null);
             return null;
         }
         else {
@@ -67,7 +68,7 @@ public class Replace extends Action implements Serializable {
             }
 
         }
-        createEntityInstanceFromScratch(worldInstance, samePropertyName);
+        createEntityInstanceFromScratch(worldInstance, samePropertyName, entity);
     }
 
     private Property deepCloneProp(PropertyDefinition property, Object value) {
@@ -95,7 +96,7 @@ public class Replace extends Action implements Serializable {
     }
 
 
-        private void createEntityInstanceFromScratch(WorldInstance worldInstance, List<Property> samePropertyName) {
+        private void createEntityInstanceFromScratch(WorldInstance worldInstance, List<Property> samePropertyName, EntityInstance entityInstance) {
         boolean flag = false;
         for (EntityDefinition entityDefinition: worldInstance.getWorldDefinition().getEntityDefinition().values()){
             if(entityDefinition.getName().equals(createEntityName)){
@@ -118,7 +119,8 @@ public class Replace extends Action implements Serializable {
                         flag = false;
                     }
                 }
-                EntityInstance entityInstanceToReplace = new EntityInstance(entityDefinition.getName(), allProperty,  worldInstance.getTwoDimensionalGrid().createNewLocation());
+                EntityInstance entityInstanceToReplace = new EntityInstance(entityDefinition.getName(), allProperty, new Location(entityInstance.getLocation().getRow(), entityInstance.getLocation().getCol()));
+               worldInstance.getTwoDimensionalGrid().setTwoD_arr(entityInstanceToReplace.getLocation().getRow(), entityInstanceToReplace.getLocation().getCol(), true);
                 worldInstance.addEntityInstanceToEntityInstanceList(entityInstanceToReplace);
                 worldInstance.setCurrentAmountOfEntitiesAfterReplace(entityInstanceToReplace);
                 break;

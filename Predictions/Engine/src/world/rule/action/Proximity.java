@@ -29,7 +29,7 @@ public class Proximity extends  Action implements Serializable {
     }
 
     @Override
-    public List<Action> operation(EntityInstance sourceEntity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> operation(EntityInstance sourceEntity, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName, List<EntityInstance> proximity) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         EntityInstance entityInstance = checkAndGetAppropriateInstance(sourceEntity, secondaryEntity, secondEntityName);
         List<Action> actionReturn = new ArrayList<>();
         if (entityInstance != null) {
@@ -48,7 +48,7 @@ public class Proximity extends  Action implements Serializable {
                 if (actions != null) {
                     for (Action action : actions) {
                         if (!action.getActionType().equals(ActionType.KILL) && !action.getActionType().equals(ActionType.REPLACE)) {
-                            action.operation(entityInstance, worldInstance, proximityEntityInstance, proximityEntityInstance.getName());
+                            action.operation(entityInstance, worldInstance, proximityEntityInstance, proximityEntityInstance.getName(), proximity);
                         } else {
                             actionReturn.add(action);
                         }
@@ -56,6 +56,9 @@ public class Proximity extends  Action implements Serializable {
                 }
             }
             if(!actionReturn.isEmpty()){
+                if(proximity.isEmpty()) {
+                    proximity.add(proximityEntityInstance);
+                }
                 return actionReturn;
             }
             else {
@@ -72,7 +75,11 @@ public class Proximity extends  Action implements Serializable {
         float rowPositive;
         float colPositive;
         String ofString = of.decipher(entityInstanceSource, worldInstance, entityInstanceTarget, null);
-        float ofInt = Float.parseFloat(ofString);
+        float ofFloat = Float.parseFloat(ofString);
+        if (ofFloat < 1F){
+            throw new NumberFormatException("You need to enter a value greater then 1");
+        }
+        int ofInt = (int) Math.floor(ofFloat);
         float entityInstanceSourceRow = entityInstanceSource.getLocation().getRow();
         float entityInstanceSourceCol = entityInstanceSource.getLocation().getCol();
         float entityInstanceTargetRow = entityInstanceTarget.getLocation().getRow();

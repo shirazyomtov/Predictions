@@ -37,13 +37,13 @@ public abstract class AbstractCondition extends Action implements Serializable {
         return singularity;
     }
 
-    public List<Action> performThenOrElse(boolean flag, EntityInstance entityInstance, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName) throws ObjectNotExist, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
+    public List<Action> performThenOrElse(boolean flag, EntityInstance entityInstance, WorldInstance worldInstance, EntityInstance secondaryEntity, String secondEntityName, List<EntityInstance> proximity) throws ObjectNotExist, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
        List<Action> actionReturn = new ArrayList<>();
         if(flag){
             if(thenActions != null) {
                 for (Action actionThen : thenActions) {
                     if (!actionThen.getActionType().equals(ActionType.KILL) && !actionThen.getActionType().equals(ActionType.REPLACE)) {
-                        actionThen.operation(entityInstance, worldInstance, secondaryEntity, secondEntityName);
+                        actionThen.operation(entityInstance, worldInstance, secondaryEntity, secondEntityName, proximity);
                     } else {
                         actionReturn.add(actionThen);
                     }
@@ -54,7 +54,7 @@ public abstract class AbstractCondition extends Action implements Serializable {
             if(elseActions != null){
                 for(Action actionElse: elseActions){
                     if (!actionElse.getActionType().equals(ActionType.KILL) && !actionElse.getActionType().equals(ActionType.REPLACE)) {
-                        actionElse.operation(entityInstance, worldInstance, secondaryEntity, secondEntityName);
+                        actionElse.operation(entityInstance, worldInstance, secondaryEntity, secondEntityName, proximity);
                     }
                     else {
                         actionReturn.add(actionElse);

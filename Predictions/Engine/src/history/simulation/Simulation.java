@@ -166,12 +166,12 @@ public  class Simulation implements Serializable, Runnable {
 
         for (EntityInstance entityInstanceToRemove : entitiesToRemove) {
             Kill killAction = new Kill(entityInstanceToRemove.getName(), null);
-            killAction.operation(entityInstanceToRemove, worldInstance, null, null);
+            killAction.operation(entityInstanceToRemove, worldInstance, null, null, null);
         }
         for (Pair<EntityInstance, Action> tuple : replaceActions) {
             if(tuple.getValue() instanceof Replace) {
                 Replace replaceAction = new Replace(tuple.getKey().getName(), ((Replace) tuple.getValue()).getCreateEntityName(), ((Replace) tuple.getValue()).getMode(), null);
-                replaceAction.operation(tuple.getKey(), worldInstance, null, null);
+                replaceAction.operation(tuple.getKey(), worldInstance, null, null, null);
             }
         }
 
@@ -384,8 +384,9 @@ public  class Simulation implements Serializable, Runnable {
 
     private void performOperation(Action action, EntityInstance entityInstance, EntityInstance secondaryEntity, List<EntityInstance> entitiesToRemove,  List<Pair<EntityInstance,Action>> replaceActions, String secondEntityName) throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
         List<Action> action1;
+        List<EntityInstance> proximity = new ArrayList<>();
         if (!action.getActionType().equals(ActionType.KILL) && !action.getActionType().equals(ActionType.REPLACE)) {
-            action1 = action.operation(entityInstance, worldInstance, secondaryEntity, secondEntityName);
+            action1 = action.operation(entityInstance, worldInstance, secondaryEntity, secondEntityName, proximity);
             if(action1 != null) {
                 for (Action actionFromList : action1) {
                     if (actionFromList.getActionType().equals(ActionType.KILL)) {
@@ -394,11 +395,17 @@ public  class Simulation implements Serializable, Runnable {
                         } else if (secondaryEntity != null) {
                             entitiesToRemove.add(secondaryEntity);
                         }
+                        else if (!proximity.isEmpty()) {
+                            entitiesToRemove.add(proximity.get(0));
+                        }
                     } else if (actionFromList.getActionType().equals(ActionType.REPLACE)) {
                         if (actionFromList.getEntityName().equals(entityInstance.getName())) {
                             replaceActions.add(new Pair<>(entityInstance, actionFromList));
                         } else if (secondaryEntity != null) {
                             replaceActions.add(new Pair<>(secondaryEntity, actionFromList));
+                        }
+                        else if (!proximity.isEmpty()) {
+                            replaceActions.add(new Pair<>(proximity.get(0), actionFromList));
                         }
                     }
                 }

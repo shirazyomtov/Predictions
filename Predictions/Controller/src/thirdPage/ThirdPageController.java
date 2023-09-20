@@ -804,5 +804,9 @@ public class ThirdPageController {
         simulationDetailsLabel.setText(simulationInfo);
         failedSimulationCauseLabel.setText("The simulation has failed due to :\n" + selectedSimulation.getMessage());
     }
+
+    public SimulationTask getSimulationTask() {
+        return simulationTask;
+    }
 }
 

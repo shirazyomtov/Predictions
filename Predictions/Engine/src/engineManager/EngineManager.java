@@ -173,7 +173,6 @@ public class EngineManager implements Serializable{
         if(numberOfTimesUserSelectSimulation == 1){
             history.setThreadManager(world.getNumberOfThreads());
         }
-        // todo remove
     }
 
 

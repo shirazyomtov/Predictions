@@ -372,7 +372,9 @@ public class ThirdPageController {
 
             if(pauseButtonPressed.get(selectedSimulation.getSimulationId())){
                 futureButton.setVisible(true);
-                pastButton.setVisible(true);
+                if (selectedSimulation.getBonusActive()) {
+                    pastButton.setVisible(true);
+                }
             }
             else{
                 futureButton.setVisible(false);

@@ -150,6 +150,9 @@ public class AppController {
             engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
             thirdPageController.setAmountOfSimulations(0);
             thirdPageController.setAmountOfSimulationsEnded(0);
+            setAmountOfCompletedSimulation("0");
+            setAmountOfSimulationsInQueue("0");
+            setAmountOfSimulationsInProgress("0");
             thirdPageController.setSimulationTask(null);
             thirdPageController.setFinishSimulationTask(null);
             thirdPageController.resetPauseAndResume();

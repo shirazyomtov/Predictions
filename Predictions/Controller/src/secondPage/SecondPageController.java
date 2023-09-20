@@ -96,6 +96,8 @@ public class SecondPageController {
     }
 
     public void setSecondPageDetails(List<DTOEntityInfo> entitiesDetails, List<DTOEnvironmentInfo> environmentInfos) {
+        startSimulationWithPastDetailsCheckBox.setSelected(false);
+        bonus = false;
         resetAllText();
         createListEntitiesNames(entitiesDetails);
         entitiesNamesListView.getItems().clear();
@@ -130,9 +132,9 @@ public class SecondPageController {
 
     @FXML
     void entitiesNamesListViewClicked(MouseEvent event) {
-        choseValueVbox.visibleProperty().set(true);
         int selectedIndex = entitiesNamesListView.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
+            choseValueVbox.visibleProperty().set(true);
             String entityName = entitiesNames.get(selectedIndex);
             entityNameTextField.setText(entityName);
             int currentValue = mainController.getEngineManager().getEntityAmount(entityName);
@@ -174,10 +176,10 @@ public class SecondPageController {
 
     @FXML
     void environmentNamesListViewClicked(MouseEvent event) {
-        choseEnvironmentVbox.visibleProperty().set(true);
         int selectedIndex = environmentListView.getSelectionModel().getSelectedIndex();
 
         if (selectedIndex >= 0) {
+            choseEnvironmentVbox.visibleProperty().set(true);
             String environmentName = environmentsNames.get(selectedIndex);
             DTOEnvironmentInfo dtoEnvironmentInfo = mainController.getEngineManager().getEnvironmentNamesList().get(selectedIndex);
             typeEnvironmentTextField.setText(dtoEnvironmentInfo.getType());

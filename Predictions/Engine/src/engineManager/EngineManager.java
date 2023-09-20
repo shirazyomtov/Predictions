@@ -566,9 +566,17 @@ public class EngineManager implements Serializable{
 
     public List<DTOEntityInfo> getCurrentTickAmountOfEntities(Integer simulationId, Integer tick){
         List<DTOEntityInfo> dtoEntityInfos = new ArrayList<>();
-        Map<String, Integer> entityCount = getAmountOfEntitiesPerTick(simulationId).get(tick);
-        for(String entityName: entityCount.keySet()){
-            addDTOEntityToList(simulationId, dtoEntityInfos, entityCount, entityName);
+        try {
+            Map<String, Integer> entityCount = getAmountOfEntitiesPerTick(simulationId).get(tick);
+            for (String entityName : entityCount.keySet()) {
+                addDTOEntityToList(simulationId, dtoEntityInfos, entityCount, entityName);
+            }
+        }
+        catch (Exception e){
+            Map<String, Integer> entityCount = getAmountOfEntitiesPerTick(simulationId).get(tick - 1);
+            for (String entityName : entityCount.keySet()) {
+                addDTOEntityToList(simulationId, dtoEntityInfos, entityCount, entityName);
+            }
         }
         return dtoEntityInfos;
     }

@@ -120,6 +120,7 @@ public  class Simulation implements Serializable, Runnable {
                 }
             }
         }
+        currentTick = currentTick -1;
         isFinish = true;
     }
 
@@ -128,7 +129,6 @@ public  class Simulation implements Serializable, Runnable {
         List<EntityInstance> secondaryEntities = null;
         List<EntityInstance> entitiesToRemove = new ArrayList<>();
         List<Pair<EntityInstance,Action>> replaceActions = new ArrayList<>();
-        worldInstance.addAmountOfEntitiesPerTick(currentTick);
         long beforePauseMilliSeconds = System.currentTimeMillis();
         synchronized(this) {
             while (this.pause) {
@@ -193,6 +193,7 @@ public  class Simulation implements Serializable, Runnable {
             }
 
         }
+        worldInstance.addAmountOfEntitiesPerTick(currentTick);
         currentTick = currentTick + 1;
         return time;
     }

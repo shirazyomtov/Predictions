@@ -71,6 +71,10 @@ public class PresentRule {
             TreeItem<String> branchSecondEntity = addBranch("Second entity", selectedAction.getSecondEntityName());
             rootAction.getChildren().add(branchSecondEntity);
         }
+        else{
+            TreeItem<String> branchSecondEntity = addBranch("Second entity", "There is no secondary entity");
+            rootAction.getChildren().add(branchSecondEntity);
+        }
 
         actionDetailsTreeView.setRoot(rootAction);
         setSpecificActionDetails(selectedAction);

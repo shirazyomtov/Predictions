@@ -461,9 +461,6 @@ public class ThirdPageController {
             Map<String, Integer> entityData = entry.getValue();
 
             Integer amount = entityData.get(entitiesName);
-            if(tick.equals(Integer.parseInt(currentTickTextField.getText()))){
-                break;
-            }
 
             if (amount != null) {
                 if(Integer.parseInt(currentTickTextField.getText()) > 3000) {
@@ -475,6 +472,10 @@ public class ThirdPageController {
                 else{
                     series.getData().add(new XYChart.Data<>(tick, amount));
                 }
+            }
+
+            if(tick.equals(Integer.parseInt(currentTickTextField.getText()))){
+                break;
             }
         }
 

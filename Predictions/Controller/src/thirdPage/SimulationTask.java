@@ -23,9 +23,10 @@ public class SimulationTask extends Task<Boolean> {
 
     private SimpleBooleanProperty isFailed;
     private Consumer<Integer> pauseResumeStop;
+    private Consumer<Boolean> resetPauseStopConsumer;
 
     private boolean past = false;
-    public SimulationTask(int simulationId, EngineManager engineManager, SimpleLongProperty currentTicksProperty, SimpleLongProperty currentSecondsProperty, SimpleBooleanProperty isFinishProperty, Consumer<List<DTOEntityInfo>> updateTableViewConsumer, SimpleBooleanProperty isFailed, Consumer<Integer> pauseResumeStop){
+    public SimulationTask(int simulationId, EngineManager engineManager, SimpleLongProperty currentTicksProperty, SimpleLongProperty currentSecondsProperty, SimpleBooleanProperty isFinishProperty, Consumer<List<DTOEntityInfo>> updateTableViewConsumer, SimpleBooleanProperty isFailed, Consumer<Integer> pauseResumeStop, Consumer<Boolean> resetPauseResumeStop){
         this.simulationId = simulationId;
         this.engineManager = engineManager;
         this.currentTicksProperty = currentTicksProperty;
@@ -34,6 +35,7 @@ public class SimulationTask extends Task<Boolean> {
         this.updateTableViewConsumer = updateTableViewConsumer;
         this.isFailed = isFailed;
         this.pauseResumeStop = pauseResumeStop;
+        this.resetPauseStopConsumer = resetPauseResumeStop;
     }
 
     @Override
@@ -55,7 +57,12 @@ public class SimulationTask extends Task<Boolean> {
                 isFailed.set(dtoWorldInfo.getIsFailed());
                 isFinishProperty.set(dtoWorldInfo.getIsFinish());
                 updateTableViewConsumer.accept(dtoWorldInfo.getCurrentAmountOfEntities());
-                pauseResumeStop.accept(dtoWorldInfo.getCurrentTick());
+                if(dtoWorldInfo.getIsFinish()){
+                    resetPauseStopConsumer.accept(true);
+                }
+                else {
+                    pauseResumeStop.accept(dtoWorldInfo.getCurrentTick());
+                }
             });
             Thread.sleep(200);
         }

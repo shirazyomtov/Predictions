@@ -18,18 +18,17 @@ import java.util.*;
 public  final class XMLReader implements  Serializable {
     private final  String JAXB_XML_GAME_PACKAGE_NAME = "jaxb.schema.generated";
     private  PRDWorld world = null;
-    private String xmlPath ;
+    private InputStream xmlContent ;
 
-    public XMLReader(String xmlPath){
-        this.xmlPath = xmlPath;
+    public XMLReader(InputStream xmlContent){
+        this.xmlContent = xmlContent;
     }
     public  void setWorld(PRDWorld world) {
         this.world = world;
     }
 
     public  XMLValidation openXmlAndGetData() throws FileNotFoundException, JAXBException {
-        InputStream inputStream = new FileInputStream(new File(xmlPath));
-        PRDWorld world = deserializeFrom(inputStream);
+        PRDWorld world = deserializeFrom(xmlContent);
         setWorld(world);
         return new XMLValidation(world);
     }

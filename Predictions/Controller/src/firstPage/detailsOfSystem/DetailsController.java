@@ -68,7 +68,7 @@ public class DetailsController {
         environmentComboBox.getItems().clear();
     }
 
-    private void setEntitiesComboBox(){
+    public void setEntitiesComboBox(){
         ObservableList<String> items = entitiesComboBox.getItems();
         for (DTOEntityInfo dtoEntityInfo: firstPageController.getEntityDetails()) {
             items.add(dtoEntityInfo.getEntityName());

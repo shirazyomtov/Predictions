@@ -92,10 +92,10 @@ public class HeaderController {
 
     @FXML
     void loadFileButtonClicked(ActionEvent event) {
-        try {
-            String filePath = mainController.loadXML();
-            if (!filePath.isEmpty())
-                mainController.setSuccessMessage("File loaded successfully.");
+       try {
+           mainController.loadXML();
+//            if (!filePath.isEmpty())
+//                mainController.setSuccessMessage("File loaded successfully.");
         }
         catch(Exception e){
             mainController.setErrorMessage(e.getMessage());

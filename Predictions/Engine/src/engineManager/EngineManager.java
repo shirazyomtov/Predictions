@@ -37,20 +37,16 @@ public class EngineManager implements Serializable{
     Map <String, EnvironmentInstance> environmentValuesByUser = new HashMap<>();
     Map <String, Integer> entitiesAmountByUser = new HashMap<>();
 
-    public void loadXMLAAndCheckValidation(String xmlPath) throws Exception {
+    public void loadXMLAAndCheckValidation(InputStream xmlContent) throws Exception {
         try {
-            XMLReader xmlReader = new XMLReader("C:\\src\\github.com\\shirazyomtov\\fix\\Predictions\\Predictions\\Engine\\src\\resources\\check\\master-ex2.xml");
+            XMLReader xmlReader = new XMLReader(xmlContent);
             XMLValidation xmlValidation;
-            checkValidationXMLPath("C:\\src\\github.com\\shirazyomtov\\fix\\Predictions\\Predictions\\Engine\\src\\resources\\check\\master-ex2.xml");
             xmlValidation = xmlReader.openXmlAndGetData();
             xmlValidation.checkValidationXmlFile();
             world = xmlReader.defineWorld();
             History.getInstance().getAllSimulations().clear();
             history = null;
             numberOfTimesUserSelectSimulation = 0;
-        }
-        catch (FileNotFoundException | JAXBException e) {
-            throw new FileNotFoundException("File has not been found in this path " + xmlPath + ".");
         }
         catch (Exception e) {
             throw new Exception(e.getMessage());
@@ -69,8 +65,8 @@ public class EngineManager implements Serializable{
         Objects.requireNonNull(world);
     }
 
-    public List<DTOEntityInfo> getEntitiesDetails(){
-        return world.entitiesDetails();
+    public DTOEntityInfo getEntitiesDetails(){
+        return world.entitiesDetails().get(0);
     }
 
     public List<DTORuleInfo> getRulesDetails(){

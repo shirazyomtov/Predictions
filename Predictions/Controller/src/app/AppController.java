@@ -1,8 +1,11 @@
 package app;
 
+import DTO.DTOEntityInfo;
+import com.google.gson.Gson;
 import engineManager.EngineManager;
 import enums.SkinsOptions;
 import firstPage.FirstPageController;
+import firstPage.HttpClientUtil;
 import header.HeaderController;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -18,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import okhttp3.*;
 import secondPage.SecondPageController;
 import thirdPage.ThirdPageController;
 
@@ -25,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class AppController {
     public static final String FIRST_PAGE_FXML_LIGHT_RESOURCE = "/firstPage/firstPage.fxml";
@@ -137,30 +142,55 @@ public class AppController {
         isDetailsClicked.set(state);
     }
 
-    public String loadXML() throws Exception {
+    public void loadXML() throws Exception {
         try {
+
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open XML File");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
             File f = fileChooser.showOpenDialog(primaryStage);
 
-            if (f == null) // user closed file choosing dialog
-                return "";
+//            if (f == null) // user closed file choosing dialog
+//                return "";
 
-            engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
-            thirdPageController.setAmountOfSimulations(0);
-            thirdPageController.setAmountOfSimulationsEnded(0);
-            setAmountOfCompletedSimulation("0");
-            setAmountOfSimulationsInQueue("0");
-            setAmountOfSimulationsInProgress("0");
-            thirdPageController.setSimulationTask(null);
-            thirdPageController.setFinishSimulationTask(null);
-            thirdPageController.resetPauseAndResume();
-            setAllPagesDetails();
-            isFileLoaded.set(true);
-            isDetailsClicked.set(false);
-            xmlPathProperty.set(f.getAbsolutePath());
-            return f.getPath();
+
+            RequestBody body =
+                    new MultipartBody.Builder()
+                            .addFormDataPart("xmlFile", f.getAbsolutePath(), RequestBody.create(f, MediaType.parse("application/octet-stream")))
+                            .build();
+
+            String finalUrl = HttpUrl
+                    .parse("http://localhost:8080/Server_Web_exploded/loadXml")
+                    .newBuilder()
+                    .build()
+                    .toString();
+
+            HttpClientUtil.runAsyncPost(finalUrl, body, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if(response.isSuccessful()) {
+                        thirdPageController.setAmountOfSimulations(0);
+                        thirdPageController.setAmountOfSimulationsEnded(0);
+                        setAmountOfCompletedSimulation("0");
+                        setAmountOfSimulationsInQueue("0");
+                        setAmountOfSimulationsInProgress("0");
+                        thirdPageController.setSimulationTask(null);
+                        thirdPageController.setFinishSimulationTask(null);
+                        thirdPageController.resetPauseAndResume();
+                        setAllPagesDetails();
+                        isFileLoaded.set(true);
+                        isDetailsClicked.set(false);
+                        xmlPathProperty.set(f.getAbsolutePath());
+                    }
+                }
+            });
+
+            //engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
         }
         catch (Exception e){
             isDetailsClicked.set(false);
@@ -175,7 +205,7 @@ public class AppController {
         firstPageController.setWorldDetailsFromEngine();
         firstPageController.resetAllComponentFirstPage();
         secondPageController.setVisible(false);
-        secondPageController.setSecondPageDetails(engineManager.getEntitiesDetails(), engineManager.getEnvironmentNamesList());
+      //  secondPageController.setSecondPageDetails(engineManager.getEntitiesDetails(), engineManager.getEnvironmentNamesList());
         thirdPageController.setVisible(false);
         thirdPageController.clearAllData();
     }

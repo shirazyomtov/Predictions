@@ -39,9 +39,9 @@ public class EngineManager implements Serializable{
 
     public void loadXMLAAndCheckValidation(String xmlPath) throws Exception {
         try {
-            XMLReader xmlReader = new XMLReader(xmlPath);
+            XMLReader xmlReader = new XMLReader("C:\\src\\github.com\\shirazyomtov\\fix\\Predictions\\Predictions\\Engine\\src\\resources\\check\\master-ex2.xml");
             XMLValidation xmlValidation;
-            checkValidationXMLPath(xmlPath);
+            checkValidationXMLPath("C:\\src\\github.com\\shirazyomtov\\fix\\Predictions\\Predictions\\Engine\\src\\resources\\check\\master-ex2.xml");
             xmlValidation = xmlReader.openXmlAndGetData();
             xmlValidation.checkValidationXmlFile();
             world = xmlReader.defineWorld();

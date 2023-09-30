@@ -22,10 +22,9 @@ public class ShowDetailsServlet extends HttpServlet {
         EngineManager engineManager = (EngineManager)getServletContext().getAttribute("manager");
         Gson gson = new Gson();
         try {
-            engineManager.loadXMLAAndCheckValidation("");
-            List<DTOEntityInfo> entityDetails = engineManager.getEntitiesDetails();
+            DTOEntityInfo entityDetails = engineManager.getEntitiesDetails();
             String jsonResponse = gson.toJson(entityDetails);
-            System.out.println(jsonResponse);
+           // System.out.println(jsonResponse);
             try (PrintWriter out = resp.getWriter()) {
                 out.print(jsonResponse);
                 out.flush();

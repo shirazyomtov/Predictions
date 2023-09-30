@@ -1,6 +1,7 @@
 package firstPage;
 
 import DTO.*;
+import com.google.gson.Gson;
 import firstPage.presentDetails.presentEntities.PresentEntities;
 import firstPage.presentDetails.presentEnvironment.PresentEnvironment;
 import firstPage.presentDetails.presentGrid.PresentGrid;
@@ -17,12 +18,13 @@ import app.AppController;
 import engineManager.EngineManager;
 import firstPage.detailsOfSystem.DetailsController;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import okhttp3.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FirstPageController {
@@ -109,12 +111,34 @@ public class FirstPageController {
     }
 
     public void setWorldDetailsFromEngine(){
-        entityDetails = engineManager.getEntitiesDetails();
-        rulesDetails = engineManager.getRulesDetails();
-        environmentDetails = engineManager.getEnvironmentNamesList();
-        terminationDetails = engineManager.getTerminationDetails();
-        gridDetails =  engineManager.getDTOGridDetails();
-        detailsComponentController.setComboBoxes();
+        String finalUrl = HttpUrl
+                .parse("http://localhost:8080/Server_Web_exploded/showDetails")
+                .newBuilder()
+                .build()
+                .toString();
+        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.isSuccessful()){
+                    Gson gson = new Gson();
+                    DTOEntityInfo moran = gson.fromJson(response.body().string(), DTOEntityInfo.class);
+                    entityDetails = new ArrayList<>();
+                    entityDetails.add(moran);
+                    detailsComponentController.setEntitiesComboBox();
+                }
+            }
+        });
+//        entityDetails = engineManager.getEntitiesDetails();
+//        rulesDetails = engineManager.getRulesDetails();
+//        environmentDetails = engineManager.getEnvironmentNamesList();
+//        terminationDetails = engineManager.getTerminationDetails();
+//        gridDetails =  engineManager.getDTOGridDetails();
+//        detailsComponentController.setComboBoxes();
     }
 
     public void bindToIsDetailsClicked() throws IOException {

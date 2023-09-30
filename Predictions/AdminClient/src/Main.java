@@ -1,17 +1,36 @@
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
-public class Main {
+import app.AppController;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+
+import java.net.URL;
+
+public class Main extends Application {
+    public static final String APP_FXML_LIGHT_RESOURCE = "/app/app.fxml";
+
     public static void main(String[] args) {
-        // Press Alt+Enter with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        Thread.currentThread().setName("main");
+        launch(args);
+    }
 
-        // Press Shift+F10 or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(APP_FXML_LIGHT_RESOURCE);
+        fxmlLoader.setLocation(url);
+        ScrollPane root = fxmlLoader.load(url.openStream());
+        AppController appController  = fxmlLoader.getController();
+        appController.setPrimaryStage(primaryStage);
 
-            // Press Shift+F9 to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Ctrl+F8.
-            System.out.println("i = " + i);
-        }
+        primaryStage.setTitle("Predictions");
+        Scene scene = new Scene(root, 900, 700);
+        primaryStage.setScene(scene);
+        primaryStage.setMinWidth(300);
+        primaryStage.setMinHeight(300);
+        primaryStage.show();
+
     }
 }

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static engineManager.EngineManager.initProperty;
+import static worldManager.WorldManager.initProperty;
 
 public class Replace extends Action implements Serializable {
 

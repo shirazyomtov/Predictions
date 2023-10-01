@@ -7,7 +7,6 @@ import jaxb.schema.generated.PRDElse;
 import jaxb.schema.generated.PRDThen;
 import world.entity.instance.EntityInstance;
 import world.enums.Type;
-import world.propertyInstance.api.Property;
 import world.rule.action.Action;
 import world.rule.action.expression.ExpressionIml;
 import world.worldInstance.WorldInstance;

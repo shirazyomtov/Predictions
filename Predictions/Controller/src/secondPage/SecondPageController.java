@@ -2,10 +2,8 @@ package secondPage;
 
 import DTO.DTOEntityInfo;
 import DTO.DTOEnvironmentInfo;
-import animations.FirstPageTerminationAnimation;
 import animations.SecondPageAnimation;
 import app.AppController;
-import engineManager.EngineManager;
 import exceptions.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -17,9 +15,7 @@ import javafx.scene.input.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import thirdPage.ThirdPageController;
 
 public class SecondPageController {
     private AppController mainController;

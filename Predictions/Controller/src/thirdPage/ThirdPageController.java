@@ -764,16 +764,16 @@ public class ThirdPageController {
     }
 
     public void setQueueAndProgressSimulation(){
-        Integer amountOfSimulationInProgress = amountOfSimulations - amountOfSimulationsEnded;
-        Integer amountOfSimulationsInQueue = amountOfSimulationInProgress - mainController.getEngineManager().getAmountOfThreads();;
-        if(amountOfSimulationsInQueue > 0 ) {
-            mainController.setAmountOfSimulationsInQueue(amountOfSimulationsInQueue.toString());
-            mainController.setAmountOfSimulationsInProgress(mainController.getEngineManager().getAmountOfThreads().toString());
-        }
-        else{
-            mainController.setAmountOfSimulationsInQueue("0");
-            mainController.setAmountOfSimulationsInProgress(amountOfSimulationInProgress.toString());
-        }
+//        Integer amountOfSimulationInProgress = amountOfSimulations - amountOfSimulationsEnded;
+//        Integer amountOfSimulationsInQueue = amountOfSimulationInProgress - mainController.getEngineManager().getAmountOfThreads();;
+//        if(amountOfSimulationsInQueue > 0 ) {
+//            mainController.setAmountOfSimulationsInQueue(amountOfSimulationsInQueue.toString());
+//            mainController.setAmountOfSimulationsInProgress(mainController.getEngineManager().getAmountOfThreads().toString());
+//        }
+//        else{
+//            mainController.setAmountOfSimulationsInQueue("0");
+//            mainController.setAmountOfSimulationsInProgress(amountOfSimulationInProgress.toString());
+//        }
     }
 
     @FXML

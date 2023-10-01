@@ -43,9 +43,9 @@ public  final class XMLReader implements  Serializable {
     {
         Map<String, EntityDefinitionImpl> entityDefinition = defineEntities();
         List<RuleImpl> ruleIml = defineRules();
-        Termination termination = defineTermination();
+        //Termination termination = defineTermination();
         Map <String, EnvironmentDefinition> environmentDefinition = defineEnvironment();
-        return new WorldDefinition(entityDefinition, ruleIml, termination, environmentDefinition,world.getPRDGrid().getRows(), world.getPRDGrid().getColumns(), world.getPRDThreadCount());
+        return new WorldDefinition(entityDefinition, ruleIml, environmentDefinition,world.getPRDGrid().getRows(), world.getPRDGrid().getColumns());
     }
 
     private  Map<String, EnvironmentDefinition> defineEnvironment() {
@@ -57,20 +57,20 @@ public  final class XMLReader implements  Serializable {
         return environmentDefinition;
     }
 
-    private  Termination defineTermination()
-    {
-        PRDBySecond prdBySecond = null;
-        PRDByTicks prdByTicks = null;
-        for (Object terminationParameter: world.getPRDTermination().getPRDBySecondOrPRDByTicks()){
-            if(terminationParameter.getClass().getSimpleName().equals("PRDByTicks")){
-                prdByTicks = (PRDByTicks) terminationParameter;
-            }
-            else if (terminationParameter.getClass().getSimpleName().equals("PRDBySecond")) {
-                prdBySecond = (PRDBySecond) terminationParameter;
-            }
-        }
-        return new Termination(prdByTicks, prdBySecond, world.getPRDTermination().getPRDByUser());
-    }
+//    private  Termination defineTermination()
+//    {
+//        PRDBySecond prdBySecond = null;
+//        PRDByTicks prdByTicks = null;
+//        for (Object terminationParameter: world.getPRDTermination().getPRDBySecondOrPRDByTicks()){
+//            if(terminationParameter.getClass().getSimpleName().equals("PRDByTicks")){
+//                prdByTicks = (PRDByTicks) terminationParameter;
+//            }
+//            else if (terminationParameter.getClass().getSimpleName().equals("PRDBySecond")) {
+//                prdBySecond = (PRDBySecond) terminationParameter;
+//            }
+//        }
+//        return new Termination(prdByTicks, prdBySecond, world.getPRDTermination().getPRDByUser());
+//    }
     private  List<RuleImpl> defineRules() {
         List<RuleImpl> ruleIml = new ArrayList<>();
         for(PRDRule rule: world.getPRDRules().getPRDRule()){
@@ -101,4 +101,7 @@ public  final class XMLReader implements  Serializable {
         return PropertyDefinition;
     }
 
+    public PRDWorld getWorld() {
+        return world;
+    }
 }

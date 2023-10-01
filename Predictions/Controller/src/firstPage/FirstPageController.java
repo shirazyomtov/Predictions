@@ -15,7 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import app.AppController;
-import engineManager.EngineManager;
+import worldManager.WorldManager;
 import firstPage.detailsOfSystem.DetailsController;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -65,7 +65,7 @@ public class FirstPageController {
     @FXML
     private Label entityNameLabel;
 
-    private EngineManager engineManager;
+    private WorldManager engineManager;
 
     private List<DTOEntityInfo> entityDetails;
 
@@ -87,7 +87,7 @@ public class FirstPageController {
 
     private PresentGrid presentGrid;
 
-    public void setControllers(AppController mainController, EngineManager engineManager) throws IOException {
+    public void setControllers(AppController mainController, WorldManager engineManager) throws IOException {
         setMainController(mainController);
         setEngineManager(engineManager);
         detailsComponentController.setFirstPageController(this);
@@ -106,7 +106,7 @@ public class FirstPageController {
         this.mainController = mainController;
     }
 
-    private void setEngineManager(EngineManager engineManager) {
+    private void setEngineManager(WorldManager engineManager) {
         this.engineManager = engineManager;
     }
 

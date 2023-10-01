@@ -235,7 +235,7 @@ public class SecondPageController {
         //todo: after we add the third screen
         isStartButtonPressed.set(true);
         mainController.getEngineManager().setSimulation(bonus);
-        mainController.getEngineManager().addSimulationTask();
+//        mainController.getEngineManager().addSimulationTask();
         mainController.setSimulationsDetails();
         clearButtonClicked(event);
         mainController.showThirdPage();

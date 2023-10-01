@@ -1,8 +1,8 @@
 package engineManager;
 
+import DTO.DTOAllWorldsInfo;
 import DTO.DTOWorldDefinitionInfo;
 import exceptions.NameAlreadyExist;
-import history.History;
 import threadManager.ThreadManager;
 import worldManager.WorldManager;
 import xml.XMLReader;
@@ -16,6 +16,14 @@ public class EngineManager {
     private Map<String, WorldManager> worldManagerMap = new HashMap<>();
 
     private ThreadManager threadManager;
+
+    public DTOAllWorldsInfo getDTOAllWorlds(){
+        Map<String, DTOWorldDefinitionInfo> dtoWorldDefinitionInfoMap = new HashMap<>();
+        for(String worldName: worldManagerMap.keySet()){
+            dtoWorldDefinitionInfoMap.put(worldName, worldManagerMap.get(worldName).getWorldDefinition());
+        }
+        return new DTOAllWorldsInfo(dtoWorldDefinitionInfoMap);
+    }
 
     public DTOWorldDefinitionInfo loadXMLAAndCheckValidation(InputStream xmlContent) throws Exception {
         try {

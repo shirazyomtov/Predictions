@@ -52,7 +52,7 @@ public final class History implements Serializable {
             Simulation simulation = entry.getValue();
             String formattedDateTime = simulation.getFormattedDateTime();
 
-            dtoSimulations.add(new DTOSimulationInfo(simulationId, formattedDateTime, simulation.getIsFinish(), simulation.getIsFailed(), simulation.getIsBonus(), simulation.getMessage()));
+            dtoSimulations.add(new DTOSimulationInfo(simulationId, formattedDateTime, simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage()));
         }
 
         return dtoSimulations;

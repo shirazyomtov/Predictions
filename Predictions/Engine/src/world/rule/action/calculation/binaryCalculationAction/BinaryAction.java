@@ -1,8 +1,8 @@
 package world.rule.action.calculation.binaryCalculationAction;
 
 
-import world.enums.CalculationBinaryTypeAction;
 import jaxb.schema.generated.PRDAction;
+import world.enums.CalculationBinaryTypeAction;
 import world.rule.action.calculation.CalculationImpl;
 import world.rule.action.expression.ExpressionIml;
 import java.io.Serializable;

@@ -3,8 +3,6 @@ package world.rule.action.secondaryEntity;
 import jaxb.schema.generated.PRDAction;
 import world.rule.action.condition.AbstractCondition;
 
-import java.util.List;
-
 public class SecondaryEntity {
     private final String secondaryEntityName;
     private final String count;

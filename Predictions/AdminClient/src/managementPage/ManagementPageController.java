@@ -2,13 +2,13 @@ package managementPage;
 
 import DTO.*;
 import app.AppController;
-import engineManager.EngineManager;
+import com.google.gson.Gson;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -17,6 +17,8 @@ import managementPage.presentDetails.presentEntities.PresentEntities;
 import managementPage.presentDetails.presentEnvironment.PresentEnvironment;
 import managementPage.presentDetails.presentGrid.PresentGrid;
 import managementPage.presentDetails.presentRules.PresentRule;
+import okhttp3.*;
+import utils.HttpAdminClientUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,8 +89,6 @@ public class ManagementPageController {
 
     private DTOGrid gridDetails;
 
-    private EngineManager engineManager = new EngineManager();
-
     @FXML
     public void initialize() {
         managementPageSplitPane.setDividerPositions(0.75);
@@ -105,6 +105,12 @@ public class ManagementPageController {
     public void setControllers(AppController appController) throws IOException {
         setMainController(appController);
         setPresentDetailsInvisibleAndSetDetails();
+        setRootTreeView();
+    }
+
+    private void setRootTreeView(){
+        TreeItem<String> rootItem = new TreeItem<>("Worlds");
+        simulationTreeView.setRoot(rootItem);
     }
 
     private void setMainController(AppController mainController) {
@@ -172,29 +178,82 @@ public class ManagementPageController {
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
             File f = fileChooser.showOpenDialog(mainController.getPrimaryStage());
 
-            engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
-            addSimulationToTreeView();
-            XMLFileTextField.setText(f.getAbsolutePath());
+            RequestBody body =
+                    new MultipartBody.Builder()
+                            .addFormDataPart("xmlFile", f.getAbsolutePath(), RequestBody.create(f, MediaType.parse("application/octet-stream")))
+                            .build();
+
+            String finalUrl = HttpUrl
+                    .parse("http://localhost:8080/Server_Web_exploded/loadXml")
+                    .newBuilder()
+                    .build()
+                    .toString();
+
+            HttpAdminClientUtil.runAsyncPost(finalUrl, body, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if(response.isSuccessful()) {
+                        Gson gson = new Gson();
+                        XMLFileTextField.setText(f.getAbsolutePath());
+                        DTOWorldDefinitionInfo dtoWorldDefinitionInfo = gson.fromJson(response.body().string(), DTOWorldDefinitionInfo.class);
+                        addSimulationDetails(dtoWorldDefinitionInfo);
+                    }
+                }
+            });
         }
         catch (Exception e){
             //resetAllComponentFirstPage();
         }
     }
 
-    private void addSimulationToTreeView() {
-        TreeItem<String> simulationItem = createSimulationTreeItem("Simulation 1");
+//    public void setWorldDetailsFromEngine(){
+//        String finalUrl = HttpUrl
+//                .parse("http://localhost:8080/Server_Web_exploded/showDetails")
+//                .newBuilder()
+//               // .addQueryParameter("worldName", )
+//                .build()
+//                .toString();
+//        HttpAdminClientUtil.runAsyncGet(finalUrl, new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                if(response.isSuccessful()){
+//                    Gson gson = new Gson();
+//                    DTOWorldDefinitionInfo dtoWorldDefinitionInfo = gson.fromJson(response.body().string(), DTOWorldDefinitionInfo.class);
+//                    addSimulationDetails(dtoWorldDefinitionInfo);
+//
+//                }
+//            }
+//        });
+//    }
 
-        TreeItem<String> rootItem = new TreeItem<>("Simulations");
-        rootItem.getChildren().addAll(simulationItem);
-        simulationTreeView.setRoot(rootItem);
+
+    private void addSimulationDetails(DTOWorldDefinitionInfo dtoWorldDefinitionInfo) {
+        TreeItem<String> simulationItem = createSimulationTreeItem(dtoWorldDefinitionInfo.getWorldName(), dtoWorldDefinitionInfo);
+
+        Platform.runLater(() -> {
+            simulationTreeView.getRoot().getChildren().addAll(simulationItem);
+        });
     }
 
-    private TreeItem<String> createSimulationTreeItem(String simulationName) {
+    private TreeItem<String> createSimulationTreeItem(String simulationName, DTOWorldDefinitionInfo dtoWorldDefinitionInfo) {
         TreeItem<String> simulationItem = new TreeItem<>(simulationName);
+        entityDetails = dtoWorldDefinitionInfo.getEntitiesList();
+        rulesDetails = dtoWorldDefinitionInfo.getRulesList();
+        environmentDetails = dtoWorldDefinitionInfo.getEnvironmentsList();
+        gridDetails =  dtoWorldDefinitionInfo.getGrid();
         TreeItem<String> entitiesBranch = createEntityBranch();
         TreeItem<String> rulesBranch = createRulesBranch();
         TreeItem<String> environmentBranch = createEnvironmentBranch();
-        gridDetails =  engineManager.getDTOGridDetails();
         TreeItem<String> gridBranch = new TreeItem<>("Grid");
         simulationItem.getChildren().addAll(entitiesBranch, rulesBranch, environmentBranch, gridBranch);
 
@@ -202,7 +261,6 @@ public class ManagementPageController {
     }
 
     private TreeItem<String> createEntityBranch() {
-        entityDetails = engineManager.getEntitiesDetails();
         TreeItem<String> entitiesBranch = new TreeItem<>("Entities");
         for (DTOEntityInfo entityInfo : entityDetails) {
             entitiesBranch.getChildren().add(new TreeItem<>(entityInfo.getEntityName()));
@@ -212,7 +270,6 @@ public class ManagementPageController {
     }
 
     private TreeItem<String> createRulesBranch() {
-        rulesDetails = engineManager.getRulesDetails();
         TreeItem<String> rulesBranch = new TreeItem<>("Rules");
         for (DTORuleInfo ruleInfo : rulesDetails) {
             rulesBranch.getChildren().add(new TreeItem<>(ruleInfo.getRuleName()));
@@ -222,7 +279,6 @@ public class ManagementPageController {
     }
 
     private TreeItem<String> createEnvironmentBranch() {
-        environmentDetails = engineManager.getEnvironmentNamesList();
         TreeItem<String> environmentBranch = new TreeItem<>("Environments");
         for (DTOEnvironmentInfo environmentInfo : environmentDetails) {
             environmentBranch.getChildren().add(new TreeItem<>(environmentInfo.getName()));

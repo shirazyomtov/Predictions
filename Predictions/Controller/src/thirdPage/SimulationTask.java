@@ -2,7 +2,7 @@ package thirdPage;
 
 import DTO.DTOEntityInfo;
 import DTO.DTOWorldInfo;
-import engineManager.EngineManager;
+import worldManager.WorldManager;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
@@ -16,7 +16,7 @@ public class SimulationTask extends Task<Boolean> {
     private SimpleBooleanProperty isFinishProperty;
     private int simulationId;
 
-    private final EngineManager engineManager;
+    private final WorldManager worldManager;
 
     private SimpleLongProperty currentTicksProperty;
     private SimpleLongProperty currentSecondsProperty;
@@ -26,9 +26,9 @@ public class SimulationTask extends Task<Boolean> {
     private Consumer<Boolean> resetPauseStopConsumer;
 
     private boolean past = false;
-    public SimulationTask(int simulationId, EngineManager engineManager, SimpleLongProperty currentTicksProperty, SimpleLongProperty currentSecondsProperty, SimpleBooleanProperty isFinishProperty, Consumer<List<DTOEntityInfo>> updateTableViewConsumer, SimpleBooleanProperty isFailed, Consumer<Integer> pauseResumeStop, Consumer<Boolean> resetPauseResumeStop){
+    public SimulationTask(int simulationId, WorldManager worldManager, SimpleLongProperty currentTicksProperty, SimpleLongProperty currentSecondsProperty, SimpleBooleanProperty isFinishProperty, Consumer<List<DTOEntityInfo>> updateTableViewConsumer, SimpleBooleanProperty isFailed, Consumer<Integer> pauseResumeStop, Consumer<Boolean> resetPauseResumeStop){
         this.simulationId = simulationId;
-        this.engineManager = engineManager;
+        this.worldManager = worldManager;
         this.currentTicksProperty = currentTicksProperty;
         this.currentSecondsProperty = currentSecondsProperty;
         this.isFinishProperty = isFinishProperty;
@@ -50,7 +50,7 @@ public class SimulationTask extends Task<Boolean> {
                     }
                 }
             }
-            DTOWorldInfo dtoWorldInfo = engineManager.getDTOWorldInfo(simulationId);
+            DTOWorldInfo dtoWorldInfo = worldManager.getDTOWorldInfo(simulationId);
             Platform.runLater(()-> {
                 currentTicksProperty.set(dtoWorldInfo.getCurrentTick());
                 currentSecondsProperty.set(dtoWorldInfo.getCurrentSecond());

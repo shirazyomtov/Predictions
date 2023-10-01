@@ -1,8 +1,6 @@
 package app;
 
-import DTO.DTOEntityInfo;
-import com.google.gson.Gson;
-import engineManager.EngineManager;
+import worldManager.WorldManager;
 import enums.SkinsOptions;
 import firstPage.FirstPageController;
 import firstPage.HttpClientUtil;
@@ -17,7 +15,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -29,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class AppController {
     public static final String FIRST_PAGE_FXML_LIGHT_RESOURCE = "/firstPage/firstPage.fxml";
@@ -46,7 +42,7 @@ public class AppController {
 
     private SimpleBooleanProperty isNewExecutionClicked;
 
-    private EngineManager engineManager = new EngineManager();
+    private WorldManager engineManager = new WorldManager();
 
     @FXML
     private BorderPane borderPaneComponent;
@@ -247,7 +243,7 @@ public class AppController {
         pause.play();
     }
 
-    public EngineManager getEngineManager() {
+    public WorldManager getEngineManager() {
         return engineManager;
     }
 

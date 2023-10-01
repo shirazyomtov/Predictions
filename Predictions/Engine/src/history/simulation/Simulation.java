@@ -69,61 +69,61 @@ public  class Simulation implements Serializable, Runnable {
 
     @Override
     public void run() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-        long startMillisSeconds = System.currentTimeMillis();
-        long pauseTime;
-        if (worldInstance.getWorldDefinition().getTermination().getTerminationByUser())
-        {
-            while (!stop){
-                if (pauseAfterTick){
-                    worldInstance.addAmountOfEntitiesPerTick(currentTick);
-                    pause = true;
-                    pauseAfterTick = false;
-                }
-                worldInstance.setSecondsPerTick(currentTick, currentSecond);
-                try {
-                    pauseTime = runSimulation();
-                    totalTimePause += pauseTime;
-                }
-                catch (Exception e){
-                    isFinish = true;
-                    isFailed = true;
-                    message = e.getMessage();
-                    break;
-                }
-                long currentMilliSeconds = System.currentTimeMillis();
-                currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);
-            }
-        }
-        else {
-            while ((worldInstance.getWorldDefinition().getTermination().getSecond() == null || currentSecond <= worldInstance.getWorldDefinition().getTermination().getSecond()) &&
-                    (worldInstance.getWorldDefinition().getTermination().getTicks() == null || currentTick <= worldInstance.getWorldDefinition().getTermination().getTicks())) {
-                if (!stop) {
-                    if (pauseAfterTick) {
-                        worldInstance.addAmountOfEntitiesPerTick(currentTick);
-                        pause = true;
-                        pauseAfterTick = false;
-                    }
-                    worldInstance.setSecondsPerTick(currentTick, currentSecond);
-                    try {
-                        pauseTime = runSimulation();
-                        totalTimePause += pauseTime;
-                    }
-                    catch (Exception e){
-                        isFinish = true;
-                        isFailed = true;
-                        message = e.getMessage();
-                        break;
-                    }
-                    long currentMilliSeconds = System.currentTimeMillis();
-                    currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);
-                }
-                else {
-                    break;
-                }
-            }
-        }
-        worldInstance.addAmountOfEntitiesPerTick(currentTick);
-        isFinish = true;
+//        long startMillisSeconds = System.currentTimeMillis();
+//        long pauseTime;
+//        if (worldInstance.getWorldDefinition().getTermination().getTerminationByUser())
+//        {
+//            while (!stop){
+//                if (pauseAfterTick){
+//                    worldInstance.addAmountOfEntitiesPerTick(currentTick);
+//                    pause = true;
+//                    pauseAfterTick = false;
+//                }
+//                worldInstance.setSecondsPerTick(currentTick, currentSecond);
+//                try {
+//                    pauseTime = runSimulation();
+//                    totalTimePause += pauseTime;
+//                }
+//                catch (Exception e){
+//                    isFinish = true;
+//                    isFailed = true;
+//                    message = e.getMessage();
+//                    break;
+//                }
+//                long currentMilliSeconds = System.currentTimeMillis();
+//                currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);
+//            }
+//        }
+//        else {
+//            while ((worldInstance.getWorldDefinition().getTermination().getSecond() == null || currentSecond <= worldInstance.getWorldDefinition().getTermination().getSecond()) &&
+//                    (worldInstance.getWorldDefinition().getTermination().getTicks() == null || currentTick <= worldInstance.getWorldDefinition().getTermination().getTicks())) {
+//                if (!stop) {
+//                    if (pauseAfterTick) {
+//                        worldInstance.addAmountOfEntitiesPerTick(currentTick);
+//                        pause = true;
+//                        pauseAfterTick = false;
+//                    }
+//                    worldInstance.setSecondsPerTick(currentTick, currentSecond);
+//                    try {
+//                        pauseTime = runSimulation();
+//                        totalTimePause += pauseTime;
+//                    }
+//                    catch (Exception e){
+//                        isFinish = true;
+//                        isFailed = true;
+//                        message = e.getMessage();
+//                        break;
+//                    }
+//                    long currentMilliSeconds = System.currentTimeMillis();
+//                    currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);
+//                }
+//                else {
+//                    break;
+//                }
+//            }
+//        }
+//        worldInstance.addAmountOfEntitiesPerTick(currentTick);
+//        isFinish = true;
     }
 
     private long runSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine{

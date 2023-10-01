@@ -27,7 +27,7 @@ public final class WorldDefinition implements Serializable {
 
     private final List<RuleImpl> rules;
 
-    private final Termination termination;
+//    private final Termination termination;
 
 
     private final Map<String, EnvironmentDefinition> environmentDefinition;
@@ -35,18 +35,17 @@ public final class WorldDefinition implements Serializable {
     private final Integer rows;
     private final Integer cols;
 
-    private final int numberOfThreads;
+//    private final int numberOfThreads;
 
-    public WorldDefinition(Map<String, EntityDefinitionImpl> entityDefinition, List<RuleImpl> rules, Termination termination,
-                           Map<String, EnvironmentDefinition> environmentDefinition, Integer rows, Integer cols, int numberOfThreads)
+    public WorldDefinition(Map<String, EntityDefinitionImpl> entityDefinition, List<RuleImpl> rules,
+                           Map<String, EnvironmentDefinition> environmentDefinition, Integer rows, Integer cols)
     {
         this.entityDefinition = entityDefinition;
         this.rules = rules;
-        this.termination = termination;
+//        this.termination = termination;
         this.environmentDefinition = environmentDefinition;
         this.rows = rows;
         this.cols = cols;
-        this.numberOfThreads = numberOfThreads;
     }
 
     public Map<String, EntityDefinitionImpl> getEntityDefinition() {
@@ -55,7 +54,7 @@ public final class WorldDefinition implements Serializable {
 
     public List<RuleImpl> getRules() {return  this.rules;}
 
-    public Termination getTermination() {return  this.termination;}
+//    public Termination getTermination() {return  this.termination;}
 
     public Map<String, EnvironmentDefinition> getEnvironmentDefinition() {
         return environmentDefinition;
@@ -146,9 +145,9 @@ public final class WorldDefinition implements Serializable {
         }
     }
 
-    public int getNumberOfThreads() {
-        return numberOfThreads;
-    }
+//    public int getNumberOfThreads() {
+//        return numberOfThreads;
+//    }
 
     public int getRows() {
         return rows;

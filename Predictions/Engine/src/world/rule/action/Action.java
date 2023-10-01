@@ -1,6 +1,5 @@
 package world.rule.action;
 
-import com.sun.org.apache.bcel.internal.generic.PUSH;
 import exceptions.*;
 import jaxb.schema.generated.PRDAction;
 import world.entity.instance.EntityInstance;
@@ -10,7 +9,6 @@ import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.WeakHashMap;
 
 public abstract class Action implements ActionOperation, Serializable {
 

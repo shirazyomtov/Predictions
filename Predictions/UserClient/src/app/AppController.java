@@ -1,6 +1,6 @@
 package app;
 
-import executionPage.ExecutionPageController;
+//import executionPage.ExecutionPageController;
 import header.HeaderController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,8 +12,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import requestsPage.RequestsPageController;
-import resultsPage.ResultsPageController;
+//import requestsPage.RequestsPageController;
+//import resultsPage.ResultsPageController;
 import simulationDetailsPage.SimulationDetailsPageController;
 
 import java.io.IOException;
@@ -45,11 +45,11 @@ public class AppController {
     private Stage primaryStage;
 
     private SimulationDetailsPageController simulationDetailsPageController;
-    private RequestsPageController requestsPageController;
-
-    private ExecutionPageController executionsPageController;
-
-    private ResultsPageController resultsPageController;
+//    private RequestsPageController requestsPageController;
+//
+//    private ExecutionPageController executionsPageController;
+//
+//    private ResultsPageController resultsPageController;
 
 
     public AppController(){
@@ -64,6 +64,7 @@ public class AppController {
         if(headerComponentController != null){
             headerComponentController.setMainController(this);
             headerComponentController.bindComponents();
+            simulationDetailsPageController.setControllers(this);
             showSimulationDetailsPage();
         }
     }
@@ -80,6 +81,7 @@ public class AppController {
         InputStream inputStream = url.openStream();
         GridPane gridPane = fxmlLoader.load(inputStream);
         simulationDetailsPageController = fxmlLoader.getController();
+        simulationDetailsPageController.worldListRefresher();
     }
 
 //    private void loadResourcesRequestsPage() throws IOException {

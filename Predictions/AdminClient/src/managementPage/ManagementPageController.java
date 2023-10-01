@@ -24,7 +24,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class ManagementPageController {
@@ -88,6 +90,8 @@ public class ManagementPageController {
     private List<DTOEnvironmentInfo> environmentDetails;
 
     private DTOGrid gridDetails;
+
+    private Map<String, DTOWorldDefinitionInfo> allSimulation = new HashMap<>();
 
     @FXML
     public void initialize() {
@@ -247,6 +251,7 @@ public class ManagementPageController {
 
     private TreeItem<String> createSimulationTreeItem(String simulationName, DTOWorldDefinitionInfo dtoWorldDefinitionInfo) {
         TreeItem<String> simulationItem = new TreeItem<>(simulationName);
+        allSimulation.put(simulationName, dtoWorldDefinitionInfo);
         entityDetails = dtoWorldDefinitionInfo.getEntitiesList();
         rulesDetails = dtoWorldDefinitionInfo.getRulesList();
         environmentDetails = dtoWorldDefinitionInfo.getEnvironmentsList();
@@ -295,18 +300,22 @@ public class ManagementPageController {
             String selectedValue = selectedItem.getValue();
             if (selectedValue.equals("Grid")) {
                 simulationName = selectedItem.getParent().getValue();
+                gridDetails =  allSimulation.get(simulationName).getGrid();
                 setGridDetails();
             }
             else if (selectedItem.getParent().getValue().equals("Entities")) {
                 simulationName = selectedItem.getParent().getParent().getValue();
+                entityDetails = allSimulation.get(simulationName).getEntitiesList();
                 setEntitiesDetails(getAllPropertiesOfEntity(selectedValue), selectedValue);
             }
             else if (selectedItem.getParent().getValue().equals("Rules")) {
                 simulationName = selectedItem.getParent().getParent().getValue();
+                rulesDetails = allSimulation.get(simulationName).getRulesList();
                 setRulesDetails(getSpecificRule(selectedValue));
             }
             else if (selectedItem.getParent().getValue().equals("Environments")) {
                 simulationName = selectedItem.getParent().getParent().getValue();
+                environmentDetails = allSimulation.get(simulationName).getEnvironmentsList();
                 setEnvironmentDetails(getSpecificEnvironment(selectedValue));
             }
         }

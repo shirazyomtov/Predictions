@@ -549,7 +549,7 @@ public class WorldManager implements Serializable{
     public List<DTOSimulationInfo> getDetailsAboutEndSimulation(){
         List<DTOSimulationInfo> detailsAboutEndSimulation = new ArrayList<>();
         for (Integer simulationId: history.getAllSimulations().keySet()){
-            detailsAboutEndSimulation.add(new DTOSimulationInfo(simulationId, history.getAllSimulations().get(simulationId).getFormattedDateTime(), history.getAllSimulations().get(simulationId).getIsFinish(), history.getAllSimulations().get(simulationId).getIsFailed(), history.getAllSimulations().get(simulationId).getIsBonus(), history.getAllSimulations().get(simulationId).getMessage()));
+            detailsAboutEndSimulation.add(new DTOSimulationInfo(simulationId, history.getAllSimulations().get(simulationId).getFormattedDateTime(), history.getAllSimulations().get(simulationId).getIsFinish(), history.getAllSimulations().get(simulationId).getIsFailed(), history.getAllSimulations().get(simulationId).getMessage()));
         }
         return detailsAboutEndSimulation;
     }

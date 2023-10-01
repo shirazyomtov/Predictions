@@ -70,7 +70,7 @@ public class AppController {
 
     private void loadResources() throws Exception {
         loadResourcesSimulationDetailsPage();
-        loadResourcesRequestsPage();
+//        loadResourcesRequestsPage();
     }
 
     private void loadResourcesSimulationDetailsPage() throws IOException {
@@ -82,14 +82,14 @@ public class AppController {
         simulationDetailsPageController = fxmlLoader.getController();
     }
 
-    private void loadResourcesRequestsPage() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        URL url = getClass().getResource(REQUESTS_PAGE_FXML_LIGHT_RESOURCE);
-        fxmlLoader.setLocation(url);
-        InputStream inputStream = url.openStream();
-        GridPane gridPane = fxmlLoader.load(inputStream);
-        requestsPageController = fxmlLoader.getController();
-    }
+//    private void loadResourcesRequestsPage() throws IOException {
+//        FXMLLoader fxmlLoader = new FXMLLoader();
+//        URL url = getClass().getResource(REQUESTS_PAGE_FXML_LIGHT_RESOURCE);
+//        fxmlLoader.setLocation(url);
+//        InputStream inputStream = url.openStream();
+//        GridPane gridPane = fxmlLoader.load(inputStream);
+//        requestsPageController = fxmlLoader.getController();
+//    }
 
     public SimpleBooleanProperty getIsFileLoadedProperty() {
         return isFileLoaded;
@@ -104,15 +104,15 @@ public class AppController {
     }
 
     public void showRequestsPage() {
-        borderPaneComponent.setCenter(requestsPageController.getGridPaneRequestsPage());
+//        borderPaneComponent.setCenter(requestsPageController.getGridPaneRequestsPage());
     }
 
     public void showExecutionsPage() {
-        borderPaneComponent.setCenter(executionsPageController.getExecutionPageGridPane());
+//        borderPaneComponent.setCenter(executionsPageController.getExecutionPageGridPane());
     }
 
     public void showResultsPage() {
-        borderPaneComponent.setCenter(resultsPageController.getResultsPageGridPane());
+//        borderPaneComponent.setCenter(resultsPageController.getResultsPageGridPane());
     }
 
     public Window getPrimaryStage() {

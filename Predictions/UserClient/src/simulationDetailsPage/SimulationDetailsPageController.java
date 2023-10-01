@@ -56,6 +56,9 @@ public class SimulationDetailsPageController {
 
     private DTOGrid gridDetails;
 
+    private Map<String, DTOWorldDefinitionInfo> allSimulation = new HashMap<>();
+
+
     @FXML
     public void initialize() {
         simulationDetailsPageSplitPane.setDividerPositions(0.5);
@@ -66,7 +69,6 @@ public class SimulationDetailsPageController {
 
     private void addSimulationToTreeView() {
         TreeItem<String> simulationItem = createSimulationTreeItem("Simulation 1");
-
         TreeItem<String> rootItem = new TreeItem<>("Simulations");
         rootItem.getChildren().addAll(simulationItem);
         simulationTreeView.setRoot(rootItem);

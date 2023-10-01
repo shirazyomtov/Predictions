@@ -1,74 +1,43 @@
-package managementPage;
+package simulationDetailsPage;
 
 import DTO.*;
 import app.AppController;
-import engineManager.EngineManager;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.input.InputMethodEvent;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import managementPage.presentDetails.presentEntities.PresentEntities;
-import managementPage.presentDetails.presentEnvironment.PresentEnvironment;
-import managementPage.presentDetails.presentGrid.PresentGrid;
-import managementPage.presentDetails.presentRules.PresentRule;
+import simulationDetailsPage.presentDetails.presentEntities.PresentEntities;
+import simulationDetailsPage.presentDetails.presentEnvironment.PresentEnvironment;
+import simulationDetailsPage.presentDetails.presentGrid.PresentGrid;
+import simulationDetailsPage.presentDetails.presentRules.PresentRule;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
 
-public class ManagementPageController {
-    private static final String ENTITIES_DETAILS_PAGE = "/managementPage/presentDetails/presentEntities/presentEntity.fxml";
-
-    private static final String RULES_DETAILS_PAGE = "/managementPage/presentDetails/presentRules/presentRule.fxml";
-
-    private static final String ENVIRONMENT_DETAILS_PAGE = "/managementPage/presentDetails/presentEnvironment/presentEnvironment.fxml";
-
-    private static final String GRID_DETAILS_PAGE = "/managementPage/presentDetails/presentGrid/presentGrid.fxml";
-
-    @FXML
-    private TextField XMLFileTextField;
-
-    @FXML
-    private Button loadFileButton;
-
-    @FXML
-    private GridPane managementPageGridPane;
-
-    @FXML
-    private SplitPane managementPageSplitPane;
-
-    @FXML
-    private SplitPane detailsSplitPane;
+public class SimulationDetailsPageController {
 
     @FXML
     private ScrollPane scrollPaneWrapper;
 
     @FXML
+    private GridPane simulationDetailsPageGridPane;
+
+    @FXML
+    private SplitPane simulationDetailsPageSplitPane;
+
+    @FXML
     private TreeView<String> simulationTreeView;
 
     @FXML
-    private Label simulationsCompletedLabel;
-
-    @FXML
-    private Label simulationsInProgressLabel;
-
-    @FXML
-    private Label simulationsInQueueLabel;
-
-    @FXML
-    private TextField threadCountTextField;
-
-    @FXML
     private VBox vboxDetails;
+
     private AppController mainController;
 
     private PresentEntities presentEntities;
@@ -87,98 +56,12 @@ public class ManagementPageController {
 
     private DTOGrid gridDetails;
 
-    private EngineManager engineManager = new EngineManager();
-
     @FXML
     public void initialize() {
-        managementPageSplitPane.setDividerPositions(0.75);
-        managementPageSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
-            managementPageSplitPane.setDividerPositions(0.75);
+        simulationDetailsPageSplitPane.setDividerPositions(0.5);
+        simulationDetailsPageSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
+            simulationDetailsPageSplitPane.setDividerPositions(0.5);
         });
-
-        detailsSplitPane.setDividerPositions(0.3);
-        detailsSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
-            detailsSplitPane.setDividerPositions(0.3);
-        });
-    }
-
-    public void setControllers(AppController appController) throws IOException {
-        setMainController(appController);
-        setPresentDetailsInvisibleAndSetDetails();
-    }
-
-    private void setMainController(AppController mainController) {
-        this.mainController = mainController;
-    }
-
-    private void setPresentDetailsInvisibleAndSetDetails() throws IOException {
-        loadEntitiesDetailsResourced();
-        loadRulesDetailsResourced();
-        loadEnvironmentDetailsResourced();
-        loadGridDetailsResourced();
-    }
-
-    private void loadEntitiesDetailsResourced() throws IOException {
-        FXMLLoader fxmlLoader = loadResourced(ENTITIES_DETAILS_PAGE);
-        presentEntities = fxmlLoader.getController();
-    }
-
-    private void loadRulesDetailsResourced() throws IOException {
-        FXMLLoader fxmlLoader = loadResourced(RULES_DETAILS_PAGE);
-        presentRule = fxmlLoader.getController();
-    }
-
-    private void loadEnvironmentDetailsResourced() throws IOException {
-        FXMLLoader fxmlLoader = loadResourced(ENVIRONMENT_DETAILS_PAGE);
-        presentEnvironment = fxmlLoader.getController();
-    }
-
-    public void loadGridDetailsResourced() throws IOException {
-        FXMLLoader fxmlLoader = loadResourced(GRID_DETAILS_PAGE);
-        presentGrid = fxmlLoader.getController();
-    }
-
-    public FXMLLoader loadResourced(String path) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        URL url = getClass().getResource(path);
-        fxmlLoader.setLocation(url);
-        InputStream inputStream = url.openStream();
-        GridPane gridPane = fxmlLoader.load(inputStream);
-        return fxmlLoader;
-    }
-
-    @FXML
-    void SetThreadsCountClicked(ActionEvent event) {
-        String threadCount = threadCountTextField.getText();
-        try{
-            Integer count = Integer.parseInt(threadCount);
-            if (count > 0) {
-                //todo: update the logic
-            }
-            else{
-                mainController.setErrorMessage("You need to enter a number of threads greater than 0");
-            }
-        }
-        catch (Exception e){
-            mainController.setErrorMessage("You need to enter a number of threads greater than 0");
-        }
-    }
-
-    @FXML
-    void loadFileButtonClicked(ActionEvent event) {
-        try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open XML File");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
-            File f = fileChooser.showOpenDialog(mainController.getPrimaryStage());
-
-            engineManager.loadXMLAAndCheckValidation(f.getAbsolutePath());
-            addSimulationToTreeView();
-            XMLFileTextField.setText(f.getAbsolutePath());
-        }
-        catch (Exception e){
-            //resetAllComponentFirstPage();
-        }
     }
 
     private void addSimulationToTreeView() {
@@ -318,7 +201,7 @@ public class ManagementPageController {
         presentEnvironment.setEnvironmentDetailsPage(dtoEnvironmentInfo);
     }
 
-    public Node getGridPaneManagementPage() {
-        return managementPageGridPane;
+    public Node getGridPaneSimulationDetailsPage() {
+        return simulationDetailsPageGridPane;
     }
 }

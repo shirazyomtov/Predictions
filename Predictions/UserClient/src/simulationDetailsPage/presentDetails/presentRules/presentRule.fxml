@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane fx:id="gridPaneRulesDetails" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simulationDetailsPage.presentDetails.presentRules.PresentRule">
+   <columnConstraints>
+      <ColumnConstraints />
+      <ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="115.0" />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="320.0" />
+      <ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+      <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="30.666664123535156" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="45.333335876464844" minHeight="10.0" prefHeight="15.333335876464844" vgrow="NEVER" />
+      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="44.333343505859375" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="56.666656494140625" minHeight="4.0" prefHeight="17.666671752929688" vgrow="NEVER" />
+      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="326.3333282470703" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="NEVER" />
+   </rowConstraints>
+   <children>
+      <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="460.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+         <children>
+            <Label maxWidth="1.7976931348623157E308" prefHeight="30.0" prefWidth="150.0" text="Rule name :" />
+            <VBox maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+               <children>
+                  <TextField fx:id="nameTextField" alignment="CENTER" editable="false" maxWidth="1.7976931348623157E308" prefHeight="31.0" prefWidth="304.0" />
+               </children>
+            </VBox>
+         </children>
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin>
+      </HBox>
+      <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="49.0" prefWidth="455.0" spacing="25.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS">
+         <children>
+            <Label maxWidth="1.7976931348623157E308" prefHeight="32.0" prefWidth="125.0" text="Activation :" />
+            <VBox maxWidth="1.7976931348623157E308" prefHeight="52.0" prefWidth="125.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label maxWidth="1.7976931348623157E308" text="ticks :" />
+                  <TextField fx:id="ticksTextField" editable="false" maxWidth="1.7976931348623157E308" prefHeight="31.0" prefWidth="54.0" />
+               </children>
+            </VBox>
+            <VBox maxWidth="1.7976931348623157E308" prefHeight="52.0" prefWidth="137.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label maxWidth="1.7976931348623157E308" text="probability :" />
+                  <TextField fx:id="probabilityTextField" editable="false" maxWidth="1.7976931348623157E308" prefHeight="31.0" prefWidth="57.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.vgrow="ALWAYS">
+         <children>
+            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="21.0" prefWidth="155.0" text="Select action :" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="actionListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseClicked="#showActionClicked" prefHeight="312.0" prefWidth="139.0" VBox.vgrow="ALWAYS" />
+         </children>
+      </VBox>
+      <TreeView fx:id="actionDetailsTreeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="322.0" prefWidth="320.0" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.vgrow="ALWAYS">
+         <GridPane.margin>
+            <Insets left="5.0" top="20.0" />
+         </GridPane.margin>
+      </TreeView>
+   </children>
+</GridPane>

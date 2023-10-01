@@ -1,5 +1,6 @@
 package app;
 
+import executionPage.ExecutionPageController;
 import header.HeaderController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,7 +12,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import managementPage.ManagementPageController;
+import requestsPage.RequestsPageController;
+import resultsPage.ResultsPageController;
+import simulationDetailsPage.SimulationDetailsPageController;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +22,8 @@ import java.net.URL;
 
 public class AppController {
 
-    public static final String MANAGEMENT_PAGE_FXML_LIGHT_RESOURCE = "/managementPage/ManagementPage.fxml";
+    public static final String SIMULATION_DETAILS_PAGE_FXML_LIGHT_RESOURCE = "/simulationDetailsPage/simulationDetailsPage.fxml";
+    private static final String REQUESTS_PAGE_FXML_LIGHT_RESOURCE = "/requestsPage/requestsPage.fxml";
 
     @FXML
     private BorderPane borderPaneComponent;
@@ -40,8 +44,13 @@ public class AppController {
 
     private Stage primaryStage;
 
-    @FXML
-    private ManagementPageController managementPageController;
+    private SimulationDetailsPageController simulationDetailsPageController;
+    private RequestsPageController requestsPageController;
+
+    private ExecutionPageController executionsPageController;
+
+    private ResultsPageController resultsPageController;
+
 
     public AppController(){
         isFileLoaded = new SimpleBooleanProperty(false);
@@ -52,26 +61,35 @@ public class AppController {
     @FXML
     public void initialize() throws Exception {
         loadResources();
-        if(headerComponentController != null && managementPageController != null){
+        if(headerComponentController != null){
             headerComponentController.setMainController(this);
-            managementPageController.setControllers(this);
             headerComponentController.bindComponents();
-            showManagementPage();
+            showSimulationDetailsPage();
         }
     }
 
     private void loadResources() throws Exception {
-        loadResourcesManagementPage();
+        loadResourcesSimulationDetailsPage();
+//        loadResourcesRequestsPage();
     }
 
-    private void loadResourcesManagementPage() throws IOException {
+    private void loadResourcesSimulationDetailsPage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
-        URL url = getClass().getResource(MANAGEMENT_PAGE_FXML_LIGHT_RESOURCE);
+        URL url = getClass().getResource(SIMULATION_DETAILS_PAGE_FXML_LIGHT_RESOURCE);
         fxmlLoader.setLocation(url);
         InputStream inputStream = url.openStream();
         GridPane gridPane = fxmlLoader.load(inputStream);
-        managementPageController = fxmlLoader.getController();
+        simulationDetailsPageController = fxmlLoader.getController();
     }
+
+//    private void loadResourcesRequestsPage() throws IOException {
+//        FXMLLoader fxmlLoader = new FXMLLoader();
+//        URL url = getClass().getResource(REQUESTS_PAGE_FXML_LIGHT_RESOURCE);
+//        fxmlLoader.setLocation(url);
+//        InputStream inputStream = url.openStream();
+//        GridPane gridPane = fxmlLoader.load(inputStream);
+//        requestsPageController = fxmlLoader.getController();
+//    }
 
     public SimpleBooleanProperty getIsFileLoadedProperty() {
         return isFileLoaded;
@@ -81,8 +99,20 @@ public class AppController {
         this.primaryStage = primaryStage;
     }
 
-    public void showManagementPage() {
-        borderPaneComponent.setCenter(managementPageController.getGridPaneManagementPage());
+    public void showSimulationDetailsPage() {
+        borderPaneComponent.setCenter(simulationDetailsPageController.getGridPaneSimulationDetailsPage());
+    }
+
+    public void showRequestsPage() {
+//        borderPaneComponent.setCenter(requestsPageController.getGridPaneRequestsPage());
+    }
+
+    public void showExecutionsPage() {
+//        borderPaneComponent.setCenter(executionsPageController.getExecutionPageGridPane());
+    }
+
+    public void showResultsPage() {
+//        borderPaneComponent.setCenter(resultsPageController.getResultsPageGridPane());
     }
 
     public Window getPrimaryStage() {
@@ -104,4 +134,6 @@ public class AppController {
         alert.setContentText(errorMessage);
         alert.showAndWait();
     }
+
+
 }

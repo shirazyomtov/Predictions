@@ -161,16 +161,16 @@ public class ManagementPageController {
     void SetThreadsCountClicked(ActionEvent event) {
         String threadCount = threadCountTextField.getText();
         try{
-            Pattern pattern = Pattern.compile("[2-9]\\d*");
-            if (pattern.matcher(threadCount).matches() || threadCount.isEmpty()) {
+            Integer count = Integer.parseInt(threadCount);
+            if (count > 0) {
                 //todo: update the logic
             }
             else{
-                mainController.setErrorMessage("You need to enter a number of threads greater than 1");
+                mainController.setErrorMessage("You need to enter a number of threads greater than 0");
             }
         }
         catch (Exception e){
-
+            mainController.setErrorMessage("You need to enter a number of threads greater than 0");
         }
     }
 

@@ -6,7 +6,7 @@ public class DTORequestsOfSimulations {
    // private String userName;
     private String worldName;
     private Integer totalAmount;
-    private DTOTerminationInfo termination;
+    private String termination;
 
     private String status;
    // private String amountOfSimulationsCurrentlyRunning;
@@ -18,10 +18,32 @@ public class DTORequestsOfSimulations {
         //  this.userName = userName;
         this.worldName = worldName;
         this.totalAmount = totalAmount;
-        this.termination = termination;
+        this.termination = createTerminationString(termination);
         this.status = status;
 //        this.amountOfSimulationsCurrentlyRunning = amountOfSimulationsCurrentlyRunning;
 //        this.amountOfFinishedSimulations = amountOfFinishedSimulations;
+    }
+
+    private String createTerminationString(DTOTerminationInfo termination) {
+        String terminationString;
+        String ticks = "";
+        String seconds = "";
+        if(termination.getTerminationByUser()){
+            terminationString = "By user";
+        }
+        else{
+            if(termination.getTicks() != null){
+                ticks = "Ticks: ";
+                ticks = ticks.concat(termination.getTicks().toString());
+                seconds.concat(" ");
+            }
+            if(termination.getSecond() != null){
+                seconds = "Seconds: ";
+                seconds = seconds.concat(termination.getSecond().toString());
+            }
+            terminationString = ticks.concat(seconds);
+        }
+        return terminationString;
     }
 
     public Integer getRequestId() {
@@ -40,7 +62,7 @@ public class DTORequestsOfSimulations {
         return totalAmount;
     }
 
-    public DTOTerminationInfo getTermination() {
+    public String getTermination() {
         return termination;
     }
 

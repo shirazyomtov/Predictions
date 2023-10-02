@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 
 import java.util.Map;
@@ -75,7 +76,6 @@ public class AllocationsPageController {
                     .findFirst();
 
             if (existingRequestOpt.isPresent()) {
-                // If found, update the existing request
 //                DTORequestsOfSimulations existingRequest = existingRequestOpt.get();
 //                existingRequest.setUserName(request.getUserName());
 //                existingRequest.setWorldName(request.getWorldName());
@@ -88,6 +88,12 @@ public class AllocationsPageController {
         if(!dtoAllRequests.getRequestsOfSimulationsMap().isEmpty()) {
             Platform.runLater(() -> {
                 requestsTableView.setItems(data);
+                requestIdColumn.setCellValueFactory(new PropertyValueFactory<>("requestId"));
+                worldNameColumn.setCellValueFactory(new PropertyValueFactory<>("worldName"));
+                totalAmountOfSimulationToRunColumn.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
+                termainationColumn.setCellValueFactory(new PropertyValueFactory<>("termination"));
+                statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
             });
         }
     }

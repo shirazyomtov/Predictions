@@ -1,7 +1,6 @@
 package simulationDetailsPage.presentDetails;
 
 import DTO.DTOAllWorldsInfo;
-import DTO.Worlds.DTOWorldsName;
 import com.google.gson.Gson;
 import okhttp3.Call;
 import okhttp3.Callback;

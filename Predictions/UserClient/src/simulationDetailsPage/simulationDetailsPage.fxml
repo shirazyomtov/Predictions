@@ -29,17 +29,17 @@
     <children>
         <ScrollPane fx:id="scrollPaneWrapper" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.vgrow="ALWAYS">
             <content>
-            <SplitPane fx:id="simulationDetailsPageSplitPane" dividerPositions="0.5">
+            <SplitPane fx:id="simulationDetailsPageSplitPane" dividerPositions="0.5" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                <items>
                           <VBox alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="450.0" prefWidth="330.0" HBox.hgrow="ALWAYS">
                         <HBox.margin>
                            <Insets left="10.0" />
                         </HBox.margin>
                      <children>
-                        <TreeView fx:id="simulationTreeView" onMouseClicked="#simulationTreeViewClicked" prefHeight="513.0" prefWidth="366.0" />
+                        <TreeView fx:id="simulationTreeView" minWidth="150.0" onMouseClicked="#simulationTreeViewClicked" prefHeight="513.0" prefWidth="366.0" VBox.vgrow="ALWAYS" />
                      </children>
                      </VBox>
-                  <VBox fx:id="vboxDetails" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="450.0" prefWidth="330.0" />
+                  <VBox fx:id="vboxDetails" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
                </items>
             </SplitPane>
             </content>

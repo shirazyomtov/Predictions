@@ -1,44 +1,46 @@
 package DTO;
 
 public class DTORequestsOfSimulations {
-    private String requestId;
-    private String userName;
+
+    private Integer requestId;
+   // private String userName;
     private String worldName;
-    private String totalAmount;
-    private String termination;
+    private Integer totalAmount;
+    private DTOTerminationInfo termination;
+
     private String status;
-    private String amountOfSimulationsCurrentlyRunning;
-    private String amountOfFinishedSimulations;
+   // private String amountOfSimulationsCurrentlyRunning;
+   // private String amountOfFinishedSimulations;
 
 
-    public DTORequestsOfSimulations(String requestId, String userName, String worldName, String totalAmount, String termination, String status, String amountOfSimulationsCurrentlyRunning, String amountOfFinishedSimulations) {
+    public DTORequestsOfSimulations(Integer requestId, String worldName, Integer totalAmount, DTOTerminationInfo termination, String status) {
         this.requestId = requestId;
-        this.userName = userName;
+        //  this.userName = userName;
         this.worldName = worldName;
         this.totalAmount = totalAmount;
         this.termination = termination;
         this.status = status;
-        this.amountOfSimulationsCurrentlyRunning = amountOfSimulationsCurrentlyRunning;
-        this.amountOfFinishedSimulations = amountOfFinishedSimulations;
+//        this.amountOfSimulationsCurrentlyRunning = amountOfSimulationsCurrentlyRunning;
+//        this.amountOfFinishedSimulations = amountOfFinishedSimulations;
     }
 
-    public String getRequestId() {
+    public Integer getRequestId() {
         return requestId;
     }
 
-    public String getUserName() {
-        return userName;
-    }
+    //    public String getUserName() {
+//        return userName;
+//    }
 
     public String getWorldName() {
         return worldName;
     }
 
-    public String getTotalAmount() {
+    public Integer getTotalAmount() {
         return totalAmount;
     }
 
-    public String getTermination() {
+    public DTOTerminationInfo getTermination() {
         return termination;
     }
 
@@ -46,11 +48,11 @@ public class DTORequestsOfSimulations {
         return status;
     }
 
-    public String getAmountOfSimulationsCurrentlyRunning() {
-        return amountOfSimulationsCurrentlyRunning;
-    }
+//    public String getAmountOfSimulationsCurrentlyRunning() {
+//        return amountOfSimulationsCurrentlyRunning;
+//    }
 
-    public String getAmountOfFinishedSimulations() {
-        return amountOfFinishedSimulations;
-    }
+//    public String getAmountOfFinishedSimulations() {
+//        return amountOfFinishedSimulations;
+//    }
 }

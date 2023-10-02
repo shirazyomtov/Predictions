@@ -215,37 +215,12 @@ public class ManagementPageController {
         }
     }
 
-//    public void setWorldDetailsFromEngine(){
-//        String finalUrl = HttpUrl
-//                .parse("http://localhost:8080/Server_Web_exploded/showDetails")
-//                .newBuilder()
-//               // .addQueryParameter("worldName", )
-//                .build()
-//                .toString();
-//        HttpAdminClientUtil.runAsyncGet(finalUrl, new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                if(response.isSuccessful()){
-//                    Gson gson = new Gson();
-//                    DTOWorldDefinitionInfo dtoWorldDefinitionInfo = gson.fromJson(response.body().string(), DTOWorldDefinitionInfo.class);
-//                    addSimulationDetails(dtoWorldDefinitionInfo);
-//
-//                }
-//            }
-//        });
-//    }
-
-
     private void addSimulationDetails(DTOWorldDefinitionInfo dtoWorldDefinitionInfo) {
         TreeItem<String> simulationItem = createSimulationTreeItem(dtoWorldDefinitionInfo.getWorldName(), dtoWorldDefinitionInfo);
 
         Platform.runLater(() -> {
             simulationTreeView.getRoot().getChildren().addAll(simulationItem);
+            mainController.setVisbleAlloctionPage();
         });
     }
 

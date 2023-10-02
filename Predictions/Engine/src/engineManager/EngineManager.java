@@ -1,7 +1,8 @@
 package engineManager;
 
-import DTO.DTOAllWorldsInfo;
-import DTO.DTOWorldDefinitionInfo;
+import DTO.*;
+import allocations.Allocation;
+import allocations.Allocations;
 import exceptions.NameAlreadyExist;
 import threadManager.ThreadManager;
 import worldManager.WorldManager;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 public class EngineManager {
     private Map<String, WorldManager> worldManagerMap = new HashMap<>();
-
+    private Allocations allocations = new Allocations();
     private ThreadManager threadManager;
 
     public DTOAllWorldsInfo getDTOAllWorlds(){
@@ -48,6 +49,20 @@ public class EngineManager {
         worldManagerMap.get(name);
     }
 
+    public void addAllocation(String simulationName, String numberOfSimulationRun, String ticks, String second, String byUser){
+        allocations.addAllocation(simulationName, numberOfSimulationRun, ticks, second, byUser);
+    }
+
+    public DTOAllRequests getAllRequest(){
+        Map<Integer, DTORequestsOfSimulations> allRequest = new HashMap<>();
+        for (Integer requestID : allocations.getAllAllocation().keySet()){
+            Allocation allocation = allocations.getAllAllocation().get(requestID);
+            String status = allocation.getStatusRequest().toString();
+            DTOTerminationInfo dtoTerminationInfo = new DTOTerminationInfo(allocation.getTermination().getTicks(), allocation.getTermination().getSecond(), allocation.getTermination().getTerminationByUser());
+            allRequest.put(requestID, new DTORequestsOfSimulations(requestID, allocation.getSimulationName(), allocation.getNumberOfSimulationRun(), dtoTerminationInfo, status));
+        }
+        return  new DTOAllRequests(allRequest);
+    }
 
 //    public ThreadManager getThreadManager() {
 //        return threadManager;

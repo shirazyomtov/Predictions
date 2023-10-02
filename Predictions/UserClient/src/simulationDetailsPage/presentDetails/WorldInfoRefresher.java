@@ -14,9 +14,11 @@ import java.util.function.Consumer;
 
 public class WorldInfoRefresher extends TimerTask {
     private final Consumer<DTOAllWorldsInfo> worldsNameConsumer;
+    private final Consumer<DTOAllWorldsInfo> worldsNameToRequestPage;
 
-    public WorldInfoRefresher(Consumer<DTOAllWorldsInfo> worldsNameConsumer) {
+    public WorldInfoRefresher(Consumer<DTOAllWorldsInfo> worldsNameConsumer, Consumer<DTOAllWorldsInfo> worldsNameToRequestPage) {
         this.worldsNameConsumer = worldsNameConsumer;
+        this.worldsNameToRequestPage = worldsNameToRequestPage;
     }
 
     @Override
@@ -39,6 +41,7 @@ public class WorldInfoRefresher extends TimerTask {
                     Gson gson = new Gson();
                     DTOAllWorldsInfo dtoWorldsName = gson.fromJson(response.body().charStream(), DTOAllWorldsInfo.class);
                     worldsNameConsumer.accept(dtoWorldsName);
+                    worldsNameToRequestPage.accept(dtoWorldsName);
                 }
             }
         });

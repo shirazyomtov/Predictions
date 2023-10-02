@@ -56,4 +56,8 @@ public class HeaderController {
     void simulationDetailsButtonClicked(ActionEvent event) {
 
     }
+
+    public void setVisbleRequestPage() {
+        requestsToggleButton.setDisable(false);
+    }
 }

@@ -35,4 +35,8 @@ public class Allocation {
     public StatusRequest getStatusRequest() {
         return statusRequest;
     }
+
+    public void updateStatus(String status) {
+        statusRequest = StatusRequest.valueOf(status);
+    }
 }

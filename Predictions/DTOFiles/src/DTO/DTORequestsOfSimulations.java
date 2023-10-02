@@ -35,7 +35,7 @@ public class DTORequestsOfSimulations {
             if(termination.getTicks() != null){
                 ticks = "Ticks: ";
                 ticks = ticks.concat(termination.getTicks().toString());
-                seconds.concat(" ");
+                ticks.concat(" ");
             }
             if(termination.getSecond() != null){
                 seconds = "Seconds: ";

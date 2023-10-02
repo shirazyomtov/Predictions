@@ -12,14 +12,14 @@ public class Termination implements Serializable {
 
     private Boolean terminationByUser = false;
 
-    public Termination(PRDByTicks prdByTicks, PRDBySecond prdBySecond, Object prdByUser) {
-        if (prdByTicks != null) {
-            this.ticks = prdByTicks.getCount();
+    public Termination(String ticks, String second, String byUser) {
+        if (!ticks.isEmpty()) {
+            this.ticks = Integer.parseInt(ticks);
         }
-        if (prdBySecond != null) {
-            this.second = prdBySecond.getCount();
+        if (!second.isEmpty()) {
+            this.second = Integer.parseInt(second);
         }
-        if(prdByUser != null){
+        if(byUser.equals("true")){
             this.terminationByUser = true;
         }
     }

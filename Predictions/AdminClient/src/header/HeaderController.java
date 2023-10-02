@@ -29,6 +29,10 @@ public class HeaderController {
         managementToggleButton.selectedProperty().addListener(e -> {
             mainController.showManagementPage();
         });
+
+        allocationsToggleButton.selectedProperty().addListener(e -> {
+            mainController.showAllocationsPage();
+        });
     }
 
     public void bindComponents() {
@@ -39,5 +43,9 @@ public class HeaderController {
     @FXML
     void managementButtonClicked(ActionEvent event) {
 
+    }
+
+    public void setAllcotionButtonVisble() {
+        allocationsToggleButton.setDisable(false);
     }
 }

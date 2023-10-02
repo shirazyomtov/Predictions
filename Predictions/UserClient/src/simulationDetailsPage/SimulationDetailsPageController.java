@@ -2,7 +2,6 @@ package simulationDetailsPage;
 
 import DTO.*;
 import app.AppController;
-import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,17 +13,13 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.Response;
+
 import simulationDetailsPage.presentDetails.WorldInfoRefresher;
 import simulationDetailsPage.presentDetails.presentEntities.PresentEntities;
 import simulationDetailsPage.presentDetails.presentEnvironment.PresentEnvironment;
 import simulationDetailsPage.presentDetails.presentGrid.PresentGrid;
 import simulationDetailsPage.presentDetails.presentRules.PresentRule;
-import sun.reflect.generics.tree.Tree;
-import utils.HttpClientUtil;
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -143,9 +138,15 @@ public class SimulationDetailsPageController {
     }
 
     public void worldListRefresher(){
-        worldInfoRefresher = new WorldInfoRefresher(this::addWorldsNamesToTreeView);
+        worldInfoRefresher = new WorldInfoRefresher(this::addWorldsNamesToTreeView, this::addWorldsNameToRequestPage);
         timer = new Timer();
         timer.schedule(worldInfoRefresher, 2000, 2000);
+    }
+
+    private void addWorldsNameToRequestPage(DTOAllWorldsInfo dtoAllWorldsInfo) {
+        if(!dtoAllWorldsInfo.getDtoWorldDefinitionInfoMap().isEmpty()) {
+            mainController.setRequestPage(dtoAllWorldsInfo);
+        }
     }
 
     public void addWorldsNamesToTreeView(DTOAllWorldsInfo dtoAllWorldsInfo){

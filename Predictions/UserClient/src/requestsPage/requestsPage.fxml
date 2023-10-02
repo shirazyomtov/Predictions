@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane fx:id="requestsPageGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="550.0" prefWidth="800.0" styleClass="grid-pane-page" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="requestsPage.RequestsPageController">
+<GridPane fx:id="requestsPageGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="550.0" prefWidth="800.0" styleClass="grid-pane-page" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="requestsPage.RequestsPageController">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
         <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
@@ -56,7 +56,7 @@
                               <HBox alignment="CENTER" prefHeight="46.0" prefWidth="731.0">
                                  <children>
                                     <Label prefHeight="26.0" prefWidth="470.0" text="Choose the amount of simulation to run" />
-                                    <TextField fx:id="amountOfSimulationTextField" alignment="CENTER" editable="false" prefHeight="26.0" prefWidth="263.0" />
+                                    <TextField fx:id="amountOfSimulationTextField" alignment="CENTER" prefHeight="26.0" prefWidth="263.0" />
                                  </children>
                               </HBox>
                               <HBox alignment="CENTER_LEFT">

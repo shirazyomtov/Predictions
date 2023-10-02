@@ -1,5 +1,6 @@
 package app;
 
+import allocationsPage.AllocationsPageController;
 import header.HeaderController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,6 +21,7 @@ import java.net.URL;
 public class AppController {
 
     public static final String MANAGEMENT_PAGE_FXML_LIGHT_RESOURCE = "/managementPage/ManagementPage.fxml";
+    private static final String ALLOCATIONS_PAGE_FXML_LIGHT_RESOURCE = "/allocationsPage/allocations.fxml";
 
     @FXML
     private BorderPane borderPaneComponent;
@@ -43,6 +45,9 @@ public class AppController {
     @FXML
     private ManagementPageController managementPageController;
 
+    @FXML
+    private AllocationsPageController allocationsPageController;
+
     public AppController(){
         isFileLoaded = new SimpleBooleanProperty(false);
         xmlPathProperty = new SimpleStringProperty();
@@ -62,7 +67,9 @@ public class AppController {
 
     private void loadResources() throws Exception {
         loadResourcesManagementPage();
+        loadResourcesAllocationsPage();
     }
+
 
     private void loadResourcesManagementPage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -71,6 +78,17 @@ public class AppController {
         InputStream inputStream = url.openStream();
         GridPane gridPane = fxmlLoader.load(inputStream);
         managementPageController = fxmlLoader.getController();
+    }
+
+
+    private void loadResourcesAllocationsPage() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(ALLOCATIONS_PAGE_FXML_LIGHT_RESOURCE);
+        fxmlLoader.setLocation(url);
+        InputStream inputStream = url.openStream();
+        GridPane gridPane = fxmlLoader.load(inputStream);
+        allocationsPageController = fxmlLoader.getController();
+        allocationsPageController.allocationsRefresher();
     }
 
     public SimpleBooleanProperty getIsFileLoadedProperty() {
@@ -83,6 +101,11 @@ public class AppController {
 
     public void showManagementPage() {
         borderPaneComponent.setCenter(managementPageController.getGridPaneManagementPage());
+    }
+
+
+    public void showAllocationsPage() {
+        borderPaneComponent.setCenter(allocationsPageController.getGridAllocationsPage());
     }
 
     public Window getPrimaryStage() {
@@ -104,4 +127,9 @@ public class AppController {
         alert.setContentText(errorMessage);
         alert.showAndWait();
     }
+
+    public void setVisbleAlloctionPage() {
+        headerComponentController.setAllcotionButtonVisble();
+    }
+
 }

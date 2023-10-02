@@ -1,6 +1,7 @@
 package app;
 
 //import executionPage.ExecutionPageController;
+import DTO.DTOAllWorldsInfo;
 import header.HeaderController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,8 +13,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-//import requestsPage.RequestsPageController;
 //import resultsPage.ResultsPageController;
+import requestsPage.RequestsPageController;
 import simulationDetailsPage.SimulationDetailsPageController;
 
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class AppController {
     private Stage primaryStage;
 
     private SimulationDetailsPageController simulationDetailsPageController;
-//    private RequestsPageController requestsPageController;
+    private RequestsPageController requestsPageController;
 //
 //    private ExecutionPageController executionsPageController;
 //
@@ -61,7 +62,7 @@ public class AppController {
     @FXML
     public void initialize() throws Exception {
         loadResources();
-        if(headerComponentController != null){
+        if(headerComponentController != null && requestsPageController != null){
             headerComponentController.setMainController(this);
             headerComponentController.bindComponents();
             simulationDetailsPageController.setControllers(this);
@@ -71,7 +72,7 @@ public class AppController {
 
     private void loadResources() throws Exception {
         loadResourcesSimulationDetailsPage();
-//        loadResourcesRequestsPage();
+        loadResourcesRequestsPage();
     }
 
     private void loadResourcesSimulationDetailsPage() throws IOException {
@@ -84,14 +85,14 @@ public class AppController {
         simulationDetailsPageController.worldListRefresher();
     }
 
-//    private void loadResourcesRequestsPage() throws IOException {
-//        FXMLLoader fxmlLoader = new FXMLLoader();
-//        URL url = getClass().getResource(REQUESTS_PAGE_FXML_LIGHT_RESOURCE);
-//        fxmlLoader.setLocation(url);
-//        InputStream inputStream = url.openStream();
-//        GridPane gridPane = fxmlLoader.load(inputStream);
-//        requestsPageController = fxmlLoader.getController();
-//    }
+    private void loadResourcesRequestsPage() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(REQUESTS_PAGE_FXML_LIGHT_RESOURCE);
+        fxmlLoader.setLocation(url);
+        InputStream inputStream = url.openStream();
+        GridPane gridPane = fxmlLoader.load(inputStream);
+        requestsPageController = fxmlLoader.getController();
+    }
 
     public SimpleBooleanProperty getIsFileLoadedProperty() {
         return isFileLoaded;
@@ -106,7 +107,7 @@ public class AppController {
     }
 
     public void showRequestsPage() {
-//        borderPaneComponent.setCenter(requestsPageController.getGridPaneRequestsPage());
+        borderPaneComponent.setCenter(requestsPageController.getGridPaneRequestsPage());
     }
 
     public void showExecutionsPage() {
@@ -138,4 +139,8 @@ public class AppController {
     }
 
 
+    public void setRequestPage(DTOAllWorldsInfo dtoAllWorldsInfo) {
+        headerComponentController.setVisbleRequestPage();
+        requestsPageController.setWorldsNames(dtoAllWorldsInfo);
+    }
 }

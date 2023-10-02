@@ -39,7 +39,7 @@ public class DTORequestsOfSimulations {
             }
             if(termination.getSecond() != null){
                 seconds = "Seconds: ";
-                seconds = termination.getSecond().toString();
+                seconds = seconds.concat(termination.getSecond().toString());
             }
             terminationString = ticks.concat(seconds);
         }

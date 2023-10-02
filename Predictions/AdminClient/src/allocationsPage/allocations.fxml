@@ -28,14 +28,14 @@
          <content>
             <TableView fx:id="requestsTableView" prefHeight="200.0" prefWidth="200.0">
               <columns>
-                <TableColumn editable="false" prefWidth="75.0" text="Request id" />
-                <TableColumn editable="false" prefWidth="75.0" sortable="false" text="User name" />
-                  <TableColumn editable="false" prefWidth="75.0" sortable="false" text="World name" />
-                  <TableColumn editable="false" prefWidth="75.0" sortable="false" text="Total amount" />
-                  <TableColumn editable="false" prefWidth="75.0" sortable="false" text="Termaination" />
-                  <TableColumn onEditStart="#checkIfPendingStatus" prefWidth="75.0" text="Status" />
-                  <TableColumn editable="false" prefWidth="75.0" sortable="false" text="Running simulation" />
-                  <TableColumn editable="false" prefWidth="75.0" sortable="false" text="Finish simulation" />
+                <TableColumn editable="false" prefWidth="76.79998630285263" text="Request id" />
+                <TableColumn editable="false" prefWidth="107.20000457763672" sortable="false" text="User name" />
+                  <TableColumn editable="false" prefWidth="98.39997863769531" sortable="false" text="World name" />
+                  <TableColumn editable="false" prefWidth="90.4000244140625" sortable="false" text="Total amount" />
+                  <TableColumn editable="false" prefWidth="95.199951171875" sortable="false" text="Termaination" />
+                  <TableColumn onEditStart="#checkIfPendingStatus" prefWidth="71.20004272460938" sortable="false" text="Status" />
+                  <TableColumn editable="false" prefWidth="84.7999267578125" sortable="false" text="Running simulation" />
+                  <TableColumn editable="false" prefWidth="93.60009765625" sortable="false" text="Finish simulation" />
               </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

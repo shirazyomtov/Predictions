@@ -1,7 +1,10 @@
 package serverlet;
 
+import DTO.DTOActions.DTOActionInfo;
+import DTO.DTOActions.DTOActionSerialize;
 import DTO.DTOWorldDefinitionInfo;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import engineManager.EngineManager;
 import worldManager.WorldManager;
 import jakarta.servlet.ServletException;
@@ -23,7 +26,7 @@ public class LoadFileServlet extends HttpServlet {
 
         EngineManager engineManager = (EngineManager) getServletContext().getAttribute("manager");
         Part xmlPart = req.getPart("xmlFile");
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().registerTypeAdapter(DTOActionInfo.class, new DTOActionSerialize()).create();
 
         try {
             DTOWorldDefinitionInfo dtoWorldDefinitionInfo =  engineManager.loadXMLAAndCheckValidation(xmlPart.getInputStream());
@@ -34,6 +37,7 @@ public class LoadFileServlet extends HttpServlet {
                 out.flush();
             }
         } catch (Exception e) {
+
             resp.sendError(400, "Error processing the request: " + e.getMessage());
         }
     }

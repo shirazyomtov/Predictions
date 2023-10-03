@@ -1,8 +1,11 @@
 package managementPage;
 
 import DTO.*;
+import DTO.DTOActions.DTOActionDeserialize;
+import DTO.DTOActions.DTOActionInfo;
 import app.AppController;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,6 +30,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ManagementPageController {
@@ -196,16 +200,35 @@ public class ManagementPageController {
             HttpAdminClientUtil.runAsyncPost(finalUrl, body, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    System.out.println("d");
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if(response.isSuccessful()) {
-                        Gson gson = new Gson();
+                        Gson gson = new GsonBuilder().registerTypeAdapter(DTOActionInfo.class, new DTOActionDeserialize()).create();
                         XMLFileTextField.setText(f.getAbsolutePath());
                         DTOWorldDefinitionInfo dtoWorldDefinitionInfo = gson.fromJson(response.body().string(), DTOWorldDefinitionInfo.class);
                         addSimulationDetails(dtoWorldDefinitionInfo);
+                        Platform.runLater(() -> {
+                            mainController.setSuccessMessage("The file was loaded Successfully");
+                        });
+                    }
+                    else{
+                        Platform.runLater(()->{
+                            try {
+                                String responseBody = response.body().string();
+                                Pattern pattern = Pattern.compile("<b>Message</b>\\s*(.*?)</p>");
+                                Matcher matcher = pattern.matcher(responseBody);
+
+                                if (matcher.find()) {
+                                    String errorMessage = matcher.group(1).trim();
+                                    Platform.runLater(() -> {
+                                        mainController.setErrorMessage(errorMessage);
+                                    });
+                                }
+                            } catch (IOException ignore) {}
+                        });
                     }
                 }
             });

@@ -66,9 +66,9 @@
                                                 <HBox fx:id="secondsAndTicksHbox" alignment="CENTER_LEFT" prefHeight="58.0" prefWidth="394.0" spacing="15.0" visible="false">
                                                     <children>
                                                         <CheckBox fx:id="secondsCheckBox" mnemonicParsing="false" onAction="#secondsCheckBoxChecked" prefHeight="24.0" prefWidth="102.0" text="Seconds" />
-                                          <Spinner fx:id="secondsSpinner" prefHeight="26.0" prefWidth="76.0" visible="false" />
+                                          <Spinner fx:id="secondsSpinner" editable="true" prefHeight="26.0" prefWidth="76.0" visible="false" />
                                                         <CheckBox fx:id="ticksCheckBox" mnemonicParsing="false" onAction="#ticksCheckBoxChecked" prefHeight="23.0" prefWidth="100.0" text="Ticks" />
-                                          <Spinner fx:id="ticksSpinner" prefHeight="26.0" prefWidth="74.0" visible="false" />
+                                          <Spinner fx:id="ticksSpinner" editable="true" prefHeight="26.0" prefWidth="74.0" visible="false" />
                                                     </children>
                                                     <HBox.margin>
                                                         <Insets left="15.0" right="10.0" />

@@ -1,7 +1,11 @@
 package simulationDetailsPage.presentDetails;
 
+import DTO.DTOActions.DTOActionDeserialize;
+import DTO.DTOActions.DTOActionInfo;
+import DTO.DTOActions.DTOActionSerialize;
 import DTO.DTOAllWorldsInfo;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
@@ -38,7 +42,7 @@ public class WorldInfoRefresher extends TimerTask {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if(response.isSuccessful()){
-                    Gson gson = new Gson();
+                    Gson gson = new GsonBuilder().registerTypeAdapter(DTOActionInfo.class, new DTOActionDeserialize()).create();
                     DTOAllWorldsInfo dtoWorldsName = gson.fromJson(response.body().charStream(), DTOAllWorldsInfo.class);
                     worldsNameConsumer.accept(dtoWorldsName);
                     worldsNameToRequestPage.accept(dtoWorldsName);

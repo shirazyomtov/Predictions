@@ -3,8 +3,10 @@ package header;
 import app.AppController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.GridPane;
 
 public class HeaderController {
     @FXML
@@ -25,6 +27,9 @@ public class HeaderController {
     @FXML
     private Label userNameTextField;
     private AppController mainController;
+
+    @FXML
+    private GridPane headerGridPane;
 
     public void setMainController(AppController appController) {
         this.mainController = appController;
@@ -59,5 +64,17 @@ public class HeaderController {
 
     public void setVisbleRequestPage() {
         requestsToggleButton.setDisable(false);
+    }
+
+    public Node getGridPaneHeader() {
+        return headerGridPane;
+    }
+
+    public void setUserName(String userName) {
+        userNameTextField.setText(userName);
+    }
+
+    public String getUserName() {
+        return userNameTextField.getText();
     }
 }

@@ -12,9 +12,9 @@ public class Allocations {
     public Map<Integer, Allocation> getAllAllocation() {
         return allAllocation;
     }
-    public synchronized void addAllocation(String simulationName, String numberOfSimulationRun, String ticks, String second, String byUser){
+    public synchronized void addAllocation(String simulationName, String numberOfSimulationRun, String ticks, String second, String byUser, String username){
         numberOfAllocation++;
         Termination termination = new Termination(ticks, second, byUser);
-        allAllocation.put(numberOfAllocation, new Allocation(simulationName, Integer.parseInt(numberOfSimulationRun) , termination));
+        allAllocation.put(numberOfAllocation, new Allocation(simulationName, Integer.parseInt(numberOfSimulationRun) , termination, username));
     }
 }

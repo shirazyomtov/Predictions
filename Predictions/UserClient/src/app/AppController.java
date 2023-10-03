@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 //import resultsPage.ResultsPageController;
+import login.HeaderLoginController;
 import requestsPage.RequestsPageController;
 import simulationDetailsPage.SimulationDetailsPageController;
 
@@ -25,6 +26,9 @@ public class AppController {
 
     public static final String SIMULATION_DETAILS_PAGE_FXML_LIGHT_RESOURCE = "/simulationDetailsPage/simulationDetailsPage.fxml";
     private static final String REQUESTS_PAGE_FXML_LIGHT_RESOURCE = "/requestsPage/requestsPage.fxml";
+    private static final String HEADER_FXML_LIGHT_RESOURCE = "/header/header.fxml";
+
+    private static final String HEADER_LOGIN_FXML_LIGHT_RESOURCE = "/login/headerLogin.fxml";
 
     @FXML
     private BorderPane borderPaneComponent;
@@ -45,6 +49,7 @@ public class AppController {
 
     private Stage primaryStage;
 
+    private HeaderLoginController headerLoginComponentController;
     private SimulationDetailsPageController simulationDetailsPageController;
     private RequestsPageController requestsPageController;
 //
@@ -63,16 +68,34 @@ public class AppController {
     public void initialize() throws Exception {
         loadResources();
         if(headerComponentController != null && requestsPageController != null){
-            headerComponentController.setMainController(this);
-            headerComponentController.bindComponents();
-            simulationDetailsPageController.setControllers(this);
-            showSimulationDetailsPage();
+            borderPaneComponent.setTop(headerLoginComponentController.getGridPaneLoginHeader());
+            headerLoginComponentController.setMainController(this);
         }
     }
 
     private void loadResources() throws Exception {
+        loadHeader();
+        loadLoginHeader();
         loadResourcesSimulationDetailsPage();
         loadResourcesRequestsPage();
+    }
+
+    private void loadLoginHeader()  throws IOException{
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(HEADER_LOGIN_FXML_LIGHT_RESOURCE);
+        fxmlLoader.setLocation(url);
+        InputStream inputStream = url.openStream();
+        GridPane gridPane = fxmlLoader.load(inputStream);
+        headerLoginComponentController = fxmlLoader.getController();
+    }
+
+    private void loadHeader()  throws IOException{
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(HEADER_FXML_LIGHT_RESOURCE);
+        fxmlLoader.setLocation(url);
+        InputStream inputStream = url.openStream();
+        GridPane gridPane = fxmlLoader.load(inputStream);
+        headerComponentController = fxmlLoader.getController();
     }
 
     private void loadResourcesSimulationDetailsPage() throws IOException {
@@ -142,5 +165,21 @@ public class AppController {
     public void setRequestPage(DTOAllWorldsInfo dtoAllWorldsInfo) {
         headerComponentController.setVisbleRequestPage();
         requestsPageController.setWorldsNames(dtoAllWorldsInfo);
+    }
+
+    public void switchToApplication() throws IOException {
+        borderPaneComponent.setTop(headerComponentController.getGridPaneHeader());
+        headerComponentController.setMainController(this);
+        headerComponentController.bindComponents();
+        simulationDetailsPageController.setControllers(this);
+        showSimulationDetailsPage();
+    }
+
+    public void updateUserName(String userName) {
+        headerComponentController.setUserName(userName);
+    }
+
+    public String getUsername() {
+        return headerComponentController.getUserName();
     }
 }

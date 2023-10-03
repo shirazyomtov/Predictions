@@ -3,7 +3,7 @@ package DTO;
 public class DTORequestsOfSimulations {
 
     private Integer requestId;
-    // private String userName;
+    private String userName;
     private String worldName;
     private Integer totalAmount;
     private String termination;
@@ -13,9 +13,9 @@ public class DTORequestsOfSimulations {
     // private String amountOfFinishedSimulations;
 
 
-    public DTORequestsOfSimulations(Integer requestId, String worldName, Integer totalAmount, DTOTerminationInfo termination, String status) {
+    public DTORequestsOfSimulations(Integer requestId, String userName, String worldName, Integer totalAmount, DTOTerminationInfo termination, String status) {
         this.requestId = requestId;
-        //  this.userName = userName;
+          this.userName = userName;
         this.worldName = worldName;
         this.totalAmount = totalAmount;
         this.termination = createTerminationString(termination);
@@ -50,9 +50,9 @@ public class DTORequestsOfSimulations {
         return requestId;
     }
 
-    //    public String getUserName() {
-//        return userName;
-//    }
+    public String getUserName() {
+        return userName;
+    }
 
     public String getWorldName() {
         return worldName;

@@ -4,7 +4,8 @@ import world.termination.Termination;
 
 public class Allocation {
     private String simulationName;
-    // private String userName;
+    private String userName;
+
     private Integer numberOfSimulationRun;
     private Termination termination;
 
@@ -13,11 +14,12 @@ public class Allocation {
     private Integer numberOfRunningSimulationNow = 0;
     private Integer numberFinishSimulation = 0;
 
-    public Allocation(String simulationName, Integer numberOfSimulationRun, Termination termination) {
+    public Allocation(String simulationName, Integer numberOfSimulationRun, Termination termination, String userName) {
         this.simulationName = simulationName;
         this.numberOfSimulationRun = numberOfSimulationRun;
         this.termination = termination;
         this.statusRequest = StatusRequest.PENDING;
+        this.userName = userName;
     }
 
     public String getSimulationName() {
@@ -38,5 +40,9 @@ public class Allocation {
 
     public void updateStatus(String status) {
         statusRequest = StatusRequest.valueOf(status);
+    }
+
+    public String getUserName() {
+        return userName;
     }
 }

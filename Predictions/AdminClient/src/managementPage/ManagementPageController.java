@@ -1,8 +1,11 @@
 package managementPage;
 
 import DTO.*;
+import DTO.DTOActions.DTOActionDeserialize;
+import DTO.DTOActions.DTOActionInfo;
 import app.AppController;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -202,7 +205,7 @@ public class ManagementPageController {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if(response.isSuccessful()) {
-                        Gson gson = new Gson();
+                        Gson gson = new GsonBuilder().registerTypeAdapter(DTOActionInfo.class, new DTOActionDeserialize()).create();
                         XMLFileTextField.setText(f.getAbsolutePath());
                         DTOWorldDefinitionInfo dtoWorldDefinitionInfo = gson.fromJson(response.body().string(), DTOWorldDefinitionInfo.class);
                         addSimulationDetails(dtoWorldDefinitionInfo);

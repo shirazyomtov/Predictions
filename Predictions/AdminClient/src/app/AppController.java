@@ -57,11 +57,13 @@ public class AppController {
     @FXML
     public void initialize() throws Exception {
         loadResources();
-        if(headerComponentController != null && managementPageController != null){
+        if(headerComponentController != null && managementPageController != null &&
+                allocationsPageController != null){
             headerComponentController.setMainController(this);
             managementPageController.setControllers(this);
             headerComponentController.bindComponents();
             showManagementPage();
+            allocationsPageController.setChoiceBoxValues();
         }
     }
 

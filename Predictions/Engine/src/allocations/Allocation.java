@@ -5,6 +5,7 @@ import world.termination.Termination;
 public class Allocation {
     private String simulationName;
     private String userName;
+
     private Integer numberOfSimulationRun;
     private Termination termination;
 
@@ -35,6 +36,10 @@ public class Allocation {
 
     public StatusRequest getStatusRequest() {
         return statusRequest;
+    }
+
+    public void updateStatus(String status) {
+        statusRequest = StatusRequest.valueOf(status);
     }
 
     public String getUserName() {

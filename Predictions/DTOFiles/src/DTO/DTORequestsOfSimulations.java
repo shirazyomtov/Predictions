@@ -9,19 +9,19 @@ public class DTORequestsOfSimulations {
     private String termination;
 
     private String status;
-    // private String amountOfSimulationsCurrentlyRunning;
-    // private String amountOfFinishedSimulations;
+     private Integer amountOfSimulationsCurrentlyRunning;
+     private Integer amountOfFinishedSimulations;
 
 
-    public DTORequestsOfSimulations(Integer requestId, String userName, String worldName, Integer totalAmount, DTOTerminationInfo termination, String status) {
+    public DTORequestsOfSimulations(Integer requestId, String userName, String worldName, Integer totalAmount, DTOTerminationInfo termination, String status, Integer amountOfSimulationsCurrentlyRunning, Integer amountOfFinishedSimulations) {
         this.requestId = requestId;
-          this.userName = userName;
+        this.userName = userName;
         this.worldName = worldName;
         this.totalAmount = totalAmount;
         this.termination = createTerminationString(termination);
         this.status = status;
-//        this.amountOfSimulationsCurrentlyRunning = amountOfSimulationsCurrentlyRunning;
-//        this.amountOfFinishedSimulations = amountOfFinishedSimulations;
+        this.amountOfSimulationsCurrentlyRunning = amountOfSimulationsCurrentlyRunning;
+        this.amountOfFinishedSimulations = amountOfFinishedSimulations;
     }
 
     private String createTerminationString(DTOTerminationInfo termination) {
@@ -70,11 +70,11 @@ public class DTORequestsOfSimulations {
         return status;
     }
 
-//    public String getAmountOfSimulationsCurrentlyRunning() {
-//        return amountOfSimulationsCurrentlyRunning;
-//    }
+    public Integer getAmountOfSimulationsCurrentlyRunning() {
+        return amountOfSimulationsCurrentlyRunning;
+    }
 
-//    public String getAmountOfFinishedSimulations() {
-//        return amountOfFinishedSimulations;
-//    }
+    public Integer getAmountOfFinishedSimulations() {
+        return amountOfFinishedSimulations;
+    }
 }

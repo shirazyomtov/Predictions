@@ -1,18 +1,23 @@
 package requestsPage;
 
 import DTO.DTOAllWorldsInfo;
+import DTO.*;
 import app.AppController;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import okhttp3.*;
 import utils.HttpClientUtil;
 
 import java.io.IOException;
+import java.util.Timer;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
@@ -25,7 +30,25 @@ public class RequestsPageController {
     private GridPane requestsPageGridPane;
 
     @FXML
-    private TableView<?> requestsTableView;
+    private TableView<DTORequestsOfSimulations> requestsTableView;
+
+    @FXML
+    private TableColumn<DTORequestsOfSimulations, Integer> requestIdColumn;
+
+    @FXML
+    private TableColumn<DTORequestsOfSimulations, String> worldNameColumn;
+
+    @FXML
+    private TableColumn<DTORequestsOfSimulations, Integer> totalAmountOfSimulationToRunColumn;
+
+    @FXML
+    private TableColumn<DTORequestsOfSimulations, String> statusColumn;
+
+    @FXML
+    private TableColumn<DTORequestsOfSimulations, Integer> amountOfRunningSimulations;
+
+    @FXML
+    private TableColumn<DTORequestsOfSimulations, Integer> amountOfFinishedSimulations;
 
     @FXML
     private ScrollPane scrollPaneWrapper;
@@ -56,9 +79,52 @@ public class RequestsPageController {
 
     private AppController mainController;
 
-
+    private AllocationsRefresher allocationsRefresher;
+    private Timer timer;
     @FXML
     public void initialize() {
+    }
+
+    public void allocationsRefresher() {
+        String userName = mainController.getUsername();
+        allocationsRefresher = new AllocationsRefresher(this::addRequest, userName);
+        timer = new Timer();
+        timer.schedule(allocationsRefresher, 2000, 2000);
+    }
+
+    private void addRequest(DTOAllRequestsByUser dtoAllRequestsByUser) {
+        ObservableList<DTORequestsOfSimulations> data = FXCollections.observableArrayList();
+
+        for (DTORequestsOfSimulations request: dtoAllRequestsByUser.getAllRequestsByUser()) {
+
+            // Check if the request ID already exists in the table
+//            boolean requestExists = data.stream().anyMatch(existingRequest -> existingRequest.getRequestId().equals(requestId));
+//
+//            if (requestExists) {
+//                int index = data.indexOf(request);
+//                if (index >= 0) {
+//                    data.set(index, request);
+//                }
+//            }
+//            else {
+                data.add(request);
+//            }
+        }
+        if(!dtoAllRequestsByUser.getAllRequestsByUser().isEmpty()) {
+            Platform.runLater(() -> {
+                DTORequestsOfSimulations selectedItem = requestsTableView.getSelectionModel().getSelectedItem();
+                requestsTableView.setItems(data);
+                requestIdColumn.setCellValueFactory(new PropertyValueFactory<>("requestId"));
+                worldNameColumn.setCellValueFactory(new PropertyValueFactory<>("worldName"));
+                totalAmountOfSimulationToRunColumn.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
+                statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+                amountOfRunningSimulations.setCellValueFactory(new PropertyValueFactory<>("amountOfSimulationsCurrentlyRunning"));
+                amountOfFinishedSimulations.setCellValueFactory(new PropertyValueFactory<>("amountOfFinishedSimulations"));
+                if(selectedItem != null) {
+                    requestsTableView.getSelectionModel().select(selectedItem);
+                }
+            });
+        }
     }
 
     public void setControllers(AppController appController){
@@ -123,6 +189,7 @@ public class RequestsPageController {
         String ticks = "";
         String seconds = "";
         String byUser = "false";
+        String userName = mainController.getUsername();
         boolean valid = true;
         try {
             checkRequestDetails(simulationName, terminationValue);
@@ -149,6 +216,7 @@ public class RequestsPageController {
             urlBuilder.addQueryParameter("ticks", ticks);
             urlBuilder.addQueryParameter("seconds", seconds);
             urlBuilder.addQueryParameter("user", byUser);
+            urlBuilder.addQueryParameter("username", userName);
             String finalUrl = urlBuilder.build().toString();
 
             HttpClientUtil.runAsyncGet(finalUrl, new Callback() {

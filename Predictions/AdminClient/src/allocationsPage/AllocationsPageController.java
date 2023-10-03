@@ -137,10 +137,18 @@ public class AllocationsPageController {
                 DTORequestsOfSimulations selectedItem = requestsTableView.getSelectionModel().getSelectedItem();
                 requestsTableView.setItems(data);
                 requestIdColumn.setCellValueFactory(new PropertyValueFactory<>("requestId"));
+                userNameColumn.setCellValueFactory(new PropertyValueFactory<>("userName"));
                 worldNameColumn.setCellValueFactory(new PropertyValueFactory<>("worldName"));
                 totalAmountOfSimulationToRunColumn.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
                 termainationColumn.setCellValueFactory(new PropertyValueFactory<>("termination"));
                 statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+                for (Map.Entry<Integer, DTORequestsOfSimulations> entry : dtoAllRequests.getRequestsOfSimulationsMap().entrySet()) {
+                    DTORequestsOfSimulations request = entry.getValue();
+                    if ("APPROVED".equals(request.getStatus())) {
+                        amountOfRunningSimulations.setCellValueFactory(new PropertyValueFactory<>("amountOfSimulationsCurrentlyRunning"));
+                        amountOfFinishedSimulations.setCellValueFactory(new PropertyValueFactory<>("amountOfFinishedSimulations"));
+                    }
+                }
                 if(selectedItem != null) {
                     requestsTableView.getSelectionModel().select(selectedItem);
                 }

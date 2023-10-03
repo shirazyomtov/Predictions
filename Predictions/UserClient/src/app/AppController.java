@@ -130,6 +130,7 @@ public class AppController {
 
     public void showRequestsPage() {
         borderPaneComponent.setCenter(requestsPageController.getGridPaneRequestsPage());
+        requestsPageController.allocationsRefresher();
     }
 
     public void showExecutionsPage() {

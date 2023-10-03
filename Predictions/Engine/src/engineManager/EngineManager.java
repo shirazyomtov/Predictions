@@ -64,6 +64,12 @@ public class EngineManager {
         return  new DTOAllRequests(allRequest);
     }
 
+    public void updateRequestStatus(String requestId, String status) {
+        Integer requestIdInt = Integer.parseInt(requestId);
+        Allocation allocation = allocations.getAllAllocation().get(requestIdInt);
+        allocation.updateStatus(status);
+    }
+
 //    public ThreadManager getThreadManager() {
 //        return threadManager;
 //    }

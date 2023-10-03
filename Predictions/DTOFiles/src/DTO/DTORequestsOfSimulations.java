@@ -3,14 +3,14 @@ package DTO;
 public class DTORequestsOfSimulations {
 
     private Integer requestId;
-   // private String userName;
+    // private String userName;
     private String worldName;
     private Integer totalAmount;
     private String termination;
 
     private String status;
-   // private String amountOfSimulationsCurrentlyRunning;
-   // private String amountOfFinishedSimulations;
+    // private String amountOfSimulationsCurrentlyRunning;
+    // private String amountOfFinishedSimulations;
 
 
     public DTORequestsOfSimulations(Integer requestId, String worldName, Integer totalAmount, DTOTerminationInfo termination, String status) {
@@ -35,7 +35,7 @@ public class DTORequestsOfSimulations {
             if(termination.getTicks() != null){
                 ticks = "Ticks: ";
                 ticks = ticks.concat(termination.getTicks().toString());
-                seconds.concat(" ");
+                ticks.concat(" ");
             }
             if(termination.getSecond() != null){
                 seconds = "Seconds: ";

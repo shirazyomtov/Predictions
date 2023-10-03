@@ -37,6 +37,7 @@ public class LoadFileServlet extends HttpServlet {
                 out.flush();
             }
         } catch (Exception e) {
+
             resp.sendError(400, "Error processing the request: " + e.getMessage());
         }
     }

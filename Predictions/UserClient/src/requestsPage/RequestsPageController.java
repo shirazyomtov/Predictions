@@ -1,12 +1,8 @@
 package requestsPage;
 
 import DTO.DTOAllWorldsInfo;
-import DTO.DTOWorldDefinitionInfo;
 import app.AppController;
-import com.google.gson.Gson;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -95,11 +91,12 @@ public class RequestsPageController {
 
     private void setTickAndSecondsHbox(ActionEvent actionEvent) {
         String value = terminationChoiceBox.getValue();
-        if(value.equals("By seconds and ticks")){
-            secondsAndTicksHbox.setVisible(true);
-        }
-        else{
-            secondsAndTicksHbox.setVisible(false);
+        if(value != null) {
+            if (value.equals("By seconds and ticks")) {
+                secondsAndTicksHbox.setVisible(true);
+            } else {
+                secondsAndTicksHbox.setVisible(false);
+            }
         }
     }
 
@@ -163,10 +160,23 @@ public class RequestsPageController {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
+                        Platform.runLater(() -> resetComponentsAndSendSuccessMessage());
                     }
                 }
             });
         }
+    }
+
+    private void resetComponentsAndSendSuccessMessage() {
+        simulationNameChoiceBox.setValue(null);
+        amountOfSimulationSpinner.getValueFactory().setValue(1);
+        terminationChoiceBox.setValue(null);
+        ticksCheckBox.setSelected(false);
+        secondsCheckBox.setSelected(false);
+        ticksSpinner.getValueFactory().setValue(1);
+        secondsSpinner.getValueFactory().setValue(1);
+        secondsAndTicksHbox.setVisible(false);
+        mainController.setSuccessMessage("The request was sent to the admin");
     }
 
     private void checkRequestDetails(String simulationName, String terminationValue) throws Exception{

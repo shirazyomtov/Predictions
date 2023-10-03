@@ -45,4 +45,12 @@ public class Allocation {
     public String getUserName() {
         return userName;
     }
+
+    public Integer getNumberOfRunningSimulationNow() {
+        return numberOfRunningSimulationNow;
+    }
+
+    public Integer getNumberFinishSimulation() {
+        return numberFinishSimulation;
+    }
 }

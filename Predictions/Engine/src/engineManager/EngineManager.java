@@ -3,6 +3,7 @@ package engineManager;
 import DTO.*;
 import allocations.Allocation;
 import allocations.Allocations;
+import allocations.StatusRequest;
 import exceptions.NameAlreadyExist;
 import threadManager.ThreadManager;
 import worldManager.WorldManager;
@@ -10,7 +11,9 @@ import xml.XMLReader;
 import xml.XMLValidation;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EngineManager {
@@ -59,11 +62,23 @@ public class EngineManager {
             Allocation allocation = allocations.getAllAllocation().get(requestID);
             String status = allocation.getStatusRequest().toString();
             DTOTerminationInfo dtoTerminationInfo = new DTOTerminationInfo(allocation.getTermination().getTicks(), allocation.getTermination().getSecond(), allocation.getTermination().getTerminationByUser());
-            allRequest.put(requestID, new DTORequestsOfSimulations(requestID, allocation.getUserName(), allocation.getSimulationName(), allocation.getNumberOfSimulationRun(), dtoTerminationInfo, status));
+            allRequest.put(requestID, new DTORequestsOfSimulations(requestID, allocation.getUserName(), allocation.getSimulationName(), allocation.getNumberOfSimulationRun(), dtoTerminationInfo, status, allocation.getNumberOfRunningSimulationNow(), allocation.getNumberFinishSimulation()));
         }
         return  new DTOAllRequests(allRequest);
     }
 
+    public DTOAllRequestsByUser getAllRequestByUser(String userName){
+        List<DTORequestsOfSimulations> allRequestByUser = new ArrayList<>();
+        for (Integer requestID : allocations.getAllAllocation().keySet()){
+            Allocation allocation = allocations.getAllAllocation().get(requestID);
+            String status = allocation.getStatusRequest().toString();
+            if((status.equals("APPROVED") || status.equals("DECLINED")) && userName.equals(allocation.getUserName())) {
+                DTOTerminationInfo dtoTerminationInfo = new DTOTerminationInfo(allocation.getTermination().getTicks(), allocation.getTermination().getSecond(), allocation.getTermination().getTerminationByUser());
+                allRequestByUser.add(new DTORequestsOfSimulations(requestID, allocation.getUserName(), allocation.getSimulationName(), allocation.getNumberOfSimulationRun(), dtoTerminationInfo, status, allocation.getNumberOfRunningSimulationNow(), allocation.getNumberFinishSimulation()));
+            }
+        }
+        return  new DTOAllRequestsByUser(allRequestByUser);
+    }
     public void updateRequestStatus(String requestId, String status) {
         Integer requestIdInt = Integer.parseInt(requestId);
         Allocation allocation = allocations.getAllAllocation().get(requestIdInt);

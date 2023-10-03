@@ -105,6 +105,7 @@ public class RequestsPageController {
         String ticks = "";
         String seconds = "";
         String byUser = "false";
+        String userName = mainController.getUsername();
         if(terminationValue.equals("By seconds and ticks")){
             if (ticksCheckBox.isSelected()) {
                 ticks = ticksTextField.getText();
@@ -123,6 +124,7 @@ public class RequestsPageController {
         urlBuilder.addQueryParameter("ticks", ticks);
         urlBuilder.addQueryParameter("seconds", seconds);
         urlBuilder.addQueryParameter("user", byUser);
+        urlBuilder.addQueryParameter("username", userName);
         String finalUrl = urlBuilder.build().toString();
 
         HttpClientUtil.runAsyncGet(finalUrl, new Callback() {

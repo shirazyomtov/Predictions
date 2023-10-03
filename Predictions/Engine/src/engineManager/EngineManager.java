@@ -49,8 +49,8 @@ public class EngineManager {
         worldManagerMap.get(name);
     }
 
-    public void addAllocation(String simulationName, String numberOfSimulationRun, String ticks, String second, String byUser){
-        allocations.addAllocation(simulationName, numberOfSimulationRun, ticks, second, byUser);
+    public void addAllocation(String simulationName, String numberOfSimulationRun, String ticks, String second, String byUser, String username){
+        allocations.addAllocation(simulationName, numberOfSimulationRun, ticks, second, byUser, username);
     }
 
     public DTOAllRequests getAllRequest(){
@@ -59,7 +59,7 @@ public class EngineManager {
             Allocation allocation = allocations.getAllAllocation().get(requestID);
             String status = allocation.getStatusRequest().toString();
             DTOTerminationInfo dtoTerminationInfo = new DTOTerminationInfo(allocation.getTermination().getTicks(), allocation.getTermination().getSecond(), allocation.getTermination().getTerminationByUser());
-            allRequest.put(requestID, new DTORequestsOfSimulations(requestID, allocation.getSimulationName(), allocation.getNumberOfSimulationRun(), dtoTerminationInfo, status));
+            allRequest.put(requestID, new DTORequestsOfSimulations(requestID, allocation.getUserName(), allocation.getSimulationName(), allocation.getNumberOfSimulationRun(), dtoTerminationInfo, status));
         }
         return  new DTOAllRequests(allRequest);
     }

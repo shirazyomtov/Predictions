@@ -5,6 +5,8 @@ import DTO.DTOWorldDefinitionInfo;
 import app.AppController;
 import com.google.gson.Gson;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -21,7 +23,7 @@ import static javafx.collections.FXCollections.observableArrayList;
 public class RequestsPageController {
 
     @FXML
-    private TextField amountOfSimulationTextField;
+    private Spinner<Integer> amountOfSimulationSpinner;
 
     @FXML
     private GridPane requestsPageGridPane;
@@ -36,13 +38,13 @@ public class RequestsPageController {
     private HBox secondsAndTicksHbox;
 
     @FXML
-    private TextField secondsTextField;
+    private Spinner<Integer> secondsSpinner;
 
     @FXML
     private ChoiceBox<String> simulationNameChoiceBox;
 
     @FXML
-    private TextField ticksTextField;
+    private Spinner<Integer> ticksSpinner;
 
     @FXML
     private ChoiceBox<String> terminationChoiceBox;
@@ -61,14 +63,34 @@ public class RequestsPageController {
 
     @FXML
     public void initialize() {
+    }
+
+    public void setControllers(AppController appController){
+        mainController = appController;
         requestsSplitPane.setDividerPositions(0.35);
         requestsSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
             requestsSplitPane.setDividerPositions(0.35);
         });
         terminationChoiceBox.setItems(observableArrayList("By user", "By seconds and ticks"));
         terminationChoiceBox.setOnAction(this::setTickAndSecondsHbox);
-        ticksTextField.visibleProperty().bind(ticksCheckBox.selectedProperty());
-        secondsTextField.visibleProperty().bind(secondsCheckBox.selectedProperty());
+        ticksSpinner.visibleProperty().bind(ticksCheckBox.selectedProperty());
+        secondsSpinner.visibleProperty().bind(secondsCheckBox.selectedProperty());
+        configureSpinner(amountOfSimulationSpinner);
+        configureSpinner(secondsSpinner);
+        configureSpinner(ticksSpinner);
+    }
+
+    private void configureSpinner(Spinner<Integer> spinner) {
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 1);
+        spinner.setValueFactory(valueFactory);
+
+        spinner.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                spinner.getEditor().setText(oldValue);
+            }
+        });
+
+        spinner.getValueFactory().setValue(1);
     }
 
     private void setTickAndSecondsHbox(ActionEvent actionEvent) {
@@ -99,111 +121,76 @@ public class RequestsPageController {
     @FXML
     void submitRequestButtonClicked(ActionEvent event) {
         String simulationName = simulationNameChoiceBox.getValue();
-        String amountOfSimulation = amountOfSimulationTextField.getText();
+        Integer amountOfSimulation = amountOfSimulationSpinner.getValue();
         String terminationValue = terminationChoiceBox.getValue();
-        checkRequestDetails(simulationName, amountOfSimulation, terminationValue);
         String ticks = "";
         String seconds = "";
         String byUser = "false";
-        String userName = mainController.getUsername();
-        if(terminationValue.equals("By seconds and ticks")){
-            if (ticksCheckBox.isSelected()) {
-                ticks = ticksTextField.getText();
-            }
-            if(secondsCheckBox.isSelected()){
-                seconds = secondsTextField.getText();
-            }
+        boolean valid = true;
+        try {
+            checkRequestDetails(simulationName, terminationValue);
         }
-        else{
-            byUser = "true";
+        catch (Exception e){
+            mainController.setErrorMessage(e.getMessage());
+            valid = false;
         }
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/addUserRequest").newBuilder();
-        urlBuilder.addQueryParameter("simulationName", simulationName);
-        urlBuilder.addQueryParameter("amountOfSimulation", amountOfSimulation);
-        urlBuilder.addQueryParameter("ticks", ticks);
-        urlBuilder.addQueryParameter("seconds", seconds);
-        urlBuilder.addQueryParameter("user", byUser);
-        urlBuilder.addQueryParameter("username", userName);
-        String finalUrl = urlBuilder.build().toString();
-
-        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if(response.isSuccessful()) {
+        if(valid) {
+            if (terminationValue.equals("By seconds and ticks")) {
+                if (ticksCheckBox.isSelected()) {
+                    ticks = ticksSpinner.getValue().toString();
                 }
+                if (secondsCheckBox.isSelected()) {
+                    seconds = secondsSpinner.getValue().toString();
+                }
+            } else {
+                byUser = "true";
             }
-        });
+            HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/addUserRequest").newBuilder();
+            urlBuilder.addQueryParameter("simulationName", simulationName);
+            urlBuilder.addQueryParameter("amountOfSimulation", amountOfSimulation.toString());
+            urlBuilder.addQueryParameter("ticks", ticks);
+            urlBuilder.addQueryParameter("seconds", seconds);
+            urlBuilder.addQueryParameter("user", byUser);
+            String finalUrl = urlBuilder.build().toString();
+
+            HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                    }
+                }
+            });
+        }
     }
 
-    private void checkRequestDetails(String simulationName, String amountOfSimulation, String terminationValue) {
+    private void checkRequestDetails(String simulationName, String terminationValue) throws Exception{
         checkIfUserChoseSimulationName(simulationName);
-        checkValidAmountOfSimulations(amountOfSimulation);
         checkValidTerminationDetails(terminationValue);
     }
 
 
-    private void checkIfUserChoseSimulationName(String simulationName) {
+    private void checkIfUserChoseSimulationName(String simulationName) throws NullPointerException{
         if(simulationName == null){
-            //error
+            throw new NullPointerException("You need to chose at least one of the worlds name");
         }
     }
 
-    private void checkValidAmountOfSimulations(String amountOfSimulation) {
-        try{
-            Integer amount = Integer.parseInt(amountOfSimulation);
-            if (amount > 0) {
-                //todo: update the logic
-            }
-            else{
-                mainController.setErrorMessage("You need to enter a number of amount of simulations greater than 0");
+    private void checkValidTerminationDetails(String terminationValue) throws Exception {
+        if (terminationValue != null) {
+            if (terminationValue.equals("By seconds and ticks")) {
+                if (!ticksCheckBox.isSelected() && !secondsCheckBox.isSelected()) {
+                    throw new Exception("You need to choose at least one of the checkboxes: seconds and ticks");
+                }
             }
         }
-        catch (Exception e){
-            mainController.setErrorMessage("You need to enter a number of amount of simulations greater than 0");
-        }
-    }
-
-    private void checkValidTerminationDetails(String terminationValue) {
-        try {
-            if (terminationValue != null) {
-                if (terminationValue.equals("By seconds and ticks")) {
-                    validateCheckBoxAndTextField(ticksCheckBox, ticksTextField, "Ticks");
-                    validateCheckBoxAndTextField(secondsCheckBox, secondsTextField, "Seconds");
-                    //Handle logic for other cases
-                }
-                else {
-                    // Handle logic for other cases
-                }
-            } else {
-                throw new Exception("You need to choose one of the termination checkboxes: By user or By seconds and ticks");
-            }
-        } catch (Exception e) {
-            mainController.setErrorMessage(e.getMessage());
-        }
-    }
-
-    private void validateCheckBoxAndTextField(CheckBox checkBox, TextField textField, String fieldName) throws Exception {
-        if (checkBox.isSelected()) {
-            if (textField.getText() == null || textField.getText().isEmpty()) {
-                throw new Exception("You need to enter a value in the " + fieldName + " textField");
-            }
-            else {
-                try {
-                    int value = Integer.parseInt(textField.getText());
-                    if (value < 1) {
-                        throw new Exception("You need to enter a number greater than 0 in the " + fieldName + " textField");
-                    }
-                }
-                catch (NumberFormatException e) {
-                    throw new Exception("You need to enter a valid number in the " + fieldName + " textField");
-                }
-            }
+        else {
+            throw new Exception("You need to choose one of the termination checkboxes: By user or By seconds and ticks");
         }
     }
 

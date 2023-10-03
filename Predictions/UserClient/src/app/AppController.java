@@ -105,7 +105,6 @@ public class AppController {
         InputStream inputStream = url.openStream();
         GridPane gridPane = fxmlLoader.load(inputStream);
         simulationDetailsPageController = fxmlLoader.getController();
-        simulationDetailsPageController.worldListRefresher();
     }
 
     private void loadResourcesRequestsPage() throws IOException {
@@ -172,7 +171,9 @@ public class AppController {
         headerComponentController.setMainController(this);
         headerComponentController.bindComponents();
         simulationDetailsPageController.setControllers(this);
+        simulationDetailsPageController.worldListRefresher();
         showSimulationDetailsPage();
+        requestsPageController.setControllers(this);
     }
 
     public void updateUserName(String userName) {

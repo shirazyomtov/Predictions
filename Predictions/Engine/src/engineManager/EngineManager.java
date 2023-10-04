@@ -3,7 +3,6 @@ package engineManager;
 import DTO.*;
 import allocations.Allocation;
 import allocations.Allocations;
-import allocations.StatusRequest;
 import exceptions.NameAlreadyExist;
 import threadManager.ThreadManager;
 import worldManager.WorldManager;
@@ -88,6 +87,27 @@ public class EngineManager {
     public DTOEntitiesAndEnvironmentInfo getEntitiesAndEnvironment(String worldName){
         WorldManager worldManager = worldManagerMap.get(worldName);
         return worldManager.getEntitiesAndEnvironmentsInfo();
+    }
+
+    public Integer getCurrentAmountOfEntity(String worldName, String entityName){
+        return worldManagerMap.get(worldName).getEntityAmount(entityName);
+    }
+
+    public void setAmountOfEntity(String worldName, String entityName, String amount){
+        Integer amountOfEntityInt = Integer.parseInt(amount);
+        worldManagerMap.get(worldName).setAmountOfEntities(entityName, amountOfEntityInt);
+    }
+
+    public Object getCurrentValueOfEnvironment(String worldName, String environmentName){
+        return worldManagerMap.get(worldName).getValueOfEnvironment(environmentName);
+    }
+
+    public void setCurrentValueOfEnvironment(String worldName, String environmentName, String valueOfEnvironment){
+        worldManagerMap.get(worldName).checkValidValueAndSetValue(environmentName, valueOfEnvironment);
+    }
+
+    public void clearPastValuesOfEntitiesAndEnvironments(String worldName){
+        worldManagerMap.get(worldName).clearPastValues();
     }
 
 //    public ThreadManager getThreadManager() {

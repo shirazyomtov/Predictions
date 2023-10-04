@@ -1,24 +1,27 @@
 package serverlet;
 
+import com.google.gson.Gson;
 import engineManager.EngineManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
-
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
-@WebServlet(name = "update request status", urlPatterns = "/updateStatus")
+@WebServlet(name = "Clear the values of entities and environments", urlPatterns = "/clearPastValues")
 @MultipartConfig
-public class UpdateStatusOfRequest extends HttpServlet {
+public class ClearPastValuesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         EngineManager engineManager = (EngineManager) getServletContext().getAttribute("manager");
-        String status = req.getParameter("status");
-        String requestId = req.getParameter("requestId");
-        engineManager.updateRequestStatus(requestId, status);
+        Gson gson = new Gson();
+        try {
+            String worldName = req.getParameter("worldName");
+            engineManager.clearPastValuesOfEntitiesAndEnvironments(worldName);
+        } catch (Exception e) {
+            resp.sendError(400, "Error processing the request: " + e.getMessage());
+        }
     }
 }

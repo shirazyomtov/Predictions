@@ -17,6 +17,7 @@ import okhttp3.*;
 import utils.HttpClientUtil;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Timer;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -77,54 +78,76 @@ public class RequestsPageController {
     @FXML
     private SplitPane requestsSplitPane;
 
+    @FXML
+    private Button executeButton;
+
     private AppController mainController;
 
     private AllocationsRefresher allocationsRefresher;
     private Timer timer;
+
+    private ObservableList<DTORequestsOfSimulations> data;
+
     @FXML
     public void initialize() {
+        requestsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && newValue.getStatus().equals("APPROVED")) {
+                executeButton.setVisible(true);
+            } else {
+                executeButton.setVisible(false);
+            }
+        });
     }
 
     public void allocationsRefresher() {
         String userName = mainController.getUsername();
-        allocationsRefresher = new AllocationsRefresher(this::addRequest, userName);
+        allocationsRefresher = new AllocationsRefresher(this::addRequests, userName);
         timer = new Timer();
         timer.schedule(allocationsRefresher, 2000, 2000);
     }
 
-    private void addRequest(DTOAllRequestsByUser dtoAllRequestsByUser) {
-        ObservableList<DTORequestsOfSimulations> data = FXCollections.observableArrayList();
+    private void addRequests(DTOAllRequestsByUser dtoAllRequestsByUser) {
+        ObservableList<DTORequestsOfSimulations> newData = FXCollections.observableArrayList();
 
-        for (DTORequestsOfSimulations request: dtoAllRequestsByUser.getAllRequestsByUser()) {
+        newData.addAll(dtoAllRequestsByUser.getAllRequestsByUser());
 
-            // Check if the request ID already exists in the table
-//            boolean requestExists = data.stream().anyMatch(existingRequest -> existingRequest.getRequestId().equals(requestId));
-//
-//            if (requestExists) {
-//                int index = data.indexOf(request);
-//                if (index >= 0) {
-//                    data.set(index, request);
-//                }
-//            }
-//            else {
-                data.add(request);
-//            }
-        }
-        if(!dtoAllRequestsByUser.getAllRequestsByUser().isEmpty()) {
-            Platform.runLater(() -> {
-                DTORequestsOfSimulations selectedItem = requestsTableView.getSelectionModel().getSelectedItem();
-                requestsTableView.setItems(data);
+        if(requestsTableView.getItems().isEmpty()){
+            Platform.runLater(()->{
+                requestsTableView.setItems(newData);
+                data = newData;
                 requestIdColumn.setCellValueFactory(new PropertyValueFactory<>("requestId"));
                 worldNameColumn.setCellValueFactory(new PropertyValueFactory<>("worldName"));
                 totalAmountOfSimulationToRunColumn.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
                 statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
                 amountOfRunningSimulations.setCellValueFactory(new PropertyValueFactory<>("amountOfSimulationsCurrentlyRunning"));
                 amountOfFinishedSimulations.setCellValueFactory(new PropertyValueFactory<>("amountOfFinishedSimulations"));
-                if(selectedItem != null) {
-                    requestsTableView.getSelectionModel().select(selectedItem);
-                }
             });
         }
+        else {
+            for (DTORequestsOfSimulations request : dtoAllRequestsByUser.getAllRequestsByUser()) {
+                Integer requestId = request.getRequestId();
+                boolean requestExists = data.stream().anyMatch(existingRequest -> existingRequest.getRequestId().equals(requestId));
+                if (requestExists) {
+                    Integer requestIdInData = findIndexByRequestId(requestId);
+                    if (!data.get(requestIdInData).getAmountOfSimulationsCurrentlyRunning().equals(request.getAmountOfSimulationsCurrentlyRunning()) ||
+                            !data.get(requestIdInData).getAmountOfFinishedSimulations().equals(request.getAmountOfFinishedSimulations())) {
+                        data.set(requestIdInData, request);
+                    }
+                } else {
+                    data.add(request);
+                }
+            }
+        }
+    }
+
+    private int findIndexByRequestId(int requestIdToFind) {
+        for (int i = 0; i < data.size(); i++) {
+            DTORequestsOfSimulations request = data.get(i);
+            if (request.getRequestId() == requestIdToFind) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     public void setControllers(AppController appController){

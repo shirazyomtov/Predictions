@@ -20,7 +20,7 @@ public class DTORequestsOfSimulations {
         this.totalAmount = totalAmount;
         this.termination = createTerminationString(termination);
         this.status = status;
-        if(status.equals("APPROVED") || status.equals("DECLINED")) {
+        if(status.equals("APPROVED")) {
             this.amountOfSimulationsCurrentlyRunning = amountOfSimulationsCurrentlyRunning.toString();
             this.amountOfFinishedSimulations = amountOfFinishedSimulations.toString();
         }

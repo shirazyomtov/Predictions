@@ -632,10 +632,9 @@ public class WorldManager implements Serializable{
         return history.getAllSimulations().get(simulationId).getWorldInstance().getSecondsPerTick();
     }
 
-    public void setFutuerBonus(Integer simulationId) {
-        Simulation simulation = history.getAllSimulations().get(simulationId);
-        synchronized(simulation) {
-            simulation.setFutureTickWithBonus4(false);
-        }
+    public DTOEntitiesAndEnvironmentInfo getEntitiesAndEnvironmentsInfo(){
+        List<DTOEnvironmentInfo> dtoEnvironmentInfoList = getEnvironmentNamesList();
+        List<DTOEntityInfo> dtoEntityInfos = getEntitiesDetails();
+        return new DTOEntitiesAndEnvironmentInfo(dtoEntityInfos, dtoEnvironmentInfoList);
     }
 }

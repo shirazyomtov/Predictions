@@ -1,132 +1,184 @@
-//package executionPage;
-//
-//import DTO.DTOEntityInfo;
-//import DTO.DTOEnvironmentInfo;
-//import app.AppController;
-//import exceptions.*;
-//import javafx.beans.property.BooleanProperty;
-//import javafx.beans.property.SimpleBooleanProperty;
-//import javafx.event.ActionEvent;
-//import javafx.fxml.FXML;
-//import javafx.scene.Node;
-//import javafx.scene.control.*;
-//import javafx.scene.input.MouseEvent;
-//import javafx.scene.layout.GridPane;
-//import javafx.scene.layout.VBox;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//public class ExecutionPageController {
-//    private AppController mainController;
-//    @FXML
-//    private VBox choseEnvironmentVbox;
-//
-//    @FXML
-//    private VBox choseValueVbox;
-//
-//    @FXML
-//    private ListView<String> entitiesNamesListView;
-//
-//    @FXML
-//    private TextField entityNameTextField;
-//
-//    @FXML
-//    private ListView<String> environmentListView;
-//
-//    @FXML
-//    private TextField environmentNameTextField;
-//
-//    @FXML
-//    private Button saveEnvironmentValueButton;
-//
-//    @FXML
-//    private Button saveValueButton;
-//
-//    @FXML
-//    private GridPane executionPageGridPane;
-//
-//    @FXML
-//    private TextField valueEnvironmentTextField;
-//
-//    @FXML
-//    private TextField valueTextField;
-//
-//    @FXML
-//    private Button startButton;
-//
-//    @FXML
-//    private Button clearButton;
-//
-//    @FXML
-//    private TextField rangeEnvironmentTextField;
-//
-//    @FXML
-//    private TextField typeEnvironmentTextField;
-//
-//    @FXML
-//    private SplitPane executionsPageSplitPane;
-//
-//    private List<String> entitiesNames = new ArrayList<>();
-//
-//    private List<String> environmentsNames = new ArrayList<>();
-//
-//    private BooleanProperty isStartButtonPressed = new SimpleBooleanProperty(false);
-//
-//    private boolean bonus = false;
-//
-//    public void setMainController(AppController appController) {
-//        this.mainController = appController;
-//    }
-//
-//    public void setExecutionsPageDetails(List<DTOEntityInfo> entitiesDetails, List<DTOEnvironmentInfo> environmentInfos) {
-//        bonus = false;
-//        resetAllText();
-//        createListEntitiesNames(entitiesDetails);
-//        entitiesNamesListView.getItems().clear();
-//        entitiesNamesListView.getItems().addAll(entitiesNames);
-//        createListEnvironmentsNames(environmentInfos);
-//        environmentListView.getItems().clear();
-//        environmentListView.getItems().addAll(environmentsNames);
-//        executionsPageSplitPane.setDividerPositions(0.5);
-//        executionsPageSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
-//            executionsPageSplitPane.setDividerPositions(0.5);
-//        });
-//        executionsPageSplitPane.widthProperty().addListener((observable, oldValue, newValue) -> {
-//            executionsPageSplitPane.setDividerPositions(0.5);
-//        });
-//    }
-//
-//    private void resetAllText() {
-//        choseValueVbox.visibleProperty().set(false);
-//        choseEnvironmentVbox.visibleProperty().set(false);
-//        entityNameTextField.clear();
-//        valueTextField.setText("0");
-//        valueEnvironmentTextField.clear();
-//    }
-//
-//
-//    private void createListEntitiesNames(List<DTOEntityInfo> entitiesDetails) {
-//        entitiesNames.clear();
-//        for(DTOEntityInfo dtoEntityInfo: entitiesDetails){
-//            entitiesNames.add(dtoEntityInfo.getEntityName());
-//        }
-//    }
-//
-//    @FXML
-//    void entitiesNamesListViewClicked(MouseEvent event) {
-//        int selectedIndex = entitiesNamesListView.getSelectionModel().getSelectedIndex();
-//        if (selectedIndex >= 0) {
-//            choseValueVbox.visibleProperty().set(true);
-//            String entityName = entitiesNames.get(selectedIndex);
-//            entityNameTextField.setText(entityName);
-//            int currentValue = mainController.getEngineManager().getEntityAmount(entityName);
-//            valueTextField.setText(String.valueOf(currentValue));
-//        }
-//    }
-//
-//    @FXML
-//    void saveValueButtonClicked(ActionEvent event){
+package executionPage;
+
+import DTO.DTOActions.DTOActionDeserialize;
+import DTO.DTOActions.DTOActionInfo;
+import DTO.DTOAllWorldsInfo;
+import DTO.DTOEntitiesAndEnvironmentInfo;
+import DTO.DTOEntityInfo;
+import DTO.DTOEnvironmentInfo;
+import app.AppController;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.Response;
+import utils.HttpClientUtil;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ExecutionPageController {
+    private AppController mainController;
+    @FXML
+    private VBox choseEnvironmentVbox;
+
+    @FXML
+    private VBox choseValueVbox;
+
+    @FXML
+    private ListView<String> entitiesNamesListView;
+
+    @FXML
+    private TextField entityNameTextField;
+
+    @FXML
+    private ListView<String> environmentListView;
+
+    @FXML
+    private TextField environmentNameTextField;
+
+    @FXML
+    private Button saveEnvironmentValueButton;
+
+    @FXML
+    private Button saveValueButton;
+
+    @FXML
+    private GridPane executionPageGridPane;
+
+    @FXML
+    private TextField valueEnvironmentTextField;
+
+    @FXML
+    private TextField valueTextField;
+
+    @FXML
+    private Button startButton;
+
+    @FXML
+    private Button clearButton;
+
+    @FXML
+    private TextField rangeEnvironmentTextField;
+
+    @FXML
+    private TextField typeEnvironmentTextField;
+
+    @FXML
+    private SplitPane executionsPageSplitPane;
+
+    private List<String> entitiesNames = new ArrayList<>();
+
+    private List<String> environmentsNames = new ArrayList<>();
+
+    private BooleanProperty isStartButtonPressed = new SimpleBooleanProperty(false);
+    private Integer requestId;
+    private String worldName;
+
+    public void setMainController(AppController appController) {
+        this.mainController = appController;
+    }
+
+    public void setExecutionsPageDetails() {
+        executionsPageSplitPane.setDividerPositions(0.5);
+        executionsPageSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
+            executionsPageSplitPane.setDividerPositions(0.5);
+        });
+        executionsPageSplitPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+            executionsPageSplitPane.setDividerPositions(0.5);
+        });
+        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/showEntitiesAndEnvironment").newBuilder();
+        urlBuilder.addQueryParameter("worldName", worldName);
+        String finalUrl = urlBuilder.build().toString();
+
+        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Gson gson = new Gson();
+                    DTOEntitiesAndEnvironmentInfo dtoEntitiesAndEnvironmentInfo = gson.fromJson(response.body().charStream(), DTOEntitiesAndEnvironmentInfo.class);
+
+                    Platform.runLater(()->{
+                        resetAllText();
+                        createListEntitiesNames(dtoEntitiesAndEnvironmentInfo.getDtoEntityInfoList());
+                        entitiesNamesListView.getItems().clear();
+                        entitiesNamesListView.getItems().addAll(entitiesNames);
+                        createListEnvironmentsNames(dtoEntitiesAndEnvironmentInfo.getDtoEnvironmentInfoList());
+                        environmentListView.getItems().clear();
+                        environmentListView.getItems().addAll(environmentsNames);
+                    });
+                }
+            }
+        });
+    }
+
+    private void resetAllText() {
+        choseValueVbox.visibleProperty().set(false);
+        choseEnvironmentVbox.visibleProperty().set(false);
+        entityNameTextField.clear();
+        valueTextField.setText("0");
+        valueEnvironmentTextField.clear();
+    }
+
+
+    private void createListEntitiesNames(List<DTOEntityInfo> entitiesDetails) {
+        entitiesNames.clear();
+        for(DTOEntityInfo dtoEntityInfo: entitiesDetails){
+            entitiesNames.add(dtoEntityInfo.getEntityName());
+        }
+    }
+
+    @FXML
+    void entitiesNamesListViewClicked(MouseEvent event) {
+        int selectedIndex = entitiesNamesListView.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0) {
+            choseValueVbox.visibleProperty().set(true);
+            String entityName = entitiesNames.get(selectedIndex);
+            entityNameTextField.setText(entityName);
+            HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/getCurrentAmountOfEntity").newBuilder();
+            urlBuilder.addQueryParameter("entityName", entityName);
+            String finalUrl = urlBuilder.build().toString();
+
+            HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        Gson gson = new Gson();
+                        Integer currentValue= gson.fromJson(response.body().charStream(), Integer.class);
+
+                        Platform.runLater(()->{
+                            valueTextField.setText(String.valueOf(currentValue));
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    @FXML
+    void saveValueButtonClicked(ActionEvent event){
 //        try {
 //            if (!valueTextField.getText().isEmpty()) {
 //                int amountOfEntityInstance = Integer.parseInt(valueTextField.getText());
@@ -144,18 +196,18 @@
 //        catch (Exception e){
 //            mainController.setErrorMessage(e.getMessage());
 //        }
-//    }
-//
-//
-//    private void createListEnvironmentsNames(List<DTOEnvironmentInfo> environmentInfos) {
-//        environmentsNames.clear();
-//        for(DTOEnvironmentInfo dtoEnvironmentInfo: environmentInfos){
-//            environmentsNames.add(dtoEnvironmentInfo.getName());
-//        }
-//    }
-//
-//    @FXML
-//    void environmentNamesListViewClicked(MouseEvent event) {
+    }
+
+
+    private void createListEnvironmentsNames(List<DTOEnvironmentInfo> environmentInfos) {
+        environmentsNames.clear();
+        for(DTOEnvironmentInfo dtoEnvironmentInfo: environmentInfos){
+            environmentsNames.add(dtoEnvironmentInfo.getName());
+        }
+    }
+
+    @FXML
+    void environmentNamesListViewClicked(MouseEvent event) {
 //        int selectedIndex = environmentListView.getSelectionModel().getSelectedIndex();
 //
 //        if (selectedIndex >= 0) {
@@ -177,10 +229,10 @@
 //                valueEnvironmentTextField.setText("");
 //            }
 //        }
-//    }
-//
-//    @FXML
-//    void saveEnvironmentValueButtonClicked(ActionEvent event) {
+    }
+
+    @FXML
+    void saveEnvironmentValueButtonClicked(ActionEvent event) {
 //        try {
 //            if (!valueEnvironmentTextField.getText().isEmpty()) {
 //                String valueOfEnvironment = valueEnvironmentTextField.getText();
@@ -196,39 +248,45 @@
 //        catch (Exception e){
 //            mainController.setErrorMessage(e.getMessage());
 //        }
-//    }
-//
-//    public void setVisible(boolean state) {
-//        executionPageGridPane.visibleProperty().set(state);
-//    }
-//
-//    @FXML
-//    void clearButtonClicked(ActionEvent event) {
+    }
+
+    public void setVisible(boolean state) {
+        executionPageGridPane.visibleProperty().set(state);
+    }
+
+    @FXML
+    void clearButtonClicked(ActionEvent event) {
 //        valueTextField.setText("0");
 //        valueEnvironmentTextField.clear();
 //        mainController.getEngineManager().clearPastValues();
-//    }
-//
-//    @FXML
-//    void startButtonClicked(ActionEvent event) throws EntityNotDefine, ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException {
+    }
+
+    @FXML
+    void startButtonClicked(ActionEvent event){
+//            throws EntityNotDefine, ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException {
 //        isStartButtonPressed.set(true);
-//        mainController.getEngineManager().setSimulation(bonus);
+//        mainController.getEngineManager().setSimulation();
 //        mainController.getEngineManager().addSimulationTask();
 //        mainController.setSimulationsDetails();
 //        clearButtonClicked(event);
-//        mainController.showThirdPage();
-//
-//    }
-//
-//    public BooleanProperty getStartButtonPressedProperty() {
-//        return isStartButtonPressed;
-//    }
-//
-//    public void resetControllers() {
-//        isStartButtonPressed.set(false);
-//    }
-//
-//    public Node getExecutionPageGridPane() {
-//        return executionPageGridPane;
-//    }
-//}
+//        mainController.showResultsPage();
+
+    }
+
+    public BooleanProperty getStartButtonPressedProperty() {
+        return isStartButtonPressed;
+    }
+
+    public void resetControllers() {
+        isStartButtonPressed.set(false);
+    }
+
+    public Node getExecutionPageGridPane() {
+        return executionPageGridPane;
+    }
+
+    public void setRequestIdAndWorldName(Integer requestId, String worldName) {
+        this.requestId = requestId;
+        this.worldName = worldName;
+    }
+}

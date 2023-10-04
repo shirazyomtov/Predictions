@@ -2,6 +2,7 @@ package app;
 
 //import executionPage.ExecutionPageController;
 import DTO.DTOAllWorldsInfo;
+import executionPage.ExecutionPageController;
 import header.HeaderController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -29,6 +30,7 @@ public class AppController {
     private static final String HEADER_FXML_LIGHT_RESOURCE = "/header/header.fxml";
 
     private static final String HEADER_LOGIN_FXML_LIGHT_RESOURCE = "/login/headerLogin.fxml";
+    private static final String EXECUTION_PAGE_FXML_LIGHT_RESOURCE = "/executionPage/executionPage.fxml";
 
     @FXML
     private BorderPane borderPaneComponent;
@@ -52,8 +54,8 @@ public class AppController {
     private HeaderLoginController headerLoginComponentController;
     private SimulationDetailsPageController simulationDetailsPageController;
     private RequestsPageController requestsPageController;
-//
-//    private ExecutionPageController executionsPageController;
+
+    private ExecutionPageController executionsPageController;
 //
 //    private ResultsPageController resultsPageController;
 
@@ -67,9 +69,11 @@ public class AppController {
     @FXML
     public void initialize() throws Exception {
         loadResources();
-        if(headerComponentController != null && requestsPageController != null){
+        if(headerComponentController != null && requestsPageController != null
+            && executionsPageController != null){
             borderPaneComponent.setTop(headerLoginComponentController.getGridPaneLoginHeader());
             headerLoginComponentController.setMainController(this);
+            executionsPageController.setMainController(this);
         }
     }
 
@@ -78,6 +82,7 @@ public class AppController {
         loadLoginHeader();
         loadResourcesSimulationDetailsPage();
         loadResourcesRequestsPage();
+        loadLoginHeaderExecutionPage();
     }
 
     private void loadLoginHeader()  throws IOException{
@@ -116,6 +121,15 @@ public class AppController {
         requestsPageController = fxmlLoader.getController();
     }
 
+    private void loadLoginHeaderExecutionPage() throws IOException{
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(EXECUTION_PAGE_FXML_LIGHT_RESOURCE);
+        fxmlLoader.setLocation(url);
+        InputStream inputStream = url.openStream();
+        GridPane gridPane = fxmlLoader.load(inputStream);
+        executionsPageController = fxmlLoader.getController();
+    }
+
     public SimpleBooleanProperty getIsFileLoadedProperty() {
         return isFileLoaded;
     }
@@ -133,8 +147,10 @@ public class AppController {
         requestsPageController.allocationsRefresher();
     }
 
-    public void showExecutionsPage() {
-//        borderPaneComponent.setCenter(executionsPageController.getExecutionPageGridPane());
+    public void showExecutionsPage(Integer requestId, String worldName) {
+        borderPaneComponent.setCenter(executionsPageController.getExecutionPageGridPane());
+        executionsPageController.setRequestIdAndWorldName(requestId, worldName);
+        executionsPageController.setExecutionsPageDetails();
     }
 
     public void showResultsPage() {

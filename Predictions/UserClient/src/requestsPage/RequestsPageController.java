@@ -88,11 +88,17 @@ public class RequestsPageController {
 
     private ObservableList<DTORequestsOfSimulations> data;
 
+    private DTORequestsOfSimulations selectedRequest;
+
     @FXML
     public void initialize() {
         requestsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue.getStatus().equals("APPROVED")) {
-                executeButton.setVisible(true);
+                Integer amountOfFinishedAndRunningSimulations = Integer.parseInt(newValue.getAmountOfFinishedSimulations()) + Integer.parseInt(newValue.getAmountOfSimulationsCurrentlyRunning());
+                if(newValue.getTotalAmount() > amountOfFinishedAndRunningSimulations) {
+                    executeButton.setVisible(true);
+                    selectedRequest = newValue;
+                }
             } else {
                 executeButton.setVisible(false);
             }
@@ -191,7 +197,7 @@ public class RequestsPageController {
 
     @FXML
     void executeButtonClicked(ActionEvent event) {
-
+        mainController.showExecutionsPage(selectedRequest.getRequestId(), selectedRequest.getWorldName());
     }
 
     @FXML

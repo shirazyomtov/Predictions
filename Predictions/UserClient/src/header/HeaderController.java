@@ -44,9 +44,9 @@ public class HeaderController {
             mainController.showRequestsPage();
         });
 
-        executionsToggleButton.selectedProperty().addListener(e -> {
-            mainController.showExecutionsPage();
-        });
+//        executionsToggleButton.selectedProperty().addListener(e -> {
+//            mainController.showExecutionsPage(selectedRequest.getRequestId(), selectedRequest.getWorldName());
+//        });
 
         resultsToggleButton.selectedProperty().addListener(e -> {
             mainController.showResultsPage();

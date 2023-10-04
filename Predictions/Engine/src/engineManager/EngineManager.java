@@ -85,6 +85,11 @@ public class EngineManager {
         allocation.updateStatus(status);
     }
 
+    public DTOEntitiesAndEnvironmentInfo getEntitiesAndEnvironment(String worldName){
+        WorldManager worldManager = worldManagerMap.get(worldName);
+        return worldManager.getEntitiesAndEnvironmentsInfo();
+    }
+
 //    public ThreadManager getThreadManager() {
 //        return threadManager;
 //    }

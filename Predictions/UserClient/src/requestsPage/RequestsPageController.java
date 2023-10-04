@@ -78,6 +78,9 @@ public class RequestsPageController {
     @FXML
     private SplitPane requestsSplitPane;
 
+    @FXML
+    private Button executeButton;
+
     private AppController mainController;
 
     private AllocationsRefresher allocationsRefresher;
@@ -87,6 +90,13 @@ public class RequestsPageController {
 
     @FXML
     public void initialize() {
+        requestsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && newValue.getStatus().equals("APPROVED")) {
+                executeButton.setVisible(true);
+            } else {
+                executeButton.setVisible(false);
+            }
+        });
     }
 
     public void allocationsRefresher() {

@@ -9,8 +9,8 @@ public class DTORequestsOfSimulations {
     private String termination;
 
     private String status;
-     private Integer amountOfSimulationsCurrentlyRunning;
-     private Integer amountOfFinishedSimulations;
+     private String amountOfSimulationsCurrentlyRunning;
+     private String amountOfFinishedSimulations;
 
 
     public DTORequestsOfSimulations(Integer requestId, String userName, String worldName, Integer totalAmount, DTOTerminationInfo termination, String status, Integer amountOfSimulationsCurrentlyRunning, Integer amountOfFinishedSimulations) {
@@ -20,8 +20,14 @@ public class DTORequestsOfSimulations {
         this.totalAmount = totalAmount;
         this.termination = createTerminationString(termination);
         this.status = status;
-        this.amountOfSimulationsCurrentlyRunning = amountOfSimulationsCurrentlyRunning;
-        this.amountOfFinishedSimulations = amountOfFinishedSimulations;
+        if(status.equals("APPROVED") || status.equals("DECLINED")) {
+            this.amountOfSimulationsCurrentlyRunning = amountOfSimulationsCurrentlyRunning.toString();
+            this.amountOfFinishedSimulations = amountOfFinishedSimulations.toString();
+        }
+        else{
+            this.amountOfSimulationsCurrentlyRunning = "";
+            this.amountOfFinishedSimulations = "";
+        }
     }
 
     private String createTerminationString(DTOTerminationInfo termination) {
@@ -35,7 +41,7 @@ public class DTORequestsOfSimulations {
             if(termination.getTicks() != null){
                 ticks = "Ticks: ";
                 ticks = ticks.concat(termination.getTicks().toString());
-                ticks.concat(" ");
+                ticks = ticks.concat(" ");
             }
             if(termination.getSecond() != null){
                 seconds = "Seconds: ";
@@ -70,11 +76,11 @@ public class DTORequestsOfSimulations {
         return status;
     }
 
-    public Integer getAmountOfSimulationsCurrentlyRunning() {
+    public String getAmountOfSimulationsCurrentlyRunning() {
         return amountOfSimulationsCurrentlyRunning;
     }
 
-    public Integer getAmountOfFinishedSimulations() {
+    public String getAmountOfFinishedSimulations() {
         return amountOfFinishedSimulations;
     }
 }

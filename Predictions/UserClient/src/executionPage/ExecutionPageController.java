@@ -28,6 +28,8 @@ import utils.HttpClientUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExecutionPageController {
     private AppController mainController;
@@ -83,6 +85,8 @@ public class ExecutionPageController {
 
     private List<String> environmentsNames = new ArrayList<>();
 
+    private List<DTOEnvironmentInfo> dtoEnvironmentsInfo;
+
     private BooleanProperty isStartButtonPressed = new SimpleBooleanProperty(false);
     private Integer requestId;
     private String worldName;
@@ -121,6 +125,7 @@ public class ExecutionPageController {
                         entitiesNamesListView.getItems().clear();
                         entitiesNamesListView.getItems().addAll(entitiesNames);
                         createListEnvironmentsNames(dtoEntitiesAndEnvironmentInfo.getDtoEnvironmentInfoList());
+                        dtoEnvironmentsInfo = dtoEntitiesAndEnvironmentInfo.getDtoEnvironmentInfoList();
                         environmentListView.getItems().clear();
                         environmentListView.getItems().addAll(environmentsNames);
                     });
@@ -153,6 +158,7 @@ public class ExecutionPageController {
             String entityName = entitiesNames.get(selectedIndex);
             entityNameTextField.setText(entityName);
             HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/getCurrentAmountOfEntity").newBuilder();
+            urlBuilder.addQueryParameter("worldName", worldName);
             urlBuilder.addQueryParameter("entityName", entityName);
             String finalUrl = urlBuilder.build().toString();
 
@@ -178,24 +184,45 @@ public class ExecutionPageController {
     }
 
     @FXML
-    void saveValueButtonClicked(ActionEvent event){
-//        try {
-//            if (!valueTextField.getText().isEmpty()) {
-//                int amountOfEntityInstance = Integer.parseInt(valueTextField.getText());
-//                String entityName = entityNameTextField.getText();
-//                mainController.getEngineManager().setAmountOfEntities(entityName, amountOfEntityInstance);
-//                mainController.setSuccessMessage("The value was saved successfully");
-//            } else {
-//                mainController.setErrorMessage("You need to enter a value before pressing save");
-//            }
-//        }
-//        catch (NumberFormatException e)
-//        {
-//            mainController.setErrorMessage("You need to enter a number as value");
-//        }
-//        catch (Exception e){
-//            mainController.setErrorMessage(e.getMessage());
-//        }
+    void saveValueButtonClicked(ActionEvent event) {
+        try {
+            if (!valueTextField.getText().isEmpty()) {
+                Integer amountOfEntityInstance = Integer.parseInt(valueTextField.getText());
+                String entityName = entityNameTextField.getText();
+                HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/setCurrentAmountOfEntity").newBuilder();
+                urlBuilder.addQueryParameter("worldName", worldName);
+                urlBuilder.addQueryParameter("entityName", entityName);
+                urlBuilder.addQueryParameter("amount", amountOfEntityInstance.toString());
+                String finalUrl = urlBuilder.build().toString();
+
+                HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            Platform.runLater(() -> {
+                                mainController.setSuccessMessage("The value was saved successfully");
+                            });
+                        }
+                        else {
+                            handleErrorResponse(response);
+                        }
+                    }
+                });
+            } else {
+                mainController.setErrorMessage("You need to enter a value before pressing save");
+            }
+        }
+        catch (NumberFormatException e) {
+            mainController.setErrorMessage("You need to enter a number as value");
+        }
+        catch (Exception e) {
+            mainController.setErrorMessage(e.getMessage());
+        }
     }
 
 
@@ -208,46 +235,89 @@ public class ExecutionPageController {
 
     @FXML
     void environmentNamesListViewClicked(MouseEvent event) {
-//        int selectedIndex = environmentListView.getSelectionModel().getSelectedIndex();
-//
-//        if (selectedIndex >= 0) {
-//            choseEnvironmentVbox.visibleProperty().set(true);
-//            String environmentName = environmentsNames.get(selectedIndex);
-//            DTOEnvironmentInfo dtoEnvironmentInfo = mainController.getEngineManager().getEnvironmentNamesList().get(selectedIndex);
-//            typeEnvironmentTextField.setText(dtoEnvironmentInfo.getType());
-//            if(dtoEnvironmentInfo.getRange() != null) {
-//                rangeEnvironmentTextField.setText(dtoEnvironmentInfo.getRange().getFrom() + " - " + dtoEnvironmentInfo.getRange().getTo());
-//            }
-//            else{
-//                rangeEnvironmentTextField.setText("No range");
-//            }
-//            Object value = mainController.getEngineManager().getValueOfEntity(environmentName);
-//            if(value != null){
-//                valueEnvironmentTextField.setText(value.toString());
-//            }
-//            else{
-//                valueEnvironmentTextField.setText("");
-//            }
-//        }
+        int selectedIndex = environmentListView.getSelectionModel().getSelectedIndex();
+
+        if (selectedIndex >= 0) {
+            choseEnvironmentVbox.visibleProperty().set(true);
+            String environmentName = environmentsNames.get(selectedIndex);
+            DTOEnvironmentInfo dtoEnvironmentInfo = dtoEnvironmentsInfo.get(selectedIndex);
+            typeEnvironmentTextField.setText(dtoEnvironmentInfo.getType());
+            if(dtoEnvironmentInfo.getRange() != null) {
+                rangeEnvironmentTextField.setText(dtoEnvironmentInfo.getRange().getFrom() + " - " + dtoEnvironmentInfo.getRange().getTo());
+            }
+            else{
+                rangeEnvironmentTextField.setText("No range");
+            }
+            HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/getCurrentValueOfEnvironment").newBuilder();
+            urlBuilder.addQueryParameter("worldName", worldName);
+            urlBuilder.addQueryParameter("environmentName", environmentName);
+            String finalUrl = urlBuilder.build().toString();
+
+            HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        Gson gson = new Gson();
+                        Object currentValue= gson.fromJson(response.body().charStream(), Object.class);
+
+                        Platform.runLater(()->{
+                            if(currentValue != null){
+                                valueEnvironmentTextField.setText(currentValue.toString());
+                            }
+                            else{
+                                valueEnvironmentTextField.setText("");
+                            }
+                        });
+                    }
+                }
+            });
+        }
     }
 
     @FXML
     void saveEnvironmentValueButtonClicked(ActionEvent event) {
-//        try {
-//            if (!valueEnvironmentTextField.getText().isEmpty()) {
-//                String valueOfEnvironment = valueEnvironmentTextField.getText();
-//                int selectedIndex = environmentListView.getSelectionModel().getSelectedIndex();
-//                String environmentName = environmentsNames.get(selectedIndex);
-//                mainController.getEngineManager().checkValidValueAndSetValue(environmentName, valueOfEnvironment);
-//                mainController.setSuccessMessage("The value was saved successfully");
-//            }
-//            else {
-//                mainController.setErrorMessage("You need to enter a value before pressing save");
-//            }
-//        }
-//        catch (Exception e){
-//            mainController.setErrorMessage(e.getMessage());
-//        }
+        try {
+            if (!valueEnvironmentTextField.getText().isEmpty()) {
+                String valueOfEnvironment = valueEnvironmentTextField.getText();
+                int selectedIndex = environmentListView.getSelectionModel().getSelectedIndex();
+                String environmentName = environmentsNames.get(selectedIndex);
+                HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/setCurrentValueOfEnvironment").newBuilder();
+                urlBuilder.addQueryParameter("worldName", worldName);
+                urlBuilder.addQueryParameter("environmentName", environmentName);
+                urlBuilder.addQueryParameter("value", valueOfEnvironment);
+                String finalUrl = urlBuilder.build().toString();
+
+                HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            Platform.runLater(() -> {
+                                mainController.setSuccessMessage("The value was saved successfully");
+                            });
+                        }
+                        else {
+                            handleErrorResponse(response);
+                        }
+                    }
+                });
+            }
+            else {
+                mainController.setErrorMessage("You need to enter a value before pressing save");
+            }
+        }
+        catch (Exception e){
+            mainController.setErrorMessage(e.getMessage());
+        }
     }
 
     public void setVisible(boolean state) {
@@ -256,9 +326,29 @@ public class ExecutionPageController {
 
     @FXML
     void clearButtonClicked(ActionEvent event) {
-//        valueTextField.setText("0");
-//        valueEnvironmentTextField.clear();
-//        mainController.getEngineManager().clearPastValues();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/clearPastValues").newBuilder();
+        urlBuilder.addQueryParameter("worldName", worldName);
+        String finalUrl = urlBuilder.build().toString();
+
+        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Platform.runLater(() -> {
+                        valueTextField.setText("0");
+                        valueEnvironmentTextField.clear();
+                    });
+                }
+                else {
+                    handleErrorResponse(response);
+                }
+            }
+        });
     }
 
     @FXML
@@ -288,5 +378,18 @@ public class ExecutionPageController {
     public void setRequestIdAndWorldName(Integer requestId, String worldName) {
         this.requestId = requestId;
         this.worldName = worldName;
+    }
+
+    private void handleErrorResponse(Response response) throws IOException {
+        String responseBody = response.body().string();
+        Pattern pattern = Pattern.compile("<b>Message</b>\\s*(.*?)</p>");
+        Matcher matcher = pattern.matcher(responseBody);
+
+        if (matcher.find()) {
+            String errorMessage = matcher.group(1).trim();
+            Platform.runLater(() -> {
+                mainController.setErrorMessage(errorMessage);
+            });
+        }
     }
 }

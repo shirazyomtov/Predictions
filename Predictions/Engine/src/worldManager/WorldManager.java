@@ -19,7 +19,6 @@ import world.value.generator.api.ValueGeneratorFactory;
 import world.worldDefinition.WorldDefinition;
 import world.worldInstance.WorldInstance;
 import xml.XMLReader;
-import xml.XMLValidation;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -433,7 +432,7 @@ public class WorldManager implements Serializable{
         return sum;
     }
 
-    public Object getValueOfEntity(String environmentName) {
+    public Object getValueOfEnvironment(String environmentName) {
         EnvironmentInstance environmentInstance = environmentValuesByUser.get(environmentName);
         if(environmentInstance != null){
             return environmentInstance.getProperty().getValue();

@@ -19,7 +19,9 @@ public class ClearPastValuesServlet extends HttpServlet {
         Gson gson = new Gson();
         try {
             String worldName = req.getParameter("worldName");
-            engineManager.clearPastValuesOfEntitiesAndEnvironments(worldName);
+            String userName = req.getParameter("userName");
+            String executeID = req.getParameter("executeID");
+            engineManager.clearPastValuesOfEntitiesAndEnvironments(worldName, userName, Integer.parseInt(executeID));
         } catch (Exception e) {
             resp.sendError(400, "Error processing the request: " + e.getMessage());
         }

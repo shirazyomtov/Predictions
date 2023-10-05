@@ -89,25 +89,31 @@ public class EngineManager {
         return worldManager.getEntitiesAndEnvironmentsInfo();
     }
 
-    public Integer getCurrentAmountOfEntity(String worldName, String entityName){
-        return worldManagerMap.get(worldName).getEntityAmount(entityName);
+    public Integer getCurrentAmountOfEntity(String worldName, String entityName, String userName, Integer executeID){
+        return worldManagerMap.get(worldName).getEntityAmount(entityName, userName, executeID);
     }
 
-    public void setAmountOfEntity(String worldName, String entityName, String amount){
+    public void setAmountOfEntity(String worldName, String entityName, String amount, String userName, Integer executeID){
         Integer amountOfEntityInt = Integer.parseInt(amount);
-        worldManagerMap.get(worldName).setAmountOfEntities(entityName, amountOfEntityInt);
+        worldManagerMap.get(worldName).setAmountOfEntities(entityName, amountOfEntityInt, userName, executeID);
     }
 
-    public Object getCurrentValueOfEnvironment(String worldName, String environmentName){
-        return worldManagerMap.get(worldName).getValueOfEnvironment(environmentName);
+    public Object getCurrentValueOfEnvironment(String worldName, String environmentName, String userName, Integer executeID){
+        return worldManagerMap.get(worldName).getValueOfEnvironment(environmentName, userName, executeID);
     }
 
-    public void setCurrentValueOfEnvironment(String worldName, String environmentName, String valueOfEnvironment){
-        worldManagerMap.get(worldName).checkValidValueAndSetValue(environmentName, valueOfEnvironment);
+    public void setCurrentValueOfEnvironment(String worldName, String environmentName, String valueOfEnvironment, String userName, Integer executeID){
+        worldManagerMap.get(worldName).checkValidValueAndSetValue(environmentName, valueOfEnvironment, userName, executeID);
     }
 
-    public void clearPastValuesOfEntitiesAndEnvironments(String worldName){
-        worldManagerMap.get(worldName).clearPastValues();
+    public void clearPastValuesOfEntitiesAndEnvironments(String worldName, String userName, Integer executeID){
+        worldManagerMap.get(worldName).clearPastValues(userName, executeID);
+    }
+
+    public DTOEntitiesAndEnvironmentInfo getFinalDetailsSummaryPage(String worldName, String userName, Integer executeID) {
+         worldManagerMap.get(worldName).setRandomValuesOfEnvironments(userName, executeID);
+         worldManagerMap.get(worldName).setFinalAmountOfEntities(userName, executeID);
+         return worldManagerMap.get(worldName).getSummaryDetails(userName, executeID);
     }
 
 //    public ThreadManager getThreadManager() {

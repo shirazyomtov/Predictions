@@ -154,7 +154,7 @@
                                               <Insets left="5.0" />
                                           </HBox.margin>
                                       </HBox>
-                                      <Button fx:id="startButton" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#startButtonClicked" prefHeight="40.0" prefWidth="184.0" text="Start !" />
+                                      <Button fx:id="continueButton" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#continueButtonClicked" prefHeight="40.0" prefWidth="184.0" text="Continue" />
                                   </children>
                               </HBox>
                      </children>

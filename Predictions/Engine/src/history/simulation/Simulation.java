@@ -52,11 +52,17 @@ public  class Simulation implements Serializable, Runnable {
 
     private boolean futureTickWithBonus4 = false;
 
-    public Simulation(WorldInstance worldInstance, LocalDateTime dateTime) {
+    private String userName;
+
+    private Integer requestID;
+
+    public Simulation(WorldInstance worldInstance, LocalDateTime dateTime, String userName, Integer requestID) {
         this.worldInstance = worldInstance;
         this.dateTime = dateTime;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy | HH.mm.ss");
         this.formattedDateTime = dateTime.format(formatter);
+        this.userName = userName;
+        this.requestID = requestID;
     }
 
     public WorldInstance getWorldInstance() {

@@ -29,7 +29,7 @@ public class FinishSimulationRefresher extends TimerTask {
     @Override
     public void run() {
         HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/getAllSimulationsByUser").newBuilder();
-        urlBuilder.addQueryParameter("username", userName);
+        urlBuilder.addQueryParameter("userName", userName);
         String finalUrl = urlBuilder.build().toString();
 
         HttpClientUtil.runAsyncGet(finalUrl, new Callback() {

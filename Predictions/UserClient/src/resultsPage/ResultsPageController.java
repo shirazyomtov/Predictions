@@ -258,6 +258,10 @@ public class ResultsPageController {
     private void updateAllFinishSimulation(List<DTOSimulationInfo> allSimulation) {
         boolean flag = false;
         allDTOSimulationList = allSimulation;
+        if(allSimulation != null) {
+            addSimulationsToMaps();
+            addSimulationsToExecutionListView();
+        }
         for(DTOSimulationInfo dtoSimulationInfo: allSimulation){
             if(dtoSimulationInfo.getFinish()){
                 for (Integer simulation: finishSimulations) {
@@ -333,20 +337,40 @@ public class ResultsPageController {
     }
 
     private void addSimulationsToExecutionListView() {
-        String state;
-        for(DTOSimulationInfo dtoSimulationInfo: allDTOSimulationList){
-            if(dtoSimulationInfo.getFinish()){
-                if(dtoSimulationInfo.getFailed()){
+        List<String> existingSimulationIds = new ArrayList<>();
+
+        for (String item : executionListView.getItems()) {
+            String[] parts = item.split("Simulation ID: ");
+            if (parts.length > 1) {
+                String simulationId = parts[1].split(",")[0];
+                existingSimulationIds.add(simulationId.trim());
+            }
+        }
+
+        for (DTOSimulationInfo dtoSimulationInfo : allDTOSimulationList) {
+            String state;
+            if (dtoSimulationInfo.getFinish()) {
+                if (dtoSimulationInfo.getFailed()) {
                     state = "(Failed)";
-                }
-                else {
+                } else {
                     state = "(Ended)";
                 }
-            }
-            else{
+            } else {
                 state = "(Running)";
             }
-            executionListView.getItems().add(state + " Simulation ID: " + dtoSimulationInfo.getSimulationId() + ", Date: " + dtoSimulationInfo.getSimulationDate());
+
+            String simulationId = dtoSimulationInfo.getSimulationId().toString();
+            String simulationDate = dtoSimulationInfo.getSimulationDate();
+            String simulationInfoString = state + " Simulation ID: " + simulationId + ", Date: " + simulationDate;
+
+            if (existingSimulationIds.contains(simulationId)) {
+                if(dtoSimulationInfo.getFinish() || dtoSimulationInfo.getFailed()) {
+                    int index = existingSimulationIds.indexOf(simulationId);
+                    executionListView.getItems().set(index, simulationInfoString);
+                }
+            } else {
+                executionListView.getItems().add(simulationInfoString);
+            }
         }
     }
 
@@ -702,11 +726,9 @@ public class ResultsPageController {
     }
 
     public void setResultsPageDetails() {
-        addSimulationsToMaps();
         displayModeLabel.setVisible(false);
         displayModeComboBox.setVisible(false);
         executionListView.getItems().clear();
-        addSimulationsToExecutionListView();
     }
 }
 

@@ -23,7 +23,9 @@ public class GetCurrentValueOfEnvironment extends HttpServlet {
         try {
             String worldName = req.getParameter("worldName");
             String environmentName = req.getParameter("environmentName");
-            Object value = engineManager.getCurrentValueOfEnvironment(worldName, environmentName);
+            String userName = req.getParameter("userName");
+            String executeID = req.getParameter("executeID");
+            Object value = engineManager.getCurrentValueOfEnvironment(worldName, environmentName, userName, Integer.parseInt(executeID));
             String jsonResponse = gson.toJson(value);
             // System.out.println(jsonResponse);
             try (PrintWriter out = resp.getWriter()) {

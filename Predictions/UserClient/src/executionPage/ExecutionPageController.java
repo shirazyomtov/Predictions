@@ -1,19 +1,17 @@
 package executionPage;
 
-import DTO.DTOActions.DTOActionDeserialize;
-import DTO.DTOActions.DTOActionInfo;
-import DTO.DTOAllWorldsInfo;
 import DTO.DTOEntitiesAndEnvironmentInfo;
 import DTO.DTOEntityInfo;
 import DTO.DTOEnvironmentInfo;
 import app.AppController;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import executionPage.summaryPageOfEntitiesAndEnvironments.SummaryPage;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -26,12 +24,15 @@ import okhttp3.Response;
 import utils.HttpClientUtil;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExecutionPageController {
+    private static final String SUMMARY_PAGE_FXML_LIGHT_RESOURCE = "/executionPage/summaryPageOfEntitiesAndEnvironments/summaryPage.fxml";
     private AppController mainController;
     @FXML
     private VBox choseEnvironmentVbox;
@@ -67,7 +68,7 @@ public class ExecutionPageController {
     private TextField valueTextField;
 
     @FXML
-    private Button startButton;
+    private Button continueButton;
 
     @FXML
     private Button clearButton;
@@ -81,6 +82,8 @@ public class ExecutionPageController {
     @FXML
     private SplitPane executionsPageSplitPane;
 
+    private SummaryPage summaryPageController;
+
     private List<String> entitiesNames = new ArrayList<>();
 
     private List<String> environmentsNames = new ArrayList<>();
@@ -91,8 +94,20 @@ public class ExecutionPageController {
     private Integer requestId;
     private String worldName;
 
-    public void setMainController(AppController appController) {
+    private Integer executeID = 1;
+
+    private void loadResourcesSummaryPage() throws IOException{
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(SUMMARY_PAGE_FXML_LIGHT_RESOURCE);
+        fxmlLoader.setLocation(url);
+        InputStream inputStream = url.openStream();
+        GridPane gridPane = fxmlLoader.load(inputStream);
+        summaryPageController = fxmlLoader.getController();
+    }
+
+    public void setMainControllerAndLoadResources(AppController appController) throws IOException {
         this.mainController = appController;
+        loadResourcesSummaryPage();
     }
 
     public void setExecutionsPageDetails() {
@@ -160,6 +175,8 @@ public class ExecutionPageController {
             HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/getCurrentAmountOfEntity").newBuilder();
             urlBuilder.addQueryParameter("worldName", worldName);
             urlBuilder.addQueryParameter("entityName", entityName);
+            urlBuilder.addQueryParameter("userName", mainController.getUsername());
+            urlBuilder.addQueryParameter("executeID", executeID.toString());
             String finalUrl = urlBuilder.build().toString();
 
             HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
@@ -193,6 +210,8 @@ public class ExecutionPageController {
                 urlBuilder.addQueryParameter("worldName", worldName);
                 urlBuilder.addQueryParameter("entityName", entityName);
                 urlBuilder.addQueryParameter("amount", amountOfEntityInstance.toString());
+                urlBuilder.addQueryParameter("userName", mainController.getUsername());
+                urlBuilder.addQueryParameter("executeID", executeID.toString());
                 String finalUrl = urlBuilder.build().toString();
 
                 HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
@@ -251,6 +270,8 @@ public class ExecutionPageController {
             HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/getCurrentValueOfEnvironment").newBuilder();
             urlBuilder.addQueryParameter("worldName", worldName);
             urlBuilder.addQueryParameter("environmentName", environmentName);
+            urlBuilder.addQueryParameter("userName", mainController.getUsername());
+            urlBuilder.addQueryParameter("executeID", executeID.toString());
             String finalUrl = urlBuilder.build().toString();
 
             HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
@@ -290,6 +311,8 @@ public class ExecutionPageController {
                 urlBuilder.addQueryParameter("worldName", worldName);
                 urlBuilder.addQueryParameter("environmentName", environmentName);
                 urlBuilder.addQueryParameter("value", valueOfEnvironment);
+                urlBuilder.addQueryParameter("userName", mainController.getUsername());
+                urlBuilder.addQueryParameter("executeID", executeID.toString());
                 String finalUrl = urlBuilder.build().toString();
 
                 HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
@@ -328,6 +351,8 @@ public class ExecutionPageController {
     void clearButtonClicked(ActionEvent event) {
         HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/clearPastValues").newBuilder();
         urlBuilder.addQueryParameter("worldName", worldName);
+        urlBuilder.addQueryParameter("userName", mainController.getUsername());
+        urlBuilder.addQueryParameter("executeID", executeID.toString());
         String finalUrl = urlBuilder.build().toString();
 
         HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
@@ -352,7 +377,33 @@ public class ExecutionPageController {
     }
 
     @FXML
-    void startButtonClicked(ActionEvent event){
+    void continueButtonClicked(ActionEvent event){
+        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/getSummaryDetails").newBuilder();
+        urlBuilder.addQueryParameter("worldName", worldName);
+        urlBuilder.addQueryParameter("userName", mainController.getUsername());
+        urlBuilder.addQueryParameter("executeID", executeID.toString());
+        String finalUrl = urlBuilder.build().toString();
+
+        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Platform.runLater(() -> {
+                        Gson gson = new Gson();
+                        DTOEntitiesAndEnvironmentInfo dtoEntitiesAndEnvironmentInfo = gson.fromJson(response.body().charStream(), DTOEntitiesAndEnvironmentInfo.class);
+                        mainController.showSummaryPage(summaryPageController, requestId, worldName, executeID, dtoEntitiesAndEnvironmentInfo);
+                    });
+                }
+                else {
+                    handleErrorResponse(response);
+                }
+            }
+        });
 //            throws EntityNotDefine, ObjectNotExist, OperationNotCompatibleTypes, OperationNotSupportedType, FormatException {
 //        isStartButtonPressed.set(true);
 //        mainController.getEngineManager().setSimulation();
@@ -391,5 +442,9 @@ public class ExecutionPageController {
                 mainController.setErrorMessage(errorMessage);
             });
         }
+    }
+
+    public void setExecuteId(Integer executeID) {
+        this.executeID = executeID;
     }
 }

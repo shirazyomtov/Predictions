@@ -22,7 +22,9 @@ public class SetValueOfEnvironment extends HttpServlet {
             String worldName = req.getParameter("worldName");
             String environmentName = req.getParameter("environmentName");
             String value = req.getParameter("value");
-            engineManager.setCurrentValueOfEnvironment(worldName, environmentName, value);
+            String userName = req.getParameter("userName");
+            String executeID = req.getParameter("executeID");
+            engineManager.setCurrentValueOfEnvironment(worldName, environmentName, value,  userName, Integer.parseInt(executeID));
             // System.out.println(jsonResponse);
         } catch (Exception e) {
             resp.sendError(400, "Error processing the request: " + e.getMessage());

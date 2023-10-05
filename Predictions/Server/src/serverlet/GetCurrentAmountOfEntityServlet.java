@@ -23,7 +23,9 @@ public class GetCurrentAmountOfEntityServlet extends HttpServlet {
         try {
             String worldName = req.getParameter("worldName");
             String entityName = req.getParameter("entityName");
-            Integer amount =  engineManager.getCurrentAmountOfEntity(worldName, entityName);
+            String userName = req.getParameter("userName");
+            String executeID = req.getParameter("executeID");
+            Integer amount =  engineManager.getCurrentAmountOfEntity(worldName, entityName, userName, Integer.parseInt(executeID));
             String jsonResponse = gson.toJson(amount);
             // System.out.println(jsonResponse);
             try (PrintWriter out = resp.getWriter()) {

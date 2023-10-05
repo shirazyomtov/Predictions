@@ -2,7 +2,9 @@ package app;
 
 //import executionPage.ExecutionPageController;
 import DTO.DTOAllWorldsInfo;
+import DTO.DTOEntitiesAndEnvironmentInfo;
 import executionPage.ExecutionPageController;
+import executionPage.summaryPageOfEntitiesAndEnvironments.SummaryPage;
 import header.HeaderController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -73,7 +75,7 @@ public class AppController {
             && executionsPageController != null){
             borderPaneComponent.setTop(headerLoginComponentController.getGridPaneLoginHeader());
             headerLoginComponentController.setMainController(this);
-            executionsPageController.setMainController(this);
+            executionsPageController.setMainControllerAndLoadResources(this);
         }
     }
 
@@ -153,6 +155,11 @@ public class AppController {
         executionsPageController.setExecutionsPageDetails();
     }
 
+    public void showSummaryPage(SummaryPage summaryPageController, Integer requestId, String worldName, Integer executeID, DTOEntitiesAndEnvironmentInfo dtoEntitiesAndEnvironmentInfo) {
+        borderPaneComponent.setCenter(summaryPageController.getSummaryPageGridPane());
+        summaryPageController.setDetails(this,requestId, worldName, executeID, dtoEntitiesAndEnvironmentInfo);
+    }
+
     public void showResultsPage() {
 //        borderPaneComponent.setCenter(resultsPageController.getResultsPageGridPane());
     }
@@ -199,5 +206,10 @@ public class AppController {
 
     public String getUsername() {
         return headerComponentController.getUserName();
+    }
+
+
+    public void setExecuteIdInExecutionPage(Integer executeID) {
+        executionsPageController.setExecuteId(executeID);
     }
 }

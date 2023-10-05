@@ -6,10 +6,6 @@ import world.entity.instance.EntityInstance;
 import world.entity.instance.location.Location;
 import world.enums.ActionType;
 import world.propertyInstance.api.Property;
-import world.propertyInstance.impl.BooleanPropertyInstance;
-import world.propertyInstance.impl.FloatPropertyInstance;
-import world.propertyInstance.impl.IntegerPropertyInstance;
-import world.propertyInstance.impl.StringPropertyInstance;
 import world.rule.RuleImpl;
 import world.rule.action.Action;
 import world.rule.action.Kill;
@@ -17,7 +13,7 @@ import world.rule.action.Replace;
 import world.rule.action.condition.AbstractCondition;
 import world.rule.action.condition.MultipleCondition;
 import world.rule.action.condition.SingleCondition;
-import world.value.generator.api.ValueGeneratorFactory;
+import world.termination.Termination;
 import world.worldInstance.WorldInstance;
 
 import java.io.Serializable;
@@ -40,7 +36,6 @@ public  class Simulation implements Serializable, Runnable {
 
     private boolean pause = false;
 
-    private boolean pauseAfterTick = false;
     private boolean stop = false;
 
     private String message = "";
@@ -48,15 +43,13 @@ public  class Simulation implements Serializable, Runnable {
     private long totalTimePause = 0;
     private Map<Integer, List<EntityInstance>> valuesPerTick = new HashMap<>();
 
-    private boolean bonus = false;
-
-    private boolean futureTickWithBonus4 = false;
-
     private String userName;
 
     private Integer requestID;
 
-    public Simulation(WorldInstance worldInstance, LocalDateTime dateTime, String userName, Integer requestID) {
+    private  Termination termination;
+
+    public Simulation(WorldInstance worldInstance, LocalDateTime dateTime, String userName, Integer requestID, Termination termination) {
         this.worldInstance = worldInstance;
         this.dateTime = dateTime;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy | HH.mm.ss");
@@ -75,61 +68,51 @@ public  class Simulation implements Serializable, Runnable {
 
     @Override
     public void run() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine {
-//        long startMillisSeconds = System.currentTimeMillis();
-//        long pauseTime;
-//        if (worldInstance.getWorldDefinition().getTermination().getTerminationByUser())
-//        {
-//            while (!stop){
-//                if (pauseAfterTick){
-//                    worldInstance.addAmountOfEntitiesPerTick(currentTick);
-//                    pause = true;
-//                    pauseAfterTick = false;
-//                }
-//                worldInstance.setSecondsPerTick(currentTick, currentSecond);
-//                try {
-//                    pauseTime = runSimulation();
-//                    totalTimePause += pauseTime;
-//                }
-//                catch (Exception e){
-//                    isFinish = true;
-//                    isFailed = true;
-//                    message = e.getMessage();
-//                    break;
-//                }
-//                long currentMilliSeconds = System.currentTimeMillis();
-//                currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);
-//            }
-//        }
-//        else {
-//            while ((worldInstance.getWorldDefinition().getTermination().getSecond() == null || currentSecond <= worldInstance.getWorldDefinition().getTermination().getSecond()) &&
-//                    (worldInstance.getWorldDefinition().getTermination().getTicks() == null || currentTick <= worldInstance.getWorldDefinition().getTermination().getTicks())) {
-//                if (!stop) {
-//                    if (pauseAfterTick) {
-//                        worldInstance.addAmountOfEntitiesPerTick(currentTick);
-//                        pause = true;
-//                        pauseAfterTick = false;
-//                    }
-//                    worldInstance.setSecondsPerTick(currentTick, currentSecond);
-//                    try {
-//                        pauseTime = runSimulation();
-//                        totalTimePause += pauseTime;
-//                    }
-//                    catch (Exception e){
-//                        isFinish = true;
-//                        isFailed = true;
-//                        message = e.getMessage();
-//                        break;
-//                    }
-//                    long currentMilliSeconds = System.currentTimeMillis();
-//                    currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);
-//                }
-//                else {
-//                    break;
-//                }
-//            }
-//        }
-//        worldInstance.addAmountOfEntitiesPerTick(currentTick);
-//        isFinish = true;
+        long startMillisSeconds = System.currentTimeMillis();
+        long pauseTime;
+        if (termination.getTerminationByUser())
+        {
+            while (!stop){
+                worldInstance.setSecondsPerTick(currentTick, currentSecond);
+                try {
+                    pauseTime = runSimulation();
+                    totalTimePause += pauseTime;
+                }
+                catch (Exception e){
+                    isFinish = true;
+                    isFailed = true;
+                    message = e.getMessage();
+                    break;
+                }
+                long currentMilliSeconds = System.currentTimeMillis();
+                currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);
+            }
+        }
+        else {
+            while ((termination.getSecond() == null || currentSecond <= termination.getSecond()) &&
+                    (termination.getTicks() == null || currentTick <= termination.getTicks())) {
+                if (!stop) {
+                    worldInstance.setSecondsPerTick(currentTick, currentSecond);
+                    try {
+                        pauseTime = runSimulation();
+                        totalTimePause += pauseTime;
+                    }
+                    catch (Exception e){
+                        isFinish = true;
+                        isFailed = true;
+                        message = e.getMessage();
+                        break;
+                    }
+                    long currentMilliSeconds = System.currentTimeMillis();
+                    currentSecond = (int) ((currentMilliSeconds - totalTimePause - startMillisSeconds) / 1000);
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        worldInstance.addAmountOfEntitiesPerTick(currentTick);
+        isFinish = true;
     }
 
     private long runSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine{
@@ -137,10 +120,7 @@ public  class Simulation implements Serializable, Runnable {
         List<EntityInstance> secondaryEntities = null;
         List<EntityInstance> entitiesToRemove = new ArrayList<>();
         List<Pair<EntityInstance,Action>> replaceActions = new ArrayList<>();
-        if(bonus) {
-            worldInstance.addAmountOfEntitiesPerTick(currentTick);
-        }
-        else if(currentTick % 5000 == 0 || currentTick == 1){
+        if(currentTick % 5000 == 0 || currentTick == 1){
             worldInstance.addAmountOfEntitiesPerTick(currentTick);
         }
         long beforePauseMilliSeconds = System.currentTimeMillis();
@@ -192,68 +172,14 @@ public  class Simulation implements Serializable, Runnable {
         entitiesToRemove.clear();
         replaceActions.clear();
         updateTickProperty();
-        if(bonus) {
-            List<EntityInstance> entityInstanceList = new ArrayList<>();
-            for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
-                entityInstanceList.add(deepCloneEntity(entityInstance));
-            }
-            valuesPerTick.put(currentTick, entityInstanceList);
-
-            for (EntityInstance entityInstance : worldInstance.getEntityInstanceList()) {
-                for (Property property : entityInstance.getAllProperty().values())
-                {
-                    property.addValueUpdateListPerTick(currentTick);
-                }
-            }
-
-        }
         currentTick = currentTick + 1;
         return time;
-    }
-
-        private EntityInstance deepCloneEntity(EntityInstance entityInstance) {
-        Map<String, Property> allProperty = new HashMap<>();
-        for(Property property: entityInstance.getAllProperty().values()){
-            Property deepCloneProperty = deepCloneProp(property);
-            allProperty.put(property.getName(), deepCloneProperty);
-        }
-        return new  EntityInstance(entityInstance.getName(), allProperty, new Location(entityInstance.getLocation().getRow(), entityInstance.getLocation().getCol()));
-    }
-
-        private Property deepCloneProp(Property property) {
-        Property deepCloneProperty = null;
-        switch (property.getType()) {
-            case FLOAT:
-                deepCloneProperty = new FloatPropertyInstance(property.getName(),
-                        ValueGeneratorFactory.createFixed((Float) property.getValue()), property.getRange());
-                break;
-            case DECIMAL:
-                deepCloneProperty = new IntegerPropertyInstance(property.getName(),
-                        ValueGeneratorFactory.createFixed((Integer) property.getValue()), property.getRange());
-                break;
-            case BOOLEAN:
-                deepCloneProperty = new BooleanPropertyInstance(property.getName(),
-                        ValueGeneratorFactory.createFixed((Boolean) property.getValue()), property.getRange());
-                break;
-            case STRING:
-                deepCloneProperty = new StringPropertyInstance(property.getName(),
-                        ValueGeneratorFactory.createFixed((String) property.getValue()), property.getRange());
-                break;
-
-        }
-        deepCloneProperty.setValueUpdatePerTick(property.getValueUpdatePerTick());
-        return deepCloneProperty;
     }
 
         public Map<Object, Integer> getPropertyValuesMapPerTick(String entityName, String propertyName, int tick) {
         Map<Object, Integer> valuesProperty = new HashMap<>();
         List<EntityInstance> entityInstanceListValuesPerTick;
-        if(bonus && !futureTickWithBonus4) {
-            entityInstanceListValuesPerTick = valuesPerTick.get(tick);
-        }
-        else {
-            entityInstanceListValuesPerTick = worldInstance.getEntityInstanceList();
-        }
+        entityInstanceListValuesPerTick = worldInstance.getEntityInstanceList();
         for (EntityInstance entityInstance : entityInstanceListValuesPerTick) {
             if (entityInstance.getName().equals(entityName)) {
                 for (Property property : entityInstance.getAllProperty().values()) {
@@ -275,15 +201,10 @@ public  class Simulation implements Serializable, Runnable {
         float sum = 0;
         float count = 0;
         List<EntityInstance> entityInstanceListValuesPerTick;
-        if(bonus && !futureTickWithBonus4) {
-            entityInstanceListValuesPerTick = valuesPerTick.get(tick);
-        }
-        else {
-            entityInstanceListValuesPerTick = worldInstance.getEntityInstanceList();
-        }
+        entityInstanceListValuesPerTick = worldInstance.getEntityInstanceList();
         for (EntityInstance entityInstance: entityInstanceListValuesPerTick){
             if(entityInstance.getName().equals(entityName)){
-                sum = sum + entityInstance.getAvgAmountOfTickTheValueDosentChange(propertyName, tick, bonus, futureTickWithBonus4);
+                sum = sum + entityInstance.getAvgAmountOfTickTheValueDosentChange(propertyName);
                 count++;
             }
         }
@@ -449,10 +370,6 @@ public  class Simulation implements Serializable, Runnable {
         this.pause = pause;
     }
 
-    public void setPauseAfterTick(boolean pauseAfterTick) {
-        this.pauseAfterTick = pauseAfterTick;
-    }
-
     public void setStop(boolean stop) {
         this.stop = stop;
     }
@@ -465,16 +382,7 @@ public  class Simulation implements Serializable, Runnable {
         return message;
     }
 
-    public void setBonus(boolean bonus) {
-        this.bonus = bonus;
+    public String getUserName() {
+        return userName;
     }
-
-    public boolean getIsBonus() {
-        return bonus;
-    }
-
-    public void setFutureTickWithBonus4(boolean futureTickWithBonus4) {
-        this.futureTickWithBonus4 = futureTickWithBonus4;
-    }
-
 }

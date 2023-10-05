@@ -163,11 +163,24 @@ public class ManagementPageController {
 
     @FXML
     void SetThreadsCountClicked(ActionEvent event) {
-        String threadCount = threadCountTextField.getText();
+        String threadCountString = threadCountTextField.getText();
         try{
-            Integer count = Integer.parseInt(threadCount);
-            if (count > 0) {
-                //todo: update the logic
+            Integer threadCount = Integer.parseInt(threadCountString);
+            if (threadCount > 0) {
+                HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/setThreadCount").newBuilder();
+                urlBuilder.addQueryParameter("threadCount", threadCountString);
+                String finalUrl = urlBuilder.build().toString();
+
+                HttpAdminClientUtil.runAsyncGet(finalUrl, new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                    }
+                });
             }
             else{
                 mainController.setErrorMessage("You need to enter a number of threads greater than 0");

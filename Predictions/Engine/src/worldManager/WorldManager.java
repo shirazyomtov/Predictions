@@ -16,6 +16,7 @@ import world.propertyInstance.impl.BooleanPropertyInstance;
 import world.propertyInstance.impl.FloatPropertyInstance;
 import world.propertyInstance.impl.IntegerPropertyInstance;
 import world.propertyInstance.impl.StringPropertyInstance;
+import world.termination.Termination;
 import world.value.generator.api.ValueGeneratorFactory;
 import world.worldDefinition.WorldDefinition;
 import world.worldInstance.WorldInstance;
@@ -91,10 +92,6 @@ public class WorldManager implements Serializable{
 
     public void checkValidValueAndSetValue(String environmentName, String value, String userName, Integer executeID) throws IndexOutOfBoundsException, IllegalArgumentException{
         world.checkValidationValue(environmentName, value, environmentValuesByUser.get(userName).get(executeID));
-    }
-
-    public void setSimulation(boolean bonus, String userName, Integer requestID, Integer executeID){
-        setSimulationDetailsAndAddToHistory(bonus, userName, requestID, executeID);
     }
 
     public void setRandomValuesOfEnvironments(String userName, Integer executeID){
@@ -208,20 +205,17 @@ public class WorldManager implements Serializable{
         }
     }
 
-    private void setSimulationDetailsAndAddToHistory(boolean bonus, String userName, Integer requestID,  Integer executeID) {
+    public synchronized Simulation setSimulationDetailsAndAddToHistory(String userName, Integer requestID, Integer executeID, Termination termination) {
         numberOfTimesUserSelectSimulation++;
         List<EntityInstance> entityInstanceList = initEntities(userName, executeID);
         Map<String, Integer> initAmountOfEntities = createInitAmountOfEntities(userName, executeID);
         Map<String, Integer> currentAmountOfEntities = createInitAmountOfEntities(userName, executeID);
         worldInstance =new WorldInstance(environmentValuesByUser.get(userName).get(executeID), entityInstanceList, world, initAmountOfEntities, currentAmountOfEntities, world.getRows(), world.getCols());
         worldInstance.initLocation();
-        Simulation simulation = new Simulation(worldInstance, LocalDateTime.now(), userName, requestID);
-        simulation.setBonus(bonus);
+        Simulation simulation = new Simulation(worldInstance, LocalDateTime.now(), userName, requestID, termination);
         history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
         history.addSimulation(simulation);
-//        if(numberOfTimesUserSelectSimulation == 1){
-//            history.setThreadManager(world.getNumberOfThreads());
-//        }
+        return history.getSimulation();
     }
 
 
@@ -403,45 +397,7 @@ public class WorldManager implements Serializable{
 
     }
 
-    public void loadFileAndSetHistory(String filePath, WorldManager engineManager) throws IOException, ClassNotFoundException{
-        filePath += ".txt";
-        try (ObjectInputStream in =
-                     new ObjectInputStream(
-                             new FileInputStream(filePath))) {
-            engineManager = (WorldManager) in.readObject();
-            history = engineManager.getHistory();
-            if(history != null) {
-                history.setAllSimulations(history.getAllSimulations());
-                history.setCurrentSimulationNumber(history.getCurrentSimulationNumber());
-                world = history.getSimulation().getWorldInstance().getWorldDefinition();
-                worldInstance = history.getSimulation().getWorldInstance();
-                numberOfTimesUserSelectSimulation = history.getCurrentSimulationNumber();
-            }
-            else{
-                world = engineManager.getWorld();
-            }
-        }
-        catch (FileNotFoundException e){
-            throw new FileNotFoundException("No such file exists in this path: " + filePath );
-        }
-        catch (IOException e) {
-            throw new IOException("The file empty");
-        }
-    }
-
-    public void saveFile(String filePath, WorldManager engineManager) throws IOException {
-        filePath += ".txt";
-        try (FileOutputStream fos = new FileOutputStream(filePath);
-             ObjectOutputStream out = new ObjectOutputStream(fos)) {
-            out.writeObject(engineManager);
-            out.flush();
-        }
-        catch (IOException e) {
-            throw new IOException("Something went wrong while saving the file");
-        }
-    }
-
-    private History getHistory() {
+    public History getHistory() {
         return history;
     }
 
@@ -594,10 +550,6 @@ public class WorldManager implements Serializable{
 //        return getAllAmountOfEntities(simulationId);
     }
 
-//    public void addSimulationTask() {
-//        history.getThreadManager().executeSimulation(history.getSimulation());
-//    }
-
     public DTOWorldInfo getDTOWorldInfo(int simulationId) {
         Simulation simulation = history.getAllSimulations().get(simulationId);
         List<DTOEntityInfo> amountOfEntities = getCurrentEntities(simulationId);
@@ -623,14 +575,6 @@ public class WorldManager implements Serializable{
 //            entitiesAmountByUser.put(entityName, initAmountOfEntities.get(entityName));
 //        }
 //        return getAllAmountOfEntities(simulationId);
-    }
-
-    public List<DTOSimulationInfo> getDetailsAboutEndSimulation(){
-        List<DTOSimulationInfo> detailsAboutEndSimulation = new ArrayList<>();
-        for (Integer simulationId: history.getAllSimulations().keySet()){
-            detailsAboutEndSimulation.add(new DTOSimulationInfo(simulationId, history.getAllSimulations().get(simulationId).getFormattedDateTime(), history.getAllSimulations().get(simulationId).getIsFinish(), history.getAllSimulations().get(simulationId).getIsFailed(), history.getAllSimulations().get(simulationId).getMessage()));
-        }
-        return detailsAboutEndSimulation;
     }
 
     public Map<Integer, Map<String, Integer>> getAmountOfEntitiesPerTick(Integer simulationId) {
@@ -692,20 +636,6 @@ public class WorldManager implements Serializable{
         }
 
     }
-
-    public void futureTick(Integer simulationId) {
-        Simulation simulation = history.getAllSimulations().get(simulationId);
-        synchronized(simulation) {
-            simulation.setFutureTickWithBonus4(true);
-            simulation.setPauseAfterTick(true);
-            simulation.setPause(false);
-            simulation.notifyAll();
-        }
-    }
-
-//    public Integer getAmountOfThreads(){
-//        return world.getNumberOfThreads();
-//    }
 
     public Map<Integer, Integer> getAllSecondsPerTick(Integer simulationId){
         return history.getAllSimulations().get(simulationId).getWorldInstance().getSecondsPerTick();

@@ -15,4 +15,15 @@ public class ThreadManager {
     public void executeSimulation(Simulation simulation){
         threadExecutor.execute(simulation);
     }
+
+    public void setThreadExecutor(int numberOfThreads) {
+        shutdownThreadExecutor();
+        this.threadExecutor = Executors.newFixedThreadPool(numberOfThreads);
+    }
+
+    public void shutdownThreadExecutor() {
+        if (threadExecutor != null && !threadExecutor.isShutdown()) {
+            threadExecutor.shutdown();
+        }
+    }
 }

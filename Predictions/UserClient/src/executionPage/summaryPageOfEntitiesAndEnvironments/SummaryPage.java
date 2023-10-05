@@ -4,6 +4,8 @@ import DTO.DTOEntitiesAndEnvironmentInfo;
 import DTO.DTOEntityInfo;
 import DTO.DTOEnvironmentInfo;
 import app.AppController;
+import com.google.gson.Gson;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +15,13 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.collections.ObservableList;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.Response;
+import utils.HttpClientUtil;
+
+import java.io.IOException;
 
 
 public class SummaryPage {
@@ -44,7 +53,30 @@ public class SummaryPage {
 
     @FXML
     void moveToResultsPageClicked(ActionEvent event) {
+        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/startSimulation").newBuilder();
+        urlBuilder.addQueryParameter("worldName", worldName);
+        urlBuilder.addQueryParameter("userName", mainController.getUsername());
+        urlBuilder.addQueryParameter("requestId",requestId.toString());
+        urlBuilder.addQueryParameter("executeID", executeID.toString());
+        String finalUrl = urlBuilder.build().toString();
 
+        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.isSuccessful()){
+                    Platform.runLater(()->{
+                        mainController.setExecuteIdInExecutionPage(executeID + 1);
+                        mainController.setSimulationsDetails();
+                        mainController.showResultsPage();
+                    });
+                }
+            }
+        });
     }
 
     public Node getSummaryPageGridPane() {
@@ -71,6 +103,4 @@ public class SummaryPage {
         mainController.showExecutionsPage(requestId, worldName);
         mainController.setExecuteIdInExecutionPage(executeID);
     }
-
-
 }

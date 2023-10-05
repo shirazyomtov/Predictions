@@ -4,7 +4,10 @@ import DTO.*;
 import allocations.Allocation;
 import allocations.Allocations;
 import exceptions.NameAlreadyExist;
+import history.History;
+import history.simulation.Simulation;
 import threadManager.ThreadManager;
+import world.termination.Termination;
 import worldManager.WorldManager;
 import xml.XMLReader;
 import xml.XMLValidation;
@@ -14,11 +17,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 public class EngineManager {
     private Map<String, WorldManager> worldManagerMap = new HashMap<>();
     private Allocations allocations = new Allocations();
     private ThreadManager threadManager;
+
+
+    public EngineManager() {
+      this.threadManager = new ThreadManager(1);
+    }
 
     public DTOAllWorldsInfo getDTOAllWorlds(){
         Map<String, DTOWorldDefinitionInfo> dtoWorldDefinitionInfoMap = new HashMap<>();
@@ -116,7 +125,29 @@ public class EngineManager {
          return worldManagerMap.get(worldName).getSummaryDetails(userName, executeID);
     }
 
-//    public ThreadManager getThreadManager() {
-//        return threadManager;
-//    }
+    public void defineSimulation(String worldName, String userName, Integer requestID, Integer executeID){
+        Termination termination = allocations.getAllAllocation().get(requestID).getTermination();
+        Simulation simulation = worldManagerMap.get(worldName).setSimulationDetailsAndAddToHistory(userName, requestID, executeID, termination);
+        threadManager.executeSimulation(simulation);
+    }
+
+    public void setThreadCount(Integer threadCount) {
+        threadManager.setThreadExecutor(threadCount);
+    }
+
+    public DTOAllSimulations getDetailsAboutEndSimulation(String userName){
+        List<DTOSimulationInfo> detailsAboutEndSimulation = new ArrayList<>();
+        History history;
+        for(String worldName: worldManagerMap.keySet()) {
+            history = worldManagerMap.get(worldName).getHistory();
+            for (Integer simulationId : history.getAllSimulations().keySet()) {
+                Simulation simulation = history.getAllSimulations().get(simulationId);
+                if(simulation.getUserName().equals(userName)) {
+                    detailsAboutEndSimulation.add(new DTOSimulationInfo(simulationId, simulation.getFormattedDateTime(),
+                            simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage()));
+                }
+            }
+        }
+        return new DTOAllSimulations(detailsAboutEndSimulation);
+    }
 }

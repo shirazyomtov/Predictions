@@ -51,16 +51,11 @@ public class EntityInstance implements Serializable {
         this.location = location;
     }
 
-    public Float getAvgAmountOfTickTheValueDosentChange(String propertyName, int tick, boolean bonus, boolean futureTickWithBonus4) {
+    public Float getAvgAmountOfTickTheValueDosentChange(String propertyName) {
         float sum = 0;
         Property property = allProperty.get(propertyName);
         List<Integer> propertyValueList;
-        if (bonus && !futureTickWithBonus4){
-            propertyValueList = property.getValueUpdateListBonus(tick);
-        }
-        else{
-            propertyValueList = property.getValueUpdateListWithoutBonus();
-        }
+        propertyValueList = property.getValueUpdateListWithoutBonus();
         for (Integer amount : propertyValueList){
             sum = sum + amount;
         }

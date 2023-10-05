@@ -447,4 +447,8 @@ public class ExecutionPageController {
     public void setExecuteId(Integer executeID) {
         this.executeID = executeID;
     }
+
+    public Integer getExecuteID() {
+        return executeID;
+    }
 }

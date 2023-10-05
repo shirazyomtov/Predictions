@@ -173,7 +173,7 @@ public class AppController {
     }
 
     public void showResultsPage() {
-        headerComponentController.setVisbleRequestPage();
+        headerComponentController.setVisbleResultsPage();
         borderPaneComponent.setCenter(resultsPageController.getResultsPageGridPane());
     }
 
@@ -199,7 +199,7 @@ public class AppController {
 
 
     public void setRequestPage(DTOAllWorldsInfo dtoAllWorldsInfo) {
-        headerComponentController.setVisbleResultsPage();
+        headerComponentController.setVisbleRequestPage();
         requestsPageController.setWorldsNames(dtoAllWorldsInfo);
     }
 

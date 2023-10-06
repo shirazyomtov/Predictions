@@ -77,4 +77,8 @@ public class HeaderController {
     public String getUserName() {
         return userNameTextField.getText();
     }
+
+    public void setVisbleResultsPage() {
+        resultsToggleButton.setDisable(false);
+    }
 }

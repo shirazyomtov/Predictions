@@ -173,6 +173,7 @@ public class AppController {
     }
 
     public void showResultsPage() {
+        headerComponentController.setVisbleResultsPage();
         borderPaneComponent.setCenter(resultsPageController.getResultsPageGridPane());
     }
 

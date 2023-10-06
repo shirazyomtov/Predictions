@@ -2,6 +2,7 @@ package resultsPage;
 
 import DTO.*;
 import app.AppController;
+import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -519,13 +520,32 @@ public class ResultsPageController implements Closeable {
 
     @FXML
     void entitiesListViewClicked(MouseEvent event) {
-//        //todo: add a function and data to save the info about amount of each entity in each tick
-//        String entitiesName = entitiesListView.getSelectionModel().getSelectedItem();
-//        Map<Integer, Map<String, Integer>> amountOfAllEntities = mainController.getEngineManager().getAmountOfEntitiesPerTick(selectedSimulation.getSimulationId());
-//        if(entitiesName != null) {
-//            createGraphOfEntityPerTick(amountOfAllEntities, entitiesName);
-//            graphPane.setVisible(true);
-//        }
+        String entitiesName = entitiesListView.getSelectionModel().getSelectedItem();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/getAmountOfEntities").newBuilder();
+        urlBuilder.addQueryParameter("worldName", selectedSimulation.getWorldName());
+        urlBuilder.addQueryParameter("simulationID", selectedSimulation.getSimulationId().toString());
+        String finalUrl = urlBuilder.build().toString();
+
+        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.isSuccessful()){
+                    Platform.runLater(()->{
+                        Gson gson = new Gson();
+                        DTOAmountOfEntities amountOfAllEntities = gson.fromJson(response.body().charStream(), DTOAmountOfEntities.class);
+                        if(entitiesName != null) {
+                            createGraphOfEntityPerTick(amountOfAllEntities.getAmountOfAllEntities(), entitiesName);
+                            graphPane.setVisible(true);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private void createGraphOfEntityPerTick(Map<Integer, Map<String, Integer>> amountOfAllEntities, String entitiesName) {
@@ -616,21 +636,22 @@ public class ResultsPageController implements Closeable {
     }
 
     private void setComboBox(String entityName, String propertyName) {
-//        List<DTOEntityInfo> finalDTOEntities = mainController.getEngineManager().getAllDetailsOfEndedSimulation(selectedSimulation.getSimulationId());
-//        finalDTOEntities.stream()
-//                .filter(dtoEntityInfo -> dtoEntityInfo.getEntityName().equals(entityName))
-//                .findFirst()
-//                .ifPresent(entity -> {
-//                    entity.getProperties().stream()
-//                            .filter(dtoPropertyInfo -> dtoPropertyInfo.getName().equals(propertyName))
-//                            .filter(dtoPropertyInfo -> dtoPropertyInfo.getType().equals("FLOAT"))
-//                            .forEach(dtoPropertyInfo -> {
-//                                String displayMode = "Average value";
-//                                displayModeComboBox.getItems().add(displayMode);
-//                            });
-//                });
-//        displayModeLabel.setVisible(true);
-//        displayModeComboBox.setVisible(true);
+        //todo: check
+        List<DTOEntityInfo> finalDTOEntities = worldInfo.getCurrentAmountOfEntities();
+        finalDTOEntities.stream()
+                .filter(dtoEntityInfo -> dtoEntityInfo.getEntityName().equals(entityName))
+                .findFirst()
+                .ifPresent(entity -> {
+                    entity.getProperties().stream()
+                            .filter(dtoPropertyInfo -> dtoPropertyInfo.getName().equals(propertyName))
+                            .filter(dtoPropertyInfo -> dtoPropertyInfo.getType().equals("FLOAT"))
+                            .forEach(dtoPropertyInfo -> {
+                                String displayMode = "Average value";
+                                displayModeComboBox.getItems().add(displayMode);
+                            });
+                });
+        displayModeLabel.setVisible(true);
+        displayModeComboBox.setVisible(true);
     }
 
     @FXML

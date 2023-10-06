@@ -164,4 +164,9 @@ public class EngineManager {
     public void pause(String worldName, Integer simulationId){
         worldManagerMap.get(worldName).pause(simulationId);
     }
+
+    public DTOAmountOfEntities getAmountOfEntities(String worldName, Integer simulationID){
+        return new DTOAmountOfEntities(worldManagerMap.get(worldName).getAmountOfEntitiesPerTick(simulationID));
+    }
+
 }

@@ -109,7 +109,7 @@ public class RequestsPageController {
         String userName = mainController.getUsername();
         allocationsRefresher = new AllocationsRefresher(this::addRequests, userName);
         timer = new Timer();
-        timer.schedule(allocationsRefresher, 2000, 2000);
+        timer.schedule(allocationsRefresher, 1000, 1000);
     }
 
     private void addRequests(DTOAllRequestsByUser dtoAllRequestsByUser) {

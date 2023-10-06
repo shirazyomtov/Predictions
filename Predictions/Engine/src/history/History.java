@@ -11,7 +11,7 @@ public final class History implements Serializable {
     private Map<Integer, Simulation> allSimulations = new HashMap<>();
     private Integer currentSimulationNumber = 0;
 
-    public void setCurrentSimulationNumber(Integer currentSimulationNumber) {
+    public  void setCurrentSimulationNumber(Integer currentSimulationNumber) {
         this.currentSimulationNumber = currentSimulationNumber;
     }
 
@@ -19,7 +19,7 @@ public final class History implements Serializable {
         return allSimulations.get(currentSimulationNumber);
     }
 
-    public void addSimulation(Simulation simulation){
+    public  void addSimulation(Simulation simulation){
         allSimulations.put(currentSimulationNumber, simulation);
     }
 
@@ -27,7 +27,7 @@ public final class History implements Serializable {
         return allSimulations;
     }
 
-    public void removeCurrentSimulation(){
+    public synchronized void removeCurrentSimulation(){
         allSimulations.remove(currentSimulationNumber);
         setCurrentSimulationNumber(currentSimulationNumber -1);
     }
@@ -44,18 +44,5 @@ public final class History implements Serializable {
         return new TreeMap<>(allSimulations);
     }
 
-    public List<DTOSimulationInfo> getDTOSimulations(){
-        List<DTOSimulationInfo> dtoSimulations = new ArrayList<>();
-        TreeMap<Integer, Simulation> allSimulation = getSortMapOfSimulations();
-        for (Map.Entry<Integer, Simulation> entry : allSimulation.entrySet()) {
-            Integer simulationId = entry.getKey();
-            Simulation simulation = entry.getValue();
-            String formattedDateTime = simulation.getFormattedDateTime();
-
-            dtoSimulations.add(new DTOSimulationInfo(simulationId, formattedDateTime, simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage()));
-        }
-
-        return dtoSimulations;
-    }
 
 }

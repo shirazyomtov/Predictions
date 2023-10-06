@@ -56,6 +56,7 @@ public  class Simulation implements Serializable, Runnable {
         this.formattedDateTime = dateTime.format(formatter);
         this.userName = userName;
         this.requestID = requestID;
+        this.termination = termination;
     }
 
     public WorldInstance getWorldInstance() {

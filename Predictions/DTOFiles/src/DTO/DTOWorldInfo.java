@@ -3,7 +3,6 @@ package DTO;
 import java.util.List;
 
 public class DTOWorldInfo {
-//    private Map<String, Integer> currentAmountOfEntities;
 
     private List<DTOEntityInfo> currentAmountOfEntities;
 

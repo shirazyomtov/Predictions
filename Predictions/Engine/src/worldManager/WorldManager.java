@@ -354,10 +354,6 @@ public class WorldManager implements Serializable{
         }
     }
 
-    public List<DTOSimulationInfo> getAllPastSimulation() {
-        return history.getDTOSimulations();
-    }
-
     public int getSortedMapSize(){
         return history.getSortMapOfSimulations().size();
     }

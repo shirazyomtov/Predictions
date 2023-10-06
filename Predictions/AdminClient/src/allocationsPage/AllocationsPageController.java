@@ -90,7 +90,7 @@ public class AllocationsPageController {
     public void allocationsRefresher() {
         allocationsRefresher = new AllocationsRefresher(this::addRequest);
         timer = new Timer();
-        timer.schedule(allocationsRefresher, 2000, 2000);
+        timer.schedule(allocationsRefresher, 1000, 1000);
     }
 
     private void addRequest(DTOAllRequests dtoAllRequests) {

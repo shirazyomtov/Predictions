@@ -9,7 +9,10 @@ public class DTOSimulationInfo {
 
     private String message;
 
-    public DTOSimulationInfo(Integer simulationId, String simulationDate, Boolean isFinish, Boolean isFailed, String message) {
+    private String worldName;
+
+    public DTOSimulationInfo(String worldName, Integer simulationId, String simulationDate, Boolean isFinish, Boolean isFailed, String message) {
+        this.worldName = worldName;
         this.simulationId = simulationId;
         this.simulationDate = simulationDate;
         this.isFinish = isFinish;
@@ -35,5 +38,9 @@ public class DTOSimulationInfo {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getWorldName() {
+        return worldName;
     }
 }

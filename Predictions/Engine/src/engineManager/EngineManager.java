@@ -143,11 +143,25 @@ public class EngineManager {
             for (Integer simulationId : history.getAllSimulations().keySet()) {
                 Simulation simulation = history.getAllSimulations().get(simulationId);
                 if(simulation.getUserName().equals(userName)) {
-                    detailsAboutEndSimulation.add(new DTOSimulationInfo(simulationId, simulation.getFormattedDateTime(),
+                    detailsAboutEndSimulation.add(new DTOSimulationInfo(worldName, simulationId, simulation.getFormattedDateTime(),
                             simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage()));
                 }
             }
         }
         return new DTOAllSimulations(detailsAboutEndSimulation);
+    }
+
+    public DTOWorldInfo getDTOWorldInfo(String worldName, Integer simulationID){
+       return  worldManagerMap.get(worldName).getDTOWorldInfo(simulationID);
+    }
+
+    public void stop(String worldName, Integer simulationId){
+        worldManagerMap.get(worldName).stop(simulationId);
+    }
+    public void resume(String worldName, Integer simulationId){
+        worldManagerMap.get(worldName).resume(simulationId);
+    }
+    public void pause(String worldName, Integer simulationId){
+        worldManagerMap.get(worldName).pause(simulationId);
     }
 }

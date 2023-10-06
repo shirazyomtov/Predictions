@@ -2,12 +2,12 @@ package resultsPage;
 
 import DTO.*;
 import app.AppController;
-import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,19 +25,19 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.Response;
-import requestsPage.AllocationsRefresher;
 import resultsPage.averageTickOfProperty.AverageTickOfProperty;
 import resultsPage.averageValueOfProperty.AverageValueOfProperty;
 import resultsPage.histogramOfPopulation.HistogramOfPopulation;
 import utils.HttpClientUtil;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class ResultsPageController {
+public class ResultsPageController implements Closeable {
 
     private static final String HISTOGRAM_FXML_LIGHT_RESOURCE = "/resultsPage/histogramOfPopulation/histogramOfPopulation.fxml";
     private static final String AVERAGE_VALUE_FXML_LIGHT_RESOURCE = "/resultsPage/averageValueOfProperty/averageValueOfProperty.fxml";
@@ -169,21 +169,23 @@ public class ResultsPageController {
 
     private Consumer<Boolean> resetPauseResumeStop;
 
-    private List<Integer> finishSimulations = new ArrayList<>();
+    private Map<String, Integer> finishSimulations = new HashMap<>();
     private List<Integer> failedSimulations = new ArrayList<>();
     private Integer amountOfSimulations = 0;
     private Integer amountOfSimulationsEnded = 0;
     private boolean resumeAfterPastTick = false;
 
-    private Map<Integer, Boolean> pauseButtonPressed = new HashMap<>();
+    private Map<String, Map<Integer, Boolean>> pauseButtonPressed = new HashMap<>();
 
-    private Map<Integer, Boolean> resumeButtonPressed = new HashMap<>();
+    private Map<String, Map<Integer, Boolean>> resumeButtonPressed = new HashMap<>();
 
     private SimpleStringProperty messageProperty;
 
     private FinishSimulationRefresher finishSimulationRefresher;
     private SimulationRefresher simulationRefresher;
     private Timer timer;
+
+    private Timer timerSimulation;
 
     public ResultsPageController(){
         this.updateDTOWorld = (currentWorldInfo)->{
@@ -272,41 +274,17 @@ public class ResultsPageController {
 
 
     private void updateAllFinishSimulation(List<DTOSimulationInfo> allSimulation) {
-        boolean flag = false;
         allDTOSimulationList = allSimulation;
         if(allSimulation != null) {
             addSimulationsToMaps();
             addSimulationsToExecutionListView();
         }
-        for(DTOSimulationInfo dtoSimulationInfo: allSimulation){
-            if(dtoSimulationInfo.getFinish()){
-                for (Integer simulation: finishSimulations) {
-                    if (simulation.equals(dtoSimulationInfo.getSimulationId())){
-                        flag = true;
-                    }
-                }
-                if(!flag) {
-                    finishSimulations.add(dtoSimulationInfo.getSimulationId());
-                    int index = findSimulationIndex(dtoSimulationInfo.getSimulationId());
-                    if (index != -1) {
-                        if (!dtoSimulationInfo.getFailed()) {
-                            executionListView.getItems().set(index, "(Ended) Simulation ID: " + dtoSimulationInfo.getSimulationId() + ", Date: " + dtoSimulationInfo.getSimulationDate());
-                            mainController.setSuccessMessage("The simulation " + dtoSimulationInfo.getSimulationId() + " has ended");
-                        } else {
-                            executionListView.getItems().set(index, "(Failed) Simulation ID: " + dtoSimulationInfo.getSimulationId() + ", Date: " + dtoSimulationInfo.getSimulationDate());
-                            mainController.setErrorMessage("The simulation " + dtoSimulationInfo.getSimulationId() + " has failed due to: " + dtoSimulationInfo.getMessage());
-                        }
-                    }
-                }
-            }
-            flag = false;
-        }
     }
 
-    private int findSimulationIndex(int simulationId) {
+    private int findSimulationIndex(String worldName, int simulationId) {
         ObservableList<String> items = executionListView.getItems();
         for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).contains("Simulation ID: " + simulationId)) {
+            if (items.get(i).contains("World name: " + worldName + ", Simulation ID: " + simulationId)) {
                 return i;
             }
         }
@@ -355,56 +333,64 @@ public class ResultsPageController {
 
     private void addSimulationsToMaps() {
         for(DTOSimulationInfo dtoSimulationInfo: allDTOSimulationList){
-            if(!(pauseButtonPressed.containsKey(dtoSimulationInfo.getSimulationId()))){
-                pauseButtonPressed.put(dtoSimulationInfo.getSimulationId(), false);
+            addSimulationsToMap(dtoSimulationInfo, pauseButtonPressed);
+            addSimulationsToMap(dtoSimulationInfo, resumeButtonPressed);
+        }
+    }
+
+    private void addSimulationsToMap(DTOSimulationInfo dtoSimulationInfo, Map<String, Map<Integer, Boolean>> resumeOrPausePressed) {
+        if(resumeOrPausePressed.containsKey(dtoSimulationInfo.getWorldName())) {
+            if (!(resumeOrPausePressed.get(dtoSimulationInfo.getWorldName()).containsKey(dtoSimulationInfo.getSimulationId()))) {
+                resumeOrPausePressed.get(dtoSimulationInfo.getWorldName()).put(dtoSimulationInfo.getSimulationId(), false);
             }
-            if(!(resumeButtonPressed.containsKey(dtoSimulationInfo.getSimulationId()))){
-                resumeButtonPressed.put(dtoSimulationInfo.getSimulationId(), false);
-            }
+        }
+        else{
+            resumeOrPausePressed.put(dtoSimulationInfo.getWorldName(), new HashMap<>());
+            resumeOrPausePressed.get(dtoSimulationInfo.getWorldName()).put(dtoSimulationInfo.getSimulationId(), false);
         }
     }
 
     private void addSimulationsToExecutionListView() {
-        List<String> existingSimulationIds = new ArrayList<>();
-
-        for (String item : executionListView.getItems()) {
-            String[] parts = item.split("Simulation ID: ");
-            if (parts.length > 1) {
-                String simulationId = parts[1].split(",")[0];
-                existingSimulationIds.add(simulationId.trim());
-            }
-        }
-
-        for (DTOSimulationInfo dtoSimulationInfo : allDTOSimulationList) {
-            String state;
-            if (dtoSimulationInfo.getFinish()) {
-                if (dtoSimulationInfo.getFailed()) {
-                    state = "(Failed)";
-                } else {
-                    state = "(Ended)";
-                }
-            } else {
-                state = "(Running)";
-            }
-
-            String simulationId = dtoSimulationInfo.getSimulationId().toString();
-            String simulationDate = dtoSimulationInfo.getSimulationDate();
-            String simulationInfoString = state + " Simulation ID: " + simulationId + ", Date: " + simulationDate;
-
-            if (existingSimulationIds.contains(simulationId)) {
-                if(dtoSimulationInfo.getFinish() || dtoSimulationInfo.getFailed()) {
-                    int index = existingSimulationIds.indexOf(simulationId);
-                    String existingItem = executionListView.getItems().get(index);
-
-                    if (!existingItem.equals(simulationInfoString) &&
-                            (state.equals("(Failed)") || state.equals("(Ended)"))) {
-                        executionListView.getItems().set(index, simulationInfoString);
+        ObservableList<String> executionList = FXCollections.observableArrayList();
+        Platform.runLater(() -> {
+            for (DTOSimulationInfo simulation : allDTOSimulationList){
+                String state;
+                if (simulation.getFinish()) {
+                    if (simulation.getFailed()) {
+                        state = "(Failed)";
+                    }
+                    else {
+                        state = "(Ended)";
                     }
                 }
-            } else {
-                executionListView.getItems().add(simulationInfoString);
+                else {
+                    state = "(Running)";
+                }
+                String simulationId = simulation.getSimulationId().toString();
+                String simulationDate = simulation.getSimulationDate();
+                String simulationInfoString = state + " World name: " + simulation.getWorldName() + ", Simulation ID: " + simulationId + ", Date: " + simulationDate;
+                executionList.add(simulationInfoString);
             }
+
+            executionListView.setItems(executionList);
+        });
+    }
+
+    private String extractSimulationId(String item) {
+        String[] parts = item.split("Simulation ID: ");
+        if (parts.length > 1) {
+            return parts[1].split(",")[0];
         }
+        return "0";
+    }
+
+
+    private String extractWorldName(String item) {
+        String[] parts = item.split("World name: ");
+        if (parts.length > 1) {
+            return parts[1].split(",")[0];
+        }
+        return "0";
     }
 
     @FXML
@@ -414,26 +400,37 @@ public class ResultsPageController {
         if (selectedIndex >= 0) {
             String simulationId = "0";
             String simulationInfo = executionListView.getItems().get(selectedIndex);
-            String[] parts = simulationInfo.split("Simulation ID: ");
-            if (parts.length > 1) {
-                simulationId = parts[1].split(",")[0];
+            simulationId = extractSimulationId(simulationInfo).trim();
+            String worldName = extractWorldName(simulationInfo).trim();
+            selectedSimulation = allDTOSimulationList.get(findDTOSimulationListIndex(worldName, Integer.parseInt(simulationId)));
+            try {
+                setSpecificSimulationDetails();
             }
-            selectedSimulation = allDTOSimulationList.get(findDTOSimulationListIndex(Integer.parseInt(simulationId)));
-            setSpecificSimulationDetails();
+            catch (Exception e){
+                System.out.println("c");
+            }
         }
     }
 
-    private int findDTOSimulationListIndex(int simulationId) {
+    private int findDTOSimulationListIndex(String worldName, int simulationId) {
         for (int i = 0; i < allDTOSimulationList.size(); i++) {
-            if (allDTOSimulationList.get(i).getSimulationId().equals(simulationId)) {
-                return i;
+            if(allDTOSimulationList.get(i).getWorldName().equals(worldName)) {
+                if (allDTOSimulationList.get(i).getSimulationId().equals(simulationId)) {
+                    return i;
+                }
             }
         }
         return -1;
     }
 
-    private void setSpecificSimulationDetails() {
-        createRefresherOfSimulation();
+    private void setSpecificSimulationDetails() throws IOException {
+        if(simulationRefresher == null) {
+            createRefresherOfSimulation();
+        }
+        else{
+            close();
+            createRefresherOfSimulation();
+        }
         simulationInfoGridPane.setVisible(true);
         if(selectedSimulation.getFinish()){
             if(!selectedSimulation.getFailed()) {
@@ -638,8 +635,8 @@ public class ResultsPageController {
             public void onResponse(Call call, Response response) throws IOException {
                 if(response.isSuccessful()){
                     Platform.runLater(()-> {
-                        resumeButtonPressed.put(selectedSimulation.getSimulationId(), false);
-                        pauseButtonPressed.put(selectedSimulation.getSimulationId(), true);
+                        resumeButtonPressed.get(selectedSimulation.getWorldName()).put(selectedSimulation.getSimulationId(), false);
+                        pauseButtonPressed.get(selectedSimulation.getWorldName()).put(selectedSimulation.getSimulationId(), true);
                     });
                 }
             }
@@ -663,8 +660,8 @@ public class ResultsPageController {
             public void onResponse(Call call, Response response) throws IOException {
                 if(response.isSuccessful()){
                     Platform.runLater(()-> {
-                        pauseButtonPressed.put(selectedSimulation.getSimulationId(), false);
-                        resumeButtonPressed.put(selectedSimulation.getSimulationId(), true);
+                        pauseButtonPressed.get(selectedSimulation.getWorldName()).put(selectedSimulation.getSimulationId(), false);
+                        resumeButtonPressed.get(selectedSimulation.getWorldName()).put(selectedSimulation.getSimulationId(), true);
                         endedSimulationInfoScrollPane.setVisible(false);
                         graphPane.setVisible(false);
                         isDisplayModePressed.set(false);
@@ -736,21 +733,16 @@ public class ResultsPageController {
     }
 
     public void createRefresherOfSimulation() {
-        if(simulationRefresher == null) {
-            simulationRefresher = new SimulationRefresher(selectedSimulation.getSimulationId(), selectedSimulation.getWorldName(), currentTicksProperty, currentSecondsProperty, isFinishProperty, updateTableViewConsumer, isFailedProperty, pauseResumeStop, resetPauseResumeStop, updateDTOWorld);
-            timer = new Timer();
-            timer.schedule(simulationRefresher, 1000, 1000);
-        }
-         else {
-            simulationRefresher.setSimulationId(selectedSimulation.getSimulationId());
-            simulationRefresher.setWorldName(selectedSimulation.getWorldName());
-        }
+        simulationRefresher = new SimulationRefresher(selectedSimulation.getSimulationId(), selectedSimulation.getWorldName(), currentTicksProperty, currentSecondsProperty, isFinishProperty, updateTableViewConsumer, isFailedProperty, pauseResumeStop, resetPauseResumeStop, updateDTOWorld);
+        timerSimulation = new Timer();
+        timerSimulation.schedule(simulationRefresher, 1000, 1000);
     }
 
     private void updateFinishSimulation(){
         Platform.runLater(() -> {
             Integer simulationId = selectedSimulation.getSimulationId();
-            selectedSimulation = allDTOSimulationList.get(findDTOSimulationListIndex(simulationId));
+            String worldName = selectedSimulation.getWorldName();
+            selectedSimulation = allDTOSimulationList.get(findDTOSimulationListIndex(worldName, simulationId));
             if(!selectedSimulation.getFailed()) {
                 setFinishSimulationComponentsVisible();
                 setFinishSimulationDetails();
@@ -815,7 +807,18 @@ public class ResultsPageController {
     public void setResultsPageDetails() {
         displayModeLabel.setVisible(false);
         displayModeComboBox.setVisible(false);
-        executionListView.getItems().clear();
+//        executionListView.getItems().clear();
+    }
+
+    @Override
+    public void close() throws IOException {
+        simulationRefresher.cancel();
+        timerSimulation.cancel();
+    }
+
+    public void closeFinishSimulationRefresher(){
+        finishSimulationRefresher.cancel();
+        timer.cancel();
     }
 }
 

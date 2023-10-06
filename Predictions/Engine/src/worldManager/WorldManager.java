@@ -527,13 +527,7 @@ public class WorldManager implements Serializable{
     }
 
     public List<DTOEnvironmentInfo> getEnvironmentValuesOfChosenSimulation(Integer simulationId){
-        return null;
-//        environmentValuesByUser = new HashMap<>();
-//        Map<String, EnvironmentInstance> environmentInstanceMapOfSpecificSimulation = history.getAllSimulations().get(simulationId).getWorldInstance().getEnvironmentInstanceMap();
-//        for(String environmentName: environmentInstanceMapOfSpecificSimulation.keySet()){
-//            world.checkValidationValue(environmentName, environmentInstanceMapOfSpecificSimulation.get(environmentName).getProperty().getValue().toString(), environmentValuesByUser);
-//        }
-//        return history.getAllSimulations().get(simulationId).getWorldInstance().createListEnvironmentNamesAndValues();
+        return history.getAllSimulations().get(simulationId).getWorldInstance().createListEnvironmentNamesAndValues();
     }
 
     public List<DTOEntityInfo> getAllAmountOfEntitiesAndSetEntitiesByUser(Integer simulationId) {
@@ -549,7 +543,8 @@ public class WorldManager implements Serializable{
     public DTOWorldInfo getDTOWorldInfo(int simulationId) {
         Simulation simulation = history.getAllSimulations().get(simulationId);
         List<DTOEntityInfo> amountOfEntities = getCurrentEntities(simulationId);
-        return new DTOWorldInfo(amountOfEntities, simulation.getCurrentTick(), simulation.getCurrentSecond(), simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage());
+        List<DTOEnvironmentInfo> environmentInfos = getEnvironmentValuesOfChosenSimulation(simulationId);
+        return new DTOWorldInfo(amountOfEntities, simulation.getCurrentTick(), simulation.getCurrentSecond(), simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage(), environmentInfos);
     }
 
     public List<DTOEntityInfo> getCurrentEntities(int simulationId) {

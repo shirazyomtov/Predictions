@@ -92,8 +92,6 @@ public class ResultsPageController implements Closeable {
     @FXML
     private TableColumn<DTOEntityInfo, String> finalAmountColumn;
 
-
-
     @FXML
     private Button pauseButton;
 
@@ -137,6 +135,15 @@ public class ResultsPageController implements Closeable {
     @FXML
     private SplitPane rightSplitPaneThirdPage;
 
+    @FXML
+    private TableView<DTOEnvironmentInfo> environmentTableView;
+
+    @FXML
+    private TableColumn<DTOEnvironmentInfo, String> environmentName;
+
+    @FXML
+    private TableColumn<DTOEnvironmentInfo, String> environmentValue;
+
     private AppController mainController;
 
     private List<DTOSimulationInfo> allDTOSimulationList;
@@ -159,7 +166,7 @@ public class ResultsPageController implements Closeable {
     private SimpleBooleanProperty isFailedProperty;
 
     private SimpleBooleanProperty isFinishProperty;
-    private Consumer<List<DTOEntityInfo>> updateTableViewConsumer;
+    private Consumer<DTOWorldInfo> updateTableViewConsumer;
 
     private Consumer<List<DTOSimulationInfo>> updateFinishSimulationConsumer;
 
@@ -193,9 +200,10 @@ public class ResultsPageController implements Closeable {
                 worldInfo = currentWorldInfo;
             });
         };
-        this.updateTableViewConsumer = (chosenSimulationEntities) -> {
+        this.updateTableViewConsumer = (chosenSimulationWorld) -> {
             Platform.runLater(() -> {
-                addEntitiesDetails(chosenSimulationEntities);
+                addEntitiesDetails(chosenSimulationWorld.getCurrentAmountOfEntities());
+                addEnvironmentDetails(chosenSimulationWorld.getEnvironmentInfos());
             });
         };
         this.pauseResumeStop = (currentTick) -> {
@@ -475,6 +483,13 @@ public class ResultsPageController implements Closeable {
         finalAmountColumn.setCellValueFactory(new PropertyValueFactory<>("finalAmount"));
     }
 
+
+    private void addEnvironmentDetails(List<DTOEnvironmentInfo> chosenSimulationEnvironments) {
+        environmentTableView.getItems().clear();
+        environmentTableView.getItems().addAll(chosenSimulationEnvironments);
+        environmentName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        environmentValue.setCellValueFactory(new PropertyValueFactory<>("value"));
+    }
 
     private void setEntitiesAndProperties(List<DTOEntityInfo> finalDTOEntities) {
         entitiesAndPropertiesTreeView.setRoot(null);

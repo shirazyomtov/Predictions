@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 public class SimulationRefresher extends TimerTask {
     private final Consumer<DTOWorldInfo> updateDTOWorld;
-    private Consumer<List<DTOEntityInfo>>  updateTableViewConsumer;
+    private Consumer<DTOWorldInfo>  updateTableViewConsumer;
     private SimpleBooleanProperty isFinishProperty;
     private Integer simulationId;
 
@@ -33,7 +33,7 @@ public class SimulationRefresher extends TimerTask {
     private Consumer<Boolean> resetPauseStopConsumer;
     private String worldName;
 
-    public SimulationRefresher(Integer simulationId, String worldName, SimpleLongProperty currentTicksProperty, SimpleLongProperty currentSecondsProperty, SimpleBooleanProperty isFinishProperty, Consumer<List<DTOEntityInfo>> updateTableViewConsumer, SimpleBooleanProperty isFailed, Consumer<Integer> pauseResumeStop, Consumer<Boolean> resetPauseResumeStop, Consumer<DTOWorldInfo> updateDTOWorld){
+    public SimulationRefresher(Integer simulationId, String worldName, SimpleLongProperty currentTicksProperty, SimpleLongProperty currentSecondsProperty, SimpleBooleanProperty isFinishProperty, Consumer<DTOWorldInfo> updateTableViewConsumer, SimpleBooleanProperty isFailed, Consumer<Integer> pauseResumeStop, Consumer<Boolean> resetPauseResumeStop, Consumer<DTOWorldInfo> updateDTOWorld){
         this.simulationId = simulationId;
         this.worldName = worldName;
         this.currentTicksProperty = currentTicksProperty;
@@ -70,7 +70,7 @@ public class SimulationRefresher extends TimerTask {
                         currentSecondsProperty.set(dtoWorldInfo.getCurrentSecond());
                         isFailed.set(dtoWorldInfo.getIsFailed());
                         isFinishProperty.set(dtoWorldInfo.getIsFinish());
-                        updateTableViewConsumer.accept(dtoWorldInfo.getCurrentAmountOfEntities());
+                        updateTableViewConsumer.accept(dtoWorldInfo);
                         if(dtoWorldInfo.getIsFinish()){
                             resetPauseStopConsumer.accept(true);
                         }

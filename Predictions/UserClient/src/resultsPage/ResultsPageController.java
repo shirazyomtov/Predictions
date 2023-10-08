@@ -301,9 +301,9 @@ public class ResultsPageController implements Closeable {
     }
 
     private void loadResourcesStaticData() throws IOException {
-//        loadResourcesHistogramProperty();
-//        loadResourcesAverageValueProperty();
-//        loadResourcesAverageTickProperty();
+        loadResourcesHistogramProperty();
+        loadResourcesAverageValueProperty();
+        loadResourcesAverageTickProperty();
     }
 
 
@@ -379,6 +379,17 @@ public class ResultsPageController implements Closeable {
                 String simulationDate = simulation.getSimulationDate();
                 String simulationInfoString = state + " World name: " + simulation.getWorldName() + ", Simulation ID: " + simulationId + ", Date: " + simulationDate;
                 executionList.add(simulationInfoString);
+
+                if(selectedSimulation != null && selectedSimulation.getSimulationId().equals(simulation.getSimulationId())){
+                    if(!selectedSimulation.getFinish() && simulation.getFinish()){
+                        if (!simulation.getFailed()) {
+                            mainController.setSuccessMessage("The simulation " + simulation.getSimulationId() + " has ended");
+                        }
+                        else{
+                            mainController.setErrorMessage("The simulation " + simulation.getSimulationId() + " has failed due to: " + simulation.getMessage());
+                        }
+                    }
+                }
             }
 
             executionListView.setItems(executionList);
@@ -499,12 +510,14 @@ public class ResultsPageController implements Closeable {
         }
         TreeItem<String> root = new TreeItem<>("Entities");
         for (DTOEntityInfo dtoEntityInfo : finalDTOEntities) {
-            TreeItem<String> entityBranch = new TreeItem<>(dtoEntityInfo.getEntityName());
-            for(DTOPropertyInfo dtoPropertyInfo: dtoEntityInfo.getProperties()){
-                TreeItem<String> leaf = new TreeItem<>(dtoPropertyInfo.getName());
-                entityBranch.getChildren().add(leaf);
+            if(dtoEntityInfo.getFinalAmount() != 0) {
+                TreeItem<String> entityBranch = new TreeItem<>(dtoEntityInfo.getEntityName());
+                for (DTOPropertyInfo dtoPropertyInfo : dtoEntityInfo.getProperties()) {
+                    TreeItem<String> leaf = new TreeItem<>(dtoPropertyInfo.getName());
+                    entityBranch.getChildren().add(leaf);
+                }
+                root.getChildren().add(entityBranch);
             }
-            root.getChildren().add(entityBranch);
         }
         entitiesAndPropertiesTreeView.setRoot(root);
 
@@ -570,34 +583,74 @@ public class ResultsPageController implements Closeable {
 
     @FXML
     void displayModeComboBoxClicked(ActionEvent event) {
-//        isDisplayModePressed.set(true);
-//        staticInfoPane.getChildren().clear();
-//        String selectedDisplay = displayModeComboBox.getSelectionModel().getSelectedItem();
-//        TreeItem<String> selectedItem = entitiesAndPropertiesTreeView.getSelectionModel().getSelectedItem();
-//        if(selectedItem == null){
-//            return;
-//        }
-//        String propertyName = selectedItem.getValue();
-//        String entityName = selectedItem.getParent().getValue();
-//        Integer currentTick = Integer.parseInt(currentTickTextField.getText());
-//        if(selectedDisplay != null) {
-//            Map<Object, Integer> propertyInfoAboutValues = mainController.getEngineManager().createPropertyValuesMap(selectedSimulation.getSimulationId(), entityName, propertyName, currentTick);
-//            switch (selectedDisplay) {
-//                case "Histogram of population":
-//                    staticInfoPane.getChildren().add(histogramOfPopulation.getHistogramScrollPane());
-//                    List<DTOHistogram> histograms= createDTOHistogram(propertyInfoAboutValues);
-//                    histogramOfPopulation.createTableView(histograms);
-//                    break;
-//                case "Consistency":
-//                    staticInfoPane.getChildren().add(averageTickOfProperty.getAverageTickOfPropertyVbox());
-//                    averageTickOfProperty.setAverageTickOfProperty(mainController.getEngineManager().getAverageTickOfSpecificProperty(selectedSimulation.getSimulationId(), entityName, propertyName, currentTick));
-//                    break;
-//                case "Average value":
-//                    staticInfoPane.getChildren().add(averageValueOfProperty.getAverageValueVbox());
-//                    averageValueOfProperty.createAverageValueOfProperty(propertyInfoAboutValues);
-//                    break;
-//            }
-//        }
+        isDisplayModePressed.set(true);
+        staticInfoPane.getChildren().clear();
+        String selectedDisplay = displayModeComboBox.getSelectionModel().getSelectedItem();
+        TreeItem<String> selectedItem = entitiesAndPropertiesTreeView.getSelectionModel().getSelectedItem();
+        if(selectedItem == null){
+            return;
+        }
+        String propertyName = selectedItem.getValue();
+        String entityName = selectedItem.getParent().getValue();
+        if(selectedDisplay != null) {
+            getPropertyInfoFromServer(entityName, propertyName);
+        }
+    }
+
+
+    private void getPropertyInfoFromServer(String entityName, String propertyName) {
+        String worldName = selectedSimulation.getWorldName();
+        String simulationId = selectedSimulation.getSimulationId().toString();
+
+        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/getStaticInfo").newBuilder();
+        urlBuilder.addQueryParameter("worldName", worldName);
+        urlBuilder.addQueryParameter("simulationId", simulationId);
+        urlBuilder.addQueryParameter("entityName", entityName);
+        urlBuilder.addQueryParameter("propertyName", propertyName);
+        String finalUrl = urlBuilder.build().toString();
+
+        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.isSuccessful()){
+                    Gson gson = new Gson();
+                    DTOStaticInfo dtoStaticInfo = gson.fromJson(response.body().charStream(), DTOStaticInfo.class);
+                    Platform.runLater(()-> {
+                        setDetailsOfDisplayStaticInfo(dtoStaticInfo);
+                    });
+                }
+                else{
+                    System.out.println("d");
+                }
+            }
+        });
+    }
+
+
+    private void setDetailsOfDisplayStaticInfo(DTOStaticInfo dtoStaticInfo) {
+        Map<Object, Integer> propertyInfoAboutValues;
+        String selectedDisplay = displayModeComboBox.getSelectionModel().getSelectedItem();
+        switch (selectedDisplay) {
+            case "Histogram of population":
+                staticInfoPane.getChildren().add(histogramOfPopulation.getHistogramScrollPane());
+                propertyInfoAboutValues = dtoStaticInfo.getPropertyInfoAboutValues();
+                List<DTOHistogram> histograms= createDTOHistogram(propertyInfoAboutValues);
+                histogramOfPopulation.createTableView(histograms);
+                break;
+            case "Consistency":
+                staticInfoPane.getChildren().add(averageTickOfProperty.getAverageTickOfPropertyVbox());
+                averageTickOfProperty.setAverageTickOfProperty(dtoStaticInfo.getAverageTickOfProperty());
+                break;
+            case "Average value":
+                staticInfoPane.getChildren().add(averageValueOfProperty.getAverageValueVbox());
+                averageValueOfProperty.createAverageValueOfProperty(dtoStaticInfo.getAverageValue());
+                break;
+        }
     }
 
     private List<DTOHistogram> createDTOHistogram(Map<Object, Integer> propertyInfoAboutValues) {
@@ -730,11 +783,9 @@ public class ResultsPageController implements Closeable {
                         resumeButton.setVisible(false);
                         stopButton.setVisible(false);
                         rerunButton.setVisible(true);
-//                        currentTicksProperty.set(mainController.getEngineManager().getCurrentTick(selectedSimulation.getSimulationId()));
-//                        currentSecondsProperty.set(mainController.getEngineManager().getCurrentSecond(selectedSimulation.getSimulationId()));
-//                        List<DTOEntityInfo> currentTickAmountOfEntities = mainController.getEngineManager().getCurrentTickAmountOfEntities(selectedSimulation.getSimulationId(), Integer.parseInt(currentTickTextField.getText()));
-//                        addEntitiesDetails(currentTickAmountOfEntities);
                         graphPane.setVisible(false);
+                        mainController.setSuccessMessage("The simulation " + selectedSimulation.getSimulationId() + " has ended");
+
                     });
                 }
             }

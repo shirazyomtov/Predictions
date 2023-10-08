@@ -47,9 +47,6 @@ public class FinishSimulationRefresher extends TimerTask {
                         allSimulation.accept(allSimulationsByUser.getDtoSimulationInfos());
                     });
                 }
-                else{
-                    System.out.println("error");
-                }
             }
         });
     }

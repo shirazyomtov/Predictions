@@ -177,7 +177,7 @@ public  class Simulation implements Serializable, Runnable {
         return time;
     }
 
-        public Map<Object, Integer> getPropertyValuesMapPerTick(String entityName, String propertyName, int tick) {
+        public Map<Object, Integer> getPropertyValuesMapPerTick(String entityName, String propertyName) {
         Map<Object, Integer> valuesProperty = new HashMap<>();
         List<EntityInstance> entityInstanceListValuesPerTick;
         entityInstanceListValuesPerTick = worldInstance.getEntityInstanceList();
@@ -198,7 +198,7 @@ public  class Simulation implements Serializable, Runnable {
         return valuesProperty;
     }
 
-    public Float getAverageTickValueOfSpecificProperty(String entityName, String propertyName, int tick){
+    public Float getAverageTickValueOfSpecificProperty(String entityName, String propertyName){
         float sum = 0;
         float count = 0;
         List<EntityInstance> entityInstanceListValuesPerTick;

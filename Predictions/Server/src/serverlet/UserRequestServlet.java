@@ -21,7 +21,7 @@ public class UserRequestServlet extends HttpServlet {
         String ticks = req.getParameter("ticks");
         String seconds = req.getParameter("seconds");
         String user = req.getParameter("user");
-        String userName = req.getParameter("username");
+        String userName =  req.getParameter("username");
         engineManager.addAllocation(name, amountOfSimulation, ticks, seconds, user, userName);
     }
 }

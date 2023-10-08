@@ -24,9 +24,12 @@ public class EngineManager {
     private Allocations allocations = new Allocations();
     private ThreadManager threadManager;
 
+    private Integer currentSimulationId = 1;
+
 
     public EngineManager() {
-      this.threadManager = new ThreadManager(1);
+        currentSimulationId = 1;
+        this.threadManager = new ThreadManager(1);
     }
 
     public DTOAllWorldsInfo getDTOAllWorlds(){
@@ -127,7 +130,8 @@ public class EngineManager {
 
     public void defineSimulation(String worldName, String userName, Integer requestID, Integer executeID){
         Termination termination = allocations.getAllAllocation().get(requestID).getTermination();
-        Simulation simulation = worldManagerMap.get(worldName).setSimulationDetailsAndAddToHistory(userName, requestID, executeID, termination);
+        Simulation simulation = worldManagerMap.get(worldName).setSimulationDetailsAndAddToHistory(currentSimulationId, userName, requestID, executeID, termination);
+        currentSimulationId++;
         threadManager.executeSimulation(simulation);
     }
 
@@ -169,4 +173,29 @@ public class EngineManager {
         return new DTOAmountOfEntities(worldManagerMap.get(worldName).getAmountOfEntitiesPerTick(simulationID));
     }
 
+    public DTOStaticInfo getStaticInfo(String worldName, String simulationId, String entityName, String propertyName) {
+        Map<Object, Integer> propertyValuesMap = worldManagerMap.get(worldName).createPropertyValuesMap(Integer.parseInt(simulationId), entityName, propertyName);
+        Float averageTick= worldManagerMap.get(worldName).getAverageTickOfSpecificProperty(Integer.parseInt(simulationId), entityName, propertyName);
+        Float averageValue = calculateAverageValue(propertyValuesMap);
+        return new DTOStaticInfo(propertyValuesMap, averageTick, averageValue);
+    }
+
+    private Float calculateAverageValue(Map<Object, Integer> propertyValuesMap) {
+        Float sum = 0.0F;
+        if (propertyValuesMap.isEmpty()) {
+            return sum;
+        }
+
+        Integer count = 0;
+        Float value;
+        for (Integer amount : propertyValuesMap.values()) {
+            count += amount ;
+        }
+        for (Object valueObject : propertyValuesMap.keySet()) {
+            value = (Float)valueObject;
+            sum += value * propertyValuesMap.get(valueObject);
+        }
+
+        return sum / count;
+    }
 }

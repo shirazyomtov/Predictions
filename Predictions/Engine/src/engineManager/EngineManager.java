@@ -147,7 +147,7 @@ public class EngineManager {
             for (Integer simulationId : history.getAllSimulations().keySet()) {
                 Simulation simulation = history.getAllSimulations().get(simulationId);
                 if(simulation.getUserName().equals(userName)) {
-                    detailsAboutEndSimulation.add(new DTOSimulationInfo(worldName, simulationId, simulation.getFormattedDateTime(),
+                    detailsAboutEndSimulation.add(new DTOSimulationInfo(simulation.getUserName(), worldName, simulationId, simulation.getFormattedDateTime(),
                             simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage()));
                 }
             }
@@ -197,5 +197,22 @@ public class EngineManager {
         }
 
         return sum / count;
+    }
+
+    public DTOAllSimulations getAllFinishSimulations(){
+        List<DTOSimulationInfo> detailsAboutEndSimulation = new ArrayList<>();
+        History history;
+
+        for(String worldName: worldManagerMap.keySet()) {
+            history = worldManagerMap.get(worldName).getHistory();
+            for (Integer simulationId : history.getAllSimulations().keySet()) {
+                Simulation simulation = history.getAllSimulations().get(simulationId);
+                if(simulation.getIsFinish()) {
+                    detailsAboutEndSimulation.add(new DTOSimulationInfo(simulation.getUserName(), worldName, simulationId, simulation.getFormattedDateTime(),
+                            simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage()));
+                }
+            }
+        }
+        return new DTOAllSimulations(detailsAboutEndSimulation);
     }
 }

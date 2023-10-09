@@ -29,7 +29,7 @@ import okhttp3.Response;
 import resultsPage.averageTickOfProperty.AverageTickOfProperty;
 import resultsPage.averageValueOfProperty.AverageValueOfProperty;
 import resultsPage.histogramOfPopulation.HistogramOfPopulation;
-import utils.HttpClientUtil;
+import utils.HttpAdminClientUtil;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -94,19 +94,7 @@ public class ResultsPageController implements Closeable {
     private TableColumn<DTOEntityInfo, String> finalAmountColumn;
 
     @FXML
-    private Button pauseButton;
-
-    @FXML
-    private Button rerunButton;
-
-    @FXML
-    private Button resumeButton;
-
-    @FXML
     private TextField secondsCounterTextField;
-
-    @FXML
-    private Button stopButton;
 
     @FXML
     private GridPane simulationInfoGridPane;
@@ -131,10 +119,10 @@ public class ResultsPageController implements Closeable {
     private Pane staticInfoPane;
 
     @FXML
-    private SplitPane thirdPageSplitPane;
+    private SplitPane resultsPageSplitPane;
 
     @FXML
-    private SplitPane rightSplitPaneThirdPage;
+    private SplitPane rightSplitPaneResultsPage;
 
     @FXML
     private TableView<DTOEnvironmentInfo> environmentTableView;
@@ -163,12 +151,6 @@ public class ResultsPageController implements Closeable {
 
     private SimpleLongProperty currentTicksProperty;
     private SimpleLongProperty currentSecondsProperty;
-
-    private SimpleBooleanProperty isFailedProperty;
-
-    private SimpleBooleanProperty isFinishProperty;
-    private Consumer<DTOWorldInfo> updateTableViewConsumer;
-
     private Consumer<List<DTOSimulationInfo>> updateFinishSimulationConsumer;
 
     private Consumer<DTOWorldInfo> updateDTOWorld;
@@ -179,51 +161,23 @@ public class ResultsPageController implements Closeable {
 
     private Map<String, Integer> finishSimulations = new HashMap<>();
     private List<Integer> failedSimulations = new ArrayList<>();
-    private Integer amountOfSimulations = 0;
-    private Integer amountOfSimulationsEnded = 0;
-    private boolean resumeAfterPastTick = false;
-
-    private Map<String, Map<Integer, Boolean>> pauseButtonPressed = new HashMap<>();
-
-    private Map<String, Map<Integer, Boolean>> resumeButtonPressed = new HashMap<>();
 
     private SimpleStringProperty messageProperty;
 
-    private FinishSimulationRefresher finishSimulationRefresher;
-    private SimulationRefresher simulationRefresher;
+    private AllFinishSimulationsRefresher allFinishSimulationsRefresher;
     private Timer timer;
 
-    private Timer timerSimulation;
-
     public ResultsPageController(){
-        this.updateDTOWorld = (currentWorldInfo)->{
-            Platform.runLater(() -> {
-                worldInfo = currentWorldInfo;
-            });
-        };
-        this.updateTableViewConsumer = (chosenSimulationWorld) -> {
-            Platform.runLater(() -> {
-                addEntitiesDetails(chosenSimulationWorld.getCurrentAmountOfEntities());
-                addEnvironmentDetails(chosenSimulationWorld.getEnvironmentInfos());
-            });
-        };
-        this.pauseResumeStop = (currentTick) -> {
-            Platform.runLater(() -> {
-                setStateOfSimulationInQueue(currentTick);
-            });
-        };
-        this.resetPauseResumeStop = (state)->{
-            Platform.runLater(()->{
-                resetRunningComponentsVisible();
-            });
-        };
+//        this.updateDTOWorld = (currentWorldInfo)->{
+//            Platform.runLater(() -> {
+//                worldInfo = currentWorldInfo;
+//            });
+//        };
 
         isDisplayModePressed = new SimpleBooleanProperty(false);
         this.currentTicksProperty = new SimpleLongProperty(0);
         this.currentSecondsProperty = new SimpleLongProperty(0);
-        this.isFinishProperty = new SimpleBooleanProperty(false);
         this.messageProperty = new SimpleStringProperty("");
-        this.isFailedProperty = new SimpleBooleanProperty(false);
     }
 
     @FXML
@@ -234,58 +188,29 @@ public class ResultsPageController implements Closeable {
         }
         currentTickTextField.textProperty().bind(Bindings.format("%d", currentTicksProperty));
         secondsCounterTextField.textProperty().bind(Bindings.format("%d", currentSecondsProperty));
-        isFinishProperty.addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                updateFinishSimulation();
-            }
+        resultsPageSplitPane.setDividerPositions(0.2);
+        resultsPageSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
+            resultsPageSplitPane.setDividerPositions(0.2);
         });
-        isFailedProperty.addListener((observable, oldValue, newValue) -> {
-            if(newValue){
-                Platform.runLater(() -> {
-                    updateFailedSimulation();
-                });
-            }
+        resultsPageSplitPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+            resultsPageSplitPane.setDividerPositions(0.2);
         });
-        thirdPageSplitPane.setDividerPositions(0.2);
-        thirdPageSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
-            thirdPageSplitPane.setDividerPositions(0.2);
+        rightSplitPaneResultsPage.setDividerPositions(0.4);
+        rightSplitPaneResultsPage.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
+            rightSplitPaneResultsPage.setDividerPositions(0.4);
         });
-        thirdPageSplitPane.widthProperty().addListener((observable, oldValue, newValue) -> {
-            thirdPageSplitPane.setDividerPositions(0.2);
+        rightSplitPaneResultsPage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            rightSplitPaneResultsPage.setDividerPositions(0.4);
         });
-        rightSplitPaneThirdPage.setDividerPositions(0.4);
-        rightSplitPaneThirdPage.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
-            rightSplitPaneThirdPage.setDividerPositions(0.4);
-        });
-        rightSplitPaneThirdPage.widthProperty().addListener((observable, oldValue, newValue) -> {
-            rightSplitPaneThirdPage.setDividerPositions(0.4);
-        });
-    }
-
-    private void resetRunningComponentsVisible() {
-        pauseButton.setVisible(false);
-        resumeButton.setVisible(false);
-        stopButton.setVisible(false);
-    }
-
-    private void setStateOfSimulationInQueue(Integer currentTick) {
-        if (currentTick > 1) {
-            pauseButton.setVisible(true);
-            resumeButton.setVisible(true);
-            stopButton.setVisible(true);
-        } else {
-            pauseButton.setVisible(false);
-            resumeButton.setVisible(false);
-            stopButton.setVisible(false);
-        }
-
     }
 
 
     private void updateAllFinishSimulation(List<DTOSimulationInfo> allSimulation) {
         allDTOSimulationList = allSimulation;
-        if(allSimulation != null) {
-            addSimulationsToMaps();
+        if(!allSimulation.isEmpty()) {
+            if(executionListView.getItems().isEmpty()) {
+                mainController.setResultsButtonVisible();
+            }
             addSimulationsToExecutionListView();
         }
     }
@@ -316,7 +241,6 @@ public class ResultsPageController implements Closeable {
         histogramOfPopulation = fxmlLoader.getController();
     }
 
-
     private void loadResourcesAverageValueProperty() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL url = getClass().getResource(AVERAGE_VALUE_FXML_LIGHT_RESOURCE);
@@ -325,7 +249,6 @@ public class ResultsPageController implements Closeable {
         VBox vBox = fxmlLoader.load(inputStream);
         averageValueOfProperty = fxmlLoader.getController();
     }
-
 
     private void loadResourcesAverageTickProperty() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -340,62 +263,25 @@ public class ResultsPageController implements Closeable {
         this.mainController = appController;
     }
 
-    private void addSimulationsToMaps() {
-        for(DTOSimulationInfo dtoSimulationInfo: allDTOSimulationList){
-            addSimulationsToMap(dtoSimulationInfo, pauseButtonPressed);
-            addSimulationsToMap(dtoSimulationInfo, resumeButtonPressed);
-        }
-    }
-
-    private void addSimulationsToMap(DTOSimulationInfo dtoSimulationInfo, Map<String, Map<Integer, Boolean>> resumeOrPausePressed) {
-        if(resumeOrPausePressed.containsKey(dtoSimulationInfo.getWorldName())) {
-            if (!(resumeOrPausePressed.get(dtoSimulationInfo.getWorldName()).containsKey(dtoSimulationInfo.getSimulationId()))) {
-                resumeOrPausePressed.get(dtoSimulationInfo.getWorldName()).put(dtoSimulationInfo.getSimulationId(), false);
-            }
-        }
-        else{
-            resumeOrPausePressed.put(dtoSimulationInfo.getWorldName(), new HashMap<>());
-            resumeOrPausePressed.get(dtoSimulationInfo.getWorldName()).put(dtoSimulationInfo.getSimulationId(), false);
-        }
-    }
-
     private void addSimulationsToExecutionListView() {
         ObservableList<String> executionList = FXCollections.observableArrayList();
         Platform.runLater(() -> {
-            DTOSimulationInfo currentSimulation = null;
-            for (DTOSimulationInfo simulation : allDTOSimulationList) {
-                String state;
+            for (DTOSimulationInfo simulation : allDTOSimulationList){
+                String state = "";
                 if (simulation.getFinish()) {
                     if (simulation.getFailed()) {
                         state = "(Failed)";
-                    } else {
+                    }
+                    else {
                         state = "(Ended)";
                     }
-                } else {
-                    state = "(Running)";
                 }
                 String simulationId = simulation.getSimulationId().toString();
                 String simulationDate = simulation.getSimulationDate();
-                String simulationInfoString = state + " World name: " + simulation.getWorldName() + ", Simulation ID: " + simulationId + ", Date: " + simulationDate;
+                String simulationInfoString = state + " User name: " + simulation.getUserName() + ", World name: " + simulation.getWorldName() + ", Simulation ID: " + simulationId + ", Date: " + simulationDate;
                 executionList.add(simulationInfoString);
-
-                if (selectedSimulation != null && selectedSimulation.getSimulationId().equals(simulation.getSimulationId())) {
-                    currentSimulation = simulation;
-                }
             }
-
             executionListView.setItems(executionList);
-
-            if (selectedSimulation != null && currentSimulation != null) {
-                if ((!selectedSimulation.getFinish()) && currentSimulation.getFinish()) {
-                    selectedSimulation = currentSimulation;
-                    if (!currentSimulation.getFailed()) {
-                        mainController.setSuccessMessage("The simulation " + currentSimulation.getSimulationId() + " has ended");
-                    } else {
-                        mainController.setErrorMessage("The simulation " + currentSimulation.getSimulationId() + " has failed due to: " + currentSimulation.getMessage());
-                    }
-                }
-            }
         });
     }
 
@@ -427,7 +313,8 @@ public class ResultsPageController implements Closeable {
             String worldName = extractWorldName(simulationInfo).trim();
             selectedSimulation = allDTOSimulationList.get(findDTOSimulationListIndex(worldName, Integer.parseInt(simulationId)));
             try {
-                setSpecificSimulationDetails();
+                setResultsPageDetails();
+                getDetailsAboutCurrentSimulation();
             }
             catch (Exception e){
                 System.out.println("c");
@@ -446,48 +333,61 @@ public class ResultsPageController implements Closeable {
         return -1;
     }
 
-    private void setSpecificSimulationDetails() throws IOException {
-        if(simulationRefresher == null) {
-            createRefresherOfSimulation();
-        }
-        else{
-            close();
-            createRefresherOfSimulation();
-        }
+
+    private void getDetailsAboutCurrentSimulation() {
+        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/getWorldInfo").newBuilder();
+        urlBuilder.addQueryParameter("worldName", selectedSimulation.getWorldName());
+        urlBuilder.addQueryParameter("simulationId", selectedSimulation.getSimulationId().toString());
+        String finalUrl = urlBuilder.build().toString();
+
+        HttpAdminClientUtil.runAsyncGet(finalUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+                if(response.isSuccessful()){
+                    Gson gson = new Gson();
+                    DTOWorldInfo dtoWorldInfo  = gson.fromJson(response.body().charStream(), DTOWorldInfo.class);
+                    Platform.runLater(()-> {
+                        worldInfo = dtoWorldInfo;
+                        currentTicksProperty.set(dtoWorldInfo.getCurrentTick());
+                        currentSecondsProperty.set(dtoWorldInfo.getCurrentSecond());
+                        updateTableView(dtoWorldInfo);
+                        setSpecificSimulationDetails(dtoWorldInfo);
+                    });
+                }
+            }
+        });
+    }
+
+    private void updateTableView(DTOWorldInfo chosenSimulationWorld){
+        addEntitiesDetails(chosenSimulationWorld.getCurrentAmountOfEntities());
+        addEnvironmentDetails(chosenSimulationWorld.getEnvironmentInfos());
+    }
+
+    private void setSpecificSimulationDetails(DTOWorldInfo dtoWorldInfo) {
         simulationInfoGridPane.setVisible(true);
-        if(selectedSimulation.getFinish()){
-            if(!selectedSimulation.getFailed()) {
-                setFinishSimulationComponentsVisible();
-                setTabOfFinishSimulation();
-            }
-            else{
-                setFinishComponentsOfFailedAndEndedSimulation();
-                setTabFailedSimulation();
-            }
+        if(!selectedSimulation.getFailed()) {
+            setTabOfFinishSimulation();
+            updateFinishSimulation(dtoWorldInfo);
         }
         else{
-            rerunButton.setVisible(false);
-            endedSimulationInfoScrollPane.setVisible(false);
+            setTabFailedSimulation();
+            updateFailedSimulation();
         }
     }
 
     private void setFinishSimulationComponentsVisible(){
-        setFinishComponentsOfFailedAndEndedSimulation();
         endedSimulationInfoScrollPane.setVisible(true);
         allEndedSimulationInfoTabPane.getTabs().remove(detailsAboutSimulationTab);
     }
 
-    private void setFinishComponentsOfFailedAndEndedSimulation(){
-        pauseButton.setVisible(false);
-        resumeButton.setVisible(false);
-        stopButton.setVisible(false);
-        rerunButton.setVisible(true);
-    }
-
-    private void setFinishSimulationDetails(){
-        List<DTOEntityInfo> finalDTOEntities = worldInfo.getCurrentAmountOfEntities();
-        setEntitiesAndProperties(finalDTOEntities);
-        setEntities(finalDTOEntities);
+    private void setFinishSimulationDetails(DTOWorldInfo dtoWorldInfo){
+        setEntitiesAndProperties(dtoWorldInfo.getCurrentAmountOfEntities());
+        setEntities(dtoWorldInfo.getCurrentAmountOfEntities());
     }
 
     private void addEntitiesDetails(List<DTOEntityInfo> chosenSimulationEntities) {
@@ -542,7 +442,7 @@ public class ResultsPageController implements Closeable {
         urlBuilder.addQueryParameter("simulationID", selectedSimulation.getSimulationId().toString());
         String finalUrl = urlBuilder.build().toString();
 
-        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+        HttpAdminClientUtil.runAsyncGet(finalUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -612,7 +512,7 @@ public class ResultsPageController implements Closeable {
         urlBuilder.addQueryParameter("propertyName", propertyName);
         String finalUrl = urlBuilder.build().toString();
 
-        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
+        HttpAdminClientUtil.runAsyncGet(finalUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -692,7 +592,6 @@ public class ResultsPageController implements Closeable {
     }
 
     private void setComboBox(String entityName, String propertyName) {
-        //todo: check
         List<DTOEntityInfo> finalDTOEntities = worldInfo.getCurrentAmountOfEntities();
         finalDTOEntities.stream()
                 .filter(dtoEntityInfo -> dtoEntityInfo.getEntityName().equals(entityName))
@@ -708,102 +607,6 @@ public class ResultsPageController implements Closeable {
                 });
         displayModeLabel.setVisible(true);
         displayModeComboBox.setVisible(true);
-    }
-
-    @FXML
-    void pauseButtonClicked(ActionEvent event) {
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/pause").newBuilder();
-        urlBuilder.addQueryParameter("worldName", selectedSimulation.getWorldName());
-        urlBuilder.addQueryParameter("simulationId", selectedSimulation.getSimulationId().toString());
-        String finalUrl = urlBuilder.build().toString();
-
-        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if(response.isSuccessful()){
-                    Platform.runLater(()-> {
-                        resumeButtonPressed.get(selectedSimulation.getWorldName()).put(selectedSimulation.getSimulationId(), false);
-                        pauseButtonPressed.get(selectedSimulation.getWorldName()).put(selectedSimulation.getSimulationId(), true);
-                    });
-                }
-            }
-        });
-    }
-
-    @FXML
-    void resumeButtonClicked(ActionEvent event) {
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/resume").newBuilder();
-        urlBuilder.addQueryParameter("worldName", selectedSimulation.getWorldName());
-        urlBuilder.addQueryParameter("simulationId", selectedSimulation.getSimulationId().toString());
-        String finalUrl = urlBuilder.build().toString();
-
-        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if(response.isSuccessful()){
-                    Platform.runLater(()-> {
-                        pauseButtonPressed.get(selectedSimulation.getWorldName()).put(selectedSimulation.getSimulationId(), false);
-                        resumeButtonPressed.get(selectedSimulation.getWorldName()).put(selectedSimulation.getSimulationId(), true);
-                        endedSimulationInfoScrollPane.setVisible(false);
-                        graphPane.setVisible(false);
-                        isDisplayModePressed.set(false);
-                        displayModeLabel.setVisible(false);
-                        displayModeComboBox.setVisible(false);
-                    });
-                }
-            }
-        });
-    }
-
-    @FXML
-    void stopButtonClicked(ActionEvent event) {
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://localhost:8080/Server_Web_exploded/stop").newBuilder();
-        urlBuilder.addQueryParameter("worldName", selectedSimulation.getWorldName());
-        urlBuilder.addQueryParameter("simulationId", selectedSimulation.getSimulationId().toString());
-        String finalUrl = urlBuilder.build().toString();
-
-        HttpClientUtil.runAsyncGet(finalUrl, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if(response.isSuccessful()){
-                    Platform.runLater(()-> {
-                        pauseButton.setVisible(false);
-                        resumeButton.setVisible(false);
-                        stopButton.setVisible(false);
-                        rerunButton.setVisible(true);
-                        graphPane.setVisible(false);
-//                        mainController.setSuccessMessage("The simulation " + selectedSimulation.getSimulationId() + " has ended");
-
-                    });
-                }
-            }
-        });
-    }
-
-    @FXML
-    void rerunButtonClicked(ActionEvent event) {
-//        if(selectedSimulation.getFinish()) {
-//            mainController.setSecondPageDetails(selectedSimulation.getSimulationId());
-//            mainController.showSecondPage();
-//        }
-//        else {
-//            mainController.setErrorMessage("You cannot rerun a simulation that is still running");
-//        }
     }
 
     public void setVisible(boolean state) {
@@ -823,47 +626,19 @@ public class ResultsPageController implements Closeable {
     }
 
     public void createRefresherOfSimulation() {
-        simulationRefresher = new SimulationRefresher(selectedSimulation.getSimulationId(), selectedSimulation.getWorldName(), currentTicksProperty, currentSecondsProperty, isFinishProperty, updateTableViewConsumer, isFailedProperty, pauseResumeStop, resetPauseResumeStop, updateDTOWorld);
-        timerSimulation = new Timer();
-        timerSimulation.schedule(simulationRefresher, 1000, 1000);
+        allFinishSimulationsRefresher = new AllFinishSimulationsRefresher(this::updateAllFinishSimulation);
+        timer = new Timer();
+        timer.schedule(allFinishSimulationsRefresher, 1000, 1000);
     }
 
-    private void updateFinishSimulation(){
-        Platform.runLater(() -> {
-            Integer simulationId = selectedSimulation.getSimulationId();
-            String worldName = selectedSimulation.getWorldName();
-            selectedSimulation = allDTOSimulationList.get(findDTOSimulationListIndex(worldName, simulationId));
-            if(!selectedSimulation.getFailed()) {
-                setFinishSimulationComponentsVisible();
-                setFinishSimulationDetails();
-            }
-        });
-    }
-
-    public void createFinishSimulationTask() {
-
-    }
-
-    public void setAmountOfSimulations(Integer amountOfSimulations) {
-        this.amountOfSimulations = amountOfSimulations;
-    }
-
-    public void setAmountOfSimulationsEnded(Integer amountOfSimulationsEnded) {
-        this.amountOfSimulationsEnded = amountOfSimulationsEnded;
-    }
-
-    public void resetPauseAndResume() {
-        pauseButtonPressed.clear();
-        resumeButtonPressed.clear();
+    private void updateFinishSimulation(DTOWorldInfo dtoWorldInfo){
+        setFinishSimulationComponentsVisible();
+        setFinishSimulationDetails(dtoWorldInfo);
     }
 
     private void updateFailedSimulation() {
         setTabFailedSimulation();
         endedSimulationInfoScrollPane.setVisible(true);
-        pauseButton.setVisible(false);
-        resumeButton.setVisible(false);
-        stopButton.setVisible(false);
-        rerunButton.setVisible(true);
     }
 
     private void setTabOfFinishSimulation(){
@@ -885,29 +660,15 @@ public class ResultsPageController implements Closeable {
         return resultsPageGridPane;
     }
 
-    public void createFinishSimulationRefresher() {
-        if(finishSimulationRefresher == null) {
-            String userName = mainController.getUsername();
-            finishSimulationRefresher = new FinishSimulationRefresher(this::updateAllFinishSimulation, userName);
-            timer = new Timer();
-            timer.schedule(finishSimulationRefresher, 1000, 1000);
-        }
-    }
-
     public void setResultsPageDetails() {
+        graphPane.setVisible(false);
         displayModeLabel.setVisible(false);
         displayModeComboBox.setVisible(false);
-//        executionListView.getItems().clear();
     }
 
     @Override
     public void close() throws IOException {
-        simulationRefresher.cancel();
-        timerSimulation.cancel();
-    }
-
-    public void closeFinishSimulationRefresher(){
-        finishSimulationRefresher.cancel();
+        allFinishSimulationsRefresher.cancel();
         timer.cancel();
     }
 }

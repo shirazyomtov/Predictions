@@ -2,6 +2,7 @@ package allocationsPage;
 
 import DTO.DTOAllRequests;
 import DTO.DTORequestsOfSimulations;
+import app.AppController;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
@@ -82,6 +83,7 @@ public class AllocationsPageController {
     private Integer requestId = null;
 
     private ObservableList<DTORequestsOfSimulations> data;
+    private AppController mainController;
 
     public void setChoiceBoxValues(){
         statusChoiceBox.getItems().addAll("APPROVED", "DECLINED");
@@ -112,6 +114,7 @@ public class AllocationsPageController {
                 statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
                 amountOfRunningSimulations.setCellValueFactory(new PropertyValueFactory<>("amountOfSimulationsCurrentlyRunning"));
                 amountOfFinishedSimulations.setCellValueFactory(new PropertyValueFactory<>("amountOfFinishedSimulations"));
+                mainController.setResultsRefresher();
             });
         }
         else{
@@ -199,5 +202,9 @@ public class AllocationsPageController {
             }
         }
 
+    }
+
+    public void setMainController(AppController appController) {
+        this.mainController = appController;
     }
 }

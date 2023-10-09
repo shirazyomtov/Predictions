@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<ScrollPane fx:id="scrollPaneHistogram" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="resultsPage.histogramOfPopulation.HistogramOfPopulation">
+   <content>
+      <TableView fx:id="histogramOfPopulationTableView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="211.0" prefWidth="353.0">
+        <columns>
+          <TableColumn fx:id="valueColumn" prefWidth="75.0" text="Value" />
+          <TableColumn fx:id="amountColumn" prefWidth="75.0" text="Amount" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </content>
+</ScrollPane>

@@ -1,4 +1,4 @@
-package serverlet;
+package serverlet.simulationsServlet;
 
 
 import engineManager.EngineManager;

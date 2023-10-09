@@ -26,7 +26,7 @@
    <content>
       <GridPane fx:id="resultsPageGridPane" alignment="TOP_CENTER" minWidth="800.0" prefHeight="500.0" prefWidth="875.0" styleClass="grid-pane-page" stylesheets="@resultsPage.css">
          <columnConstraints>
-            <ColumnConstraints hgrow="NEVER" maxWidth="30.0" minWidth="10.0" prefWidth="30.0" />
+            <ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
             <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="139.20002441406248" />
             <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="502.39997558593745" />
             <ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
@@ -40,7 +40,7 @@
          <children>
             <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.vgrow="ALWAYS">
                <content>
-                  <SplitPane fx:id="thirdPageSplitPane" dividerPositions="0.20106649937264737" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="600.0" prefHeight="380.0" prefWidth="850.0">
+                  <SplitPane fx:id="thirdPageSplitPane" dividerPositions="0.16588345864661652" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="600.0" prefHeight="380.0" prefWidth="850.0">
                      <items>
                         <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                            <columnConstraints>
@@ -69,9 +69,9 @@
                                     <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="105.00001220703125" />
                                     <ColumnConstraints hgrow="NEVER" maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
                                     <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="134.60001220703126" />
-                                    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="152.19996337890623" />
-                                    <ColumnConstraints hgrow="NEVER" maxWidth="5.0" minWidth="10.0" prefWidth="5.0" />
-                                    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="160.80001220703127" />
+                                    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="165.999951171875" />
+                                    <ColumnConstraints hgrow="NEVER" maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
+                                    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="162.39998779296872" />
                                     <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="83.99998779296874" />
                                     <ColumnConstraints hgrow="NEVER" maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
                                  </columnConstraints>
@@ -83,13 +83,13 @@
                                  </rowConstraints>
                                  <children>
                                     <Button fx:id="pauseButton" mnemonicParsing="false" onAction="#pauseButtonClicked" prefHeight="26.0" prefWidth="88.0" text="Pause " GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                                    <Button fx:id="resumeButton" mnemonicParsing="false" onAction="#resumeButtonClicked" prefHeight="26.0" prefWidth="90.0" text="Resume " GridPane.columnIndex="4" GridPane.halignment="CENTER" />
+                                    <Button fx:id="resumeButton" mnemonicParsing="false" onAction="#resumeButtonClicked" prefHeight="26.0" prefWidth="98.0" text="Resume " GridPane.columnIndex="4" GridPane.halignment="CENTER" />
                                     <Button fx:id="stopButton" mnemonicParsing="false" onAction="#stopButtonClicked" prefHeight="26.0" prefWidth="86.0" text="Stop " GridPane.columnIndex="6" GridPane.halignment="LEFT" />
                                     <VBox prefHeight="123.0" prefWidth="136.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                        <children>
-                                          <Label prefHeight="25.0" prefWidth="109.0" text="Current tick :" wrapText="true" />
+                                          <Label prefHeight="26.0" prefWidth="121.0" text="Current tick :" wrapText="true" />
                                           <TextField fx:id="currentTickTextField" editable="false" />
-                                          <Label prefHeight="27.0" prefWidth="109.0" text="Seconds counter :" wrapText="true" />
+                                          <Label prefHeight="27.0" prefWidth="121.0" text="Current second :" wrapText="true" />
                                           <TextField fx:id="secondsCounterTextField" editable="false" />
                                        </children>
                                     </VBox>

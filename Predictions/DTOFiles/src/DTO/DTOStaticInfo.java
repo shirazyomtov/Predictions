@@ -1,21 +1,22 @@
 package DTO;
 
+import java.util.List;
 import java.util.Map;
 
 public class DTOStaticInfo {
-    private Map<Object, Integer> propertyInfoAboutValues;
+    private List<DTOHistogram> histograms;
     private Float averageTickOfProperty;
 
     private Float averageValue;
 
-    public DTOStaticInfo(Map<Object, Integer> propertyInfoAboutValues, Float averageTickOfProperty, Float averageValue) {
-        this.propertyInfoAboutValues = propertyInfoAboutValues;
+    public DTOStaticInfo(List<DTOHistogram> histograms, Float averageTickOfProperty, Float averageValue) {
+        this.histograms = histograms;
         this.averageTickOfProperty = averageTickOfProperty;
         this.averageValue = averageValue;
     }
 
-    public Map<Object, Integer> getPropertyInfoAboutValues() {
-        return propertyInfoAboutValues;
+    public List<DTOHistogram> getHistograms() {
+        return histograms;
     }
 
     public Float getAverageTickOfProperty() {

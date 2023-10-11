@@ -17,13 +17,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 
 public class EngineManager {
     private Map<String, WorldManager> worldManagerMap = new HashMap<>();
     private Allocations allocations = new Allocations();
     private ThreadManager threadManager;
-
     private Integer currentSimulationId = 1;
 
 
@@ -129,6 +127,7 @@ public class EngineManager {
     }
 
     public void defineSimulation(String worldName, String userName, Integer requestID, Integer executeID){
+        allocations.getAllAllocation().get(requestID).setNumberOfRunningSimulationNow();
         Termination termination = allocations.getAllAllocation().get(requestID).getTermination();
         Simulation simulation = worldManagerMap.get(worldName).setSimulationDetailsAndAddToHistory(currentSimulationId, userName, requestID, executeID, termination);
         currentSimulationId++;
@@ -175,9 +174,23 @@ public class EngineManager {
 
     public DTOStaticInfo getStaticInfo(String worldName, String simulationId, String entityName, String propertyName) {
         Map<Object, Integer> propertyValuesMap = worldManagerMap.get(worldName).createPropertyValuesMap(Integer.parseInt(simulationId), entityName, propertyName);
+        List<DTOHistogram> histograms = creatListOfHistograms(propertyValuesMap);
         Float averageTick= worldManagerMap.get(worldName).getAverageTickOfSpecificProperty(Integer.parseInt(simulationId), entityName, propertyName);
-        Float averageValue = calculateAverageValue(propertyValuesMap);
-        return new DTOStaticInfo(propertyValuesMap, averageTick, averageValue);
+        Float averageValue = 0.0F;
+        boolean isFloat =  worldManagerMap.get(worldName).checkIfPropertyIsFloat(Integer.parseInt(simulationId), entityName, propertyName);
+        if(isFloat){
+            averageValue = calculateAverageValue(propertyValuesMap);
+        }
+        return new DTOStaticInfo(histograms, averageTick, averageValue);
+    }
+
+    private List<DTOHistogram> creatListOfHistograms(Map<Object, Integer> propertyValuesMap) {
+        List<DTOHistogram> histogramsList = new ArrayList<>();
+        for(Object object: propertyValuesMap.keySet()){
+            histogramsList.add(new DTOHistogram(object, propertyValuesMap.get(object)));
+        }
+
+        return histogramsList;
     }
 
     private Float calculateAverageValue(Map<Object, Integer> propertyValuesMap) {
@@ -214,5 +227,18 @@ public class EngineManager {
             }
         }
         return new DTOAllSimulations(detailsAboutEndSimulation);
+    }
+
+    public DTOQueueManagementInfo getQueueManagementInfo(){
+        Integer numberOfRunningSimulations = 0;
+        Integer numberOfSimulationsInQueue = 0;
+        Integer numberOfFinishSimulations = 0;
+
+        for (Integer requestId: allocations.getAllAllocation().keySet()){
+            numberOfRunningSimulations += allocations.getAllAllocation().get(requestId).getNumberOfRunningSimulationNow();
+            numberOfFinishSimulations += allocations.getAllAllocation().get(requestId).getNumberFinishSimulation();
+        }
+
+        return new DTOQueueManagementInfo(numberOfRunningSimulations, numberOfSimulationsInQueue, numberOfFinishSimulations);
     }
 }

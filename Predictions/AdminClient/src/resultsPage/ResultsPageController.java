@@ -536,14 +536,11 @@ public class ResultsPageController implements Closeable {
 
 
     private void setDetailsOfDisplayStaticInfo(DTOStaticInfo dtoStaticInfo) {
-        Map<Object, Integer> propertyInfoAboutValues;
         String selectedDisplay = displayModeComboBox.getSelectionModel().getSelectedItem();
         switch (selectedDisplay) {
             case "Histogram of population":
                 staticInfoPane.getChildren().add(histogramOfPopulation.getHistogramScrollPane());
-                propertyInfoAboutValues = dtoStaticInfo.getPropertyInfoAboutValues();
-                List<DTOHistogram> histograms= createDTOHistogram(propertyInfoAboutValues);
-                histogramOfPopulation.createTableView(histograms);
+                histogramOfPopulation.createTableView(dtoStaticInfo.getHistograms());
                 break;
             case "Consistency":
                 staticInfoPane.getChildren().add(averageTickOfProperty.getAverageTickOfPropertyVbox());
@@ -554,15 +551,6 @@ public class ResultsPageController implements Closeable {
                 averageValueOfProperty.createAverageValueOfProperty(dtoStaticInfo.getAverageValue());
                 break;
         }
-    }
-
-    private List<DTOHistogram> createDTOHistogram(Map<Object, Integer> propertyInfoAboutValues) {
-        List<DTOHistogram> histogramsList = new ArrayList<>();
-        for(Object object: propertyInfoAboutValues.keySet()){
-            histogramsList.add(new DTOHistogram(object, propertyInfoAboutValues.get(object)));
-        }
-
-        return histogramsList;
     }
 
     @FXML
@@ -661,6 +649,7 @@ public class ResultsPageController implements Closeable {
     }
 
     public void setResultsPageDetails() {
+        rightSplitPaneResultsPage.setVisible(true);
         graphPane.setVisible(false);
         displayModeLabel.setVisible(false);
         displayModeComboBox.setVisible(false);

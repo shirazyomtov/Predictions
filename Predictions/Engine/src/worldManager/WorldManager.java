@@ -9,6 +9,7 @@ import world.entity.definition.EntityDefinitionImpl;
 import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
 import world.entity.instance.location.Location;
+import world.enums.Type;
 import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
 import world.propertyInstance.api.Property;
@@ -629,5 +630,11 @@ public class WorldManager implements Serializable{
         List<DTOEnvironmentInfo> dtoEnvironmentInfoList = getEnvironmentNamesList();
         List<DTOEntityInfo> dtoEntityInfos = getEntitiesDetails();
         return new DTOEntitiesAndEnvironmentInfo(dtoEntityInfos, dtoEnvironmentInfoList);
+    }
+
+    public boolean checkIfPropertyIsFloat(Integer simulationId, String entityName, String propertyName) {
+        EntityInstance entityInstance = history.getAllSimulations().get(simulationId).getWorldInstance().isEntityExists(entityName);
+        Type type = entityInstance.getAllProperty().get(propertyName).getType();
+        return type.equals(Type.FLOAT);
     }
 }

@@ -1,4 +1,4 @@
-package serverlet;
+package serverlet.managementPageServlet;
 
 import DTO.DTOActions.DTOActionInfo;
 import DTO.DTOActions.DTOActionSerialize;

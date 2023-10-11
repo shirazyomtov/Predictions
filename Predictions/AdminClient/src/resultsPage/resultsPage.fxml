@@ -59,7 +59,7 @@
                               </VBox>
                            </children>
                         </GridPane>
-                        <SplitPane fx:id="rightSplitPaneResultsPage" dividerPositions="0.4493670886075949" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL">
+                        <SplitPane fx:id="rightSplitPaneResultsPage" dividerPositions="0.4493670886075949" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" visible="false">
                            <items>
                               <GridPane fx:id="simulationInfoGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                  <columnConstraints>

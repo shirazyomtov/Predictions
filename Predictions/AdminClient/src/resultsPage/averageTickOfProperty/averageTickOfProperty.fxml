@@ -4,7 +4,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
-
 <VBox fx:id="averageTickOfPropertyVbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="350.0" spacing="10.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="resultsPage.averageTickOfProperty.AverageTickOfProperty">
    <children>
       <Label alignment="CENTER" prefHeight="100.0" prefWidth="337.0" text="The average number of ticks in which the value of the property did not change" wrapText="true" />

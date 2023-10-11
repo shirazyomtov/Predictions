@@ -1,7 +1,6 @@
-package serverlet;
+package serverlet.executionPageServlet;
 
-import DTO.DTOAllRequests;
-import DTO.DTOAllRequestsByUser;
+
 import com.google.gson.Gson;
 import engineManager.EngineManager;
 import jakarta.servlet.ServletException;
@@ -14,18 +13,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-
-@WebServlet(name = "Request details by user servlet", urlPatterns = "/requestDetailsByUser")
+@WebServlet(name = "Get current value of environment", urlPatterns = "/getCurrentValueOfEnvironment")
 @MultipartConfig
-public class ShowRequestDetailsByUser extends HttpServlet {
+public class GetCurrentValueOfEnvironment extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         EngineManager engineManager = (EngineManager) getServletContext().getAttribute("manager");
         Gson gson = new Gson();
         try {
-            String userName = req.getParameter("username");
-            DTOAllRequestsByUser allRequestsByUser = engineManager.getAllRequestByUser(userName);
-            String jsonResponse = gson.toJson(allRequestsByUser);
+            String worldName = req.getParameter("worldName");
+            String environmentName = req.getParameter("environmentName");
+            String userName = req.getParameter("userName");
+            String executeID = req.getParameter("executeID");
+            Object value = engineManager.getCurrentValueOfEnvironment(worldName, environmentName, userName, Integer.parseInt(executeID));
+            String jsonResponse = gson.toJson(value);
             // System.out.println(jsonResponse);
             try (PrintWriter out = resp.getWriter()) {
                 out.print(jsonResponse);

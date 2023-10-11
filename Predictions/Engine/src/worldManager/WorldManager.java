@@ -9,6 +9,7 @@ import world.entity.definition.EntityDefinitionImpl;
 import world.entity.definition.PropertyDefinition;
 import world.entity.instance.EntityInstance;
 import world.entity.instance.location.Location;
+import world.enums.Type;
 import world.environment.definition.EnvironmentDefinition;
 import world.environment.instance.EnvironmentInstance;
 import world.propertyInstance.api.Property;
@@ -28,7 +29,6 @@ import java.util.*;
 
 public class WorldManager implements Serializable{
     private History history = null;
-    private Integer numberOfTimesUserSelectSimulation = 0;
 
     private String worldName;
 
@@ -46,7 +46,7 @@ public class WorldManager implements Serializable{
     public void loadXMLAAndCheckValidation(XMLReader xmlReader) throws Exception {
         world = xmlReader.defineWorld();
         history = new History();
-        numberOfTimesUserSelectSimulation = 0;
+//        numberOfTimesUserSelectSimulation = 0;
         worldName = xmlReader.getWorld().getName();
     }
 
@@ -205,15 +205,14 @@ public class WorldManager implements Serializable{
         }
     }
 
-    public synchronized Simulation setSimulationDetailsAndAddToHistory(String userName, Integer requestID, Integer executeID, Termination termination) {
-        numberOfTimesUserSelectSimulation++;
+    public synchronized Simulation setSimulationDetailsAndAddToHistory(Integer currentSimulationId, String userName, Integer requestID, Integer executeID, Termination termination) {
         List<EntityInstance> entityInstanceList = initEntities(userName, executeID);
         Map<String, Integer> initAmountOfEntities = createInitAmountOfEntities(userName, executeID);
         Map<String, Integer> currentAmountOfEntities = createInitAmountOfEntities(userName, executeID);
         worldInstance =new WorldInstance(environmentValuesByUser.get(userName).get(executeID), entityInstanceList, world, initAmountOfEntities, currentAmountOfEntities, world.getRows(), world.getCols());
         worldInstance.initLocation();
         Simulation simulation = new Simulation(worldInstance, LocalDateTime.now(), userName, requestID, termination);
-        history.setCurrentSimulationNumber(numberOfTimesUserSelectSimulation);
+        history.setCurrentSimulationNumber(currentSimulationId);
         history.addSimulation(simulation);
         return history.getSimulation();
     }
@@ -339,11 +338,6 @@ public class WorldManager implements Serializable{
         return worldInstance.createListEnvironmentNamesAndValues();
     }
 
-
-    public Integer getNumberOfTimesUserSelectSimulation() {
-        return numberOfTimesUserSelectSimulation;
-    }
-
     public void removeSimulationFromHistory(){
         history.removeCurrentSimulation();
     }
@@ -387,9 +381,9 @@ public class WorldManager implements Serializable{
 
     }
 
-    public Map<Object, Integer> createPropertyValuesMap(int simulationId, String entityName, String propertyName, int tick) {
+    public Map<Object, Integer> createPropertyValuesMap(int simulationId, String entityName, String propertyName) {
         Simulation simulation = history.getAllSimulations().get(simulationId);
-        return simulation.getPropertyValuesMapPerTick(entityName, propertyName, tick);
+        return simulation.getPropertyValuesMapPerTick(entityName, propertyName);
 
     }
 
@@ -527,13 +521,7 @@ public class WorldManager implements Serializable{
     }
 
     public List<DTOEnvironmentInfo> getEnvironmentValuesOfChosenSimulation(Integer simulationId){
-        return null;
-//        environmentValuesByUser = new HashMap<>();
-//        Map<String, EnvironmentInstance> environmentInstanceMapOfSpecificSimulation = history.getAllSimulations().get(simulationId).getWorldInstance().getEnvironmentInstanceMap();
-//        for(String environmentName: environmentInstanceMapOfSpecificSimulation.keySet()){
-//            world.checkValidationValue(environmentName, environmentInstanceMapOfSpecificSimulation.get(environmentName).getProperty().getValue().toString(), environmentValuesByUser);
-//        }
-//        return history.getAllSimulations().get(simulationId).getWorldInstance().createListEnvironmentNamesAndValues();
+        return history.getAllSimulations().get(simulationId).getWorldInstance().createListEnvironmentNamesAndValues();
     }
 
     public List<DTOEntityInfo> getAllAmountOfEntitiesAndSetEntitiesByUser(Integer simulationId) {
@@ -549,7 +537,8 @@ public class WorldManager implements Serializable{
     public DTOWorldInfo getDTOWorldInfo(int simulationId) {
         Simulation simulation = history.getAllSimulations().get(simulationId);
         List<DTOEntityInfo> amountOfEntities = getCurrentEntities(simulationId);
-        return new DTOWorldInfo(amountOfEntities, simulation.getCurrentTick(), simulation.getCurrentSecond(), simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage());
+        List<DTOEnvironmentInfo> environmentInfos = getEnvironmentValuesOfChosenSimulation(simulationId);
+        return new DTOWorldInfo(amountOfEntities, simulation.getCurrentTick(), simulation.getCurrentSecond(), simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage(), environmentInfos);
     }
 
     public List<DTOEntityInfo> getCurrentEntities(int simulationId) {
@@ -606,8 +595,8 @@ public class WorldManager implements Serializable{
         return map.get(highestKey);
     }
 
-    public Float getAverageTickOfSpecificProperty(Integer simulationId, String entityName, String propertyName, int tick){
-        return history.getAllSimulations().get(simulationId).getAverageTickValueOfSpecificProperty(entityName, propertyName, tick);
+    public Float getAverageTickOfSpecificProperty(Integer simulationId, String entityName, String propertyName){
+        return history.getAllSimulations().get(simulationId).getAverageTickValueOfSpecificProperty(entityName, propertyName);
     }
 
     public void pause(Integer simulationId) {
@@ -641,5 +630,11 @@ public class WorldManager implements Serializable{
         List<DTOEnvironmentInfo> dtoEnvironmentInfoList = getEnvironmentNamesList();
         List<DTOEntityInfo> dtoEntityInfos = getEntitiesDetails();
         return new DTOEntitiesAndEnvironmentInfo(dtoEntityInfos, dtoEnvironmentInfoList);
+    }
+
+    public boolean checkIfPropertyIsFloat(Integer simulationId, String entityName, String propertyName) {
+        EntityInstance entityInstance = history.getAllSimulations().get(simulationId).getWorldInstance().isEntityExists(entityName);
+        Type type = entityInstance.getAllProperty().get(propertyName).getType();
+        return type.equals(Type.FLOAT);
     }
 }

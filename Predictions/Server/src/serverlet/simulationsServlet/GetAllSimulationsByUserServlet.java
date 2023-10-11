@@ -1,6 +1,6 @@
-package serverlet;
+package serverlet.simulationsServlet;
 
-
+import DTO.DTOAllSimulations;
 import com.google.gson.Gson;
 import engineManager.EngineManager;
 import jakarta.servlet.ServletException;
@@ -13,21 +13,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "Get current value of environment", urlPatterns = "/getCurrentValueOfEnvironment")
+@WebServlet(name = "Get all simulations by user name", urlPatterns = "/getAllSimulationsByUser")
 @MultipartConfig
-public class GetCurrentValueOfEnvironment extends HttpServlet {
+public class GetAllSimulationsByUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         EngineManager engineManager = (EngineManager) getServletContext().getAttribute("manager");
         Gson gson = new Gson();
         try {
-            String worldName = req.getParameter("worldName");
-            String environmentName = req.getParameter("environmentName");
             String userName = req.getParameter("userName");
-            String executeID = req.getParameter("executeID");
-            Object value = engineManager.getCurrentValueOfEnvironment(worldName, environmentName, userName, Integer.parseInt(executeID));
-            String jsonResponse = gson.toJson(value);
-            // System.out.println(jsonResponse);
+            DTOAllSimulations allSimulationsByUser =  engineManager.getDetailsAboutEndSimulation(userName);
+            String jsonResponse = gson.toJson(allSimulationsByUser);
             try (PrintWriter out = resp.getWriter()) {
                 out.print(jsonResponse);
                 out.flush();

@@ -6,6 +6,8 @@ public class DTOWorldInfo {
 
     private List<DTOEntityInfo> currentAmountOfEntities;
 
+    private List<DTOEnvironmentInfo> environmentInfos;
+
     private int currentTick;
 
     private int currentSecond;
@@ -14,12 +16,13 @@ public class DTOWorldInfo {
 
     private boolean isFailed;
 
-    public DTOWorldInfo(List<DTOEntityInfo> currentAmountOfEntities, int currentTick, int currentSecond, boolean isFinish, boolean isFailed, String message){
+    public DTOWorldInfo(List<DTOEntityInfo> currentAmountOfEntities, int currentTick, int currentSecond, boolean isFinish, boolean isFailed, String message, List<DTOEnvironmentInfo> environmentInfos){
         this.currentAmountOfEntities = currentAmountOfEntities;
         this.currentTick = currentTick;
         this.currentSecond = currentSecond;
         this.isFinish = isFinish;
         this.isFailed = isFailed;
+        this.environmentInfos = environmentInfos;
     }
 
     public int getCurrentTick() {
@@ -40,6 +43,10 @@ public class DTOWorldInfo {
 
     public boolean getIsFailed() {
         return isFailed;
+    }
+
+    public List<DTOEnvironmentInfo> getEnvironmentInfos() {
+        return environmentInfos;
     }
 }
 

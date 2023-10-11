@@ -22,7 +22,7 @@ public class AllocationsRefresher extends TimerTask {
     @Override
     public void run() {
         String finalUrl = HttpUrl.
-                parse("http://localhost:8080/Server_Web_exploded/requestaDetails")
+                parse("http://localhost:8080/Server_Web_exploded/requestsDetails")
                 .newBuilder()
                 .build()
                 .toString();

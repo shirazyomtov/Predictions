@@ -33,6 +33,10 @@ public class HeaderController {
         allocationsToggleButton.selectedProperty().addListener(e -> {
             mainController.showAllocationsPage();
         });
+
+        executionsHistoryToggleButton.selectedProperty().addListener(e -> {
+            mainController.showResultsPage();
+        });
     }
 
     public void bindComponents() {
@@ -47,5 +51,9 @@ public class HeaderController {
 
     public void setAllcotionButtonVisble() {
         allocationsToggleButton.setDisable(false);
+    }
+
+    public void setVisbleResultsPage() {
+        executionsHistoryToggleButton.setDisable(false);
     }
 }

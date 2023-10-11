@@ -17,16 +17,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 
 public class EngineManager {
     private Map<String, WorldManager> worldManagerMap = new HashMap<>();
     private Allocations allocations = new Allocations();
     private ThreadManager threadManager;
+    private Integer currentSimulationId = 1;
 
 
     public EngineManager() {
-      this.threadManager = new ThreadManager(1);
+        currentSimulationId = 1;
+        this.threadManager = new ThreadManager(1);
     }
 
     public DTOAllWorldsInfo getDTOAllWorlds(){
@@ -126,8 +127,10 @@ public class EngineManager {
     }
 
     public void defineSimulation(String worldName, String userName, Integer requestID, Integer executeID){
+        allocations.getAllAllocation().get(requestID).setNumberOfRunningSimulationNow();
         Termination termination = allocations.getAllAllocation().get(requestID).getTermination();
-        Simulation simulation = worldManagerMap.get(worldName).setSimulationDetailsAndAddToHistory(userName, requestID, executeID, termination);
+        Simulation simulation = worldManagerMap.get(worldName).setSimulationDetailsAndAddToHistory(currentSimulationId, userName, requestID, executeID, termination);
+        currentSimulationId++;
         threadManager.executeSimulation(simulation);
     }
 
@@ -143,7 +146,7 @@ public class EngineManager {
             for (Integer simulationId : history.getAllSimulations().keySet()) {
                 Simulation simulation = history.getAllSimulations().get(simulationId);
                 if(simulation.getUserName().equals(userName)) {
-                    detailsAboutEndSimulation.add(new DTOSimulationInfo(worldName, simulationId, simulation.getFormattedDateTime(),
+                    detailsAboutEndSimulation.add(new DTOSimulationInfo(simulation.getUserName(), worldName, simulationId, simulation.getFormattedDateTime(),
                             simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage()));
                 }
             }
@@ -163,5 +166,79 @@ public class EngineManager {
     }
     public void pause(String worldName, Integer simulationId){
         worldManagerMap.get(worldName).pause(simulationId);
+    }
+
+    public DTOAmountOfEntities getAmountOfEntities(String worldName, Integer simulationID){
+        return new DTOAmountOfEntities(worldManagerMap.get(worldName).getAmountOfEntitiesPerTick(simulationID));
+    }
+
+    public DTOStaticInfo getStaticInfo(String worldName, String simulationId, String entityName, String propertyName) {
+        Map<Object, Integer> propertyValuesMap = worldManagerMap.get(worldName).createPropertyValuesMap(Integer.parseInt(simulationId), entityName, propertyName);
+        List<DTOHistogram> histograms = creatListOfHistograms(propertyValuesMap);
+        Float averageTick= worldManagerMap.get(worldName).getAverageTickOfSpecificProperty(Integer.parseInt(simulationId), entityName, propertyName);
+        Float averageValue = 0.0F;
+        boolean isFloat =  worldManagerMap.get(worldName).checkIfPropertyIsFloat(Integer.parseInt(simulationId), entityName, propertyName);
+        if(isFloat){
+            averageValue = calculateAverageValue(propertyValuesMap);
+        }
+        return new DTOStaticInfo(histograms, averageTick, averageValue);
+    }
+
+    private List<DTOHistogram> creatListOfHistograms(Map<Object, Integer> propertyValuesMap) {
+        List<DTOHistogram> histogramsList = new ArrayList<>();
+        for(Object object: propertyValuesMap.keySet()){
+            histogramsList.add(new DTOHistogram(object, propertyValuesMap.get(object)));
+        }
+
+        return histogramsList;
+    }
+
+    private Float calculateAverageValue(Map<Object, Integer> propertyValuesMap) {
+        Float sum = 0.0F;
+        if (propertyValuesMap.isEmpty()) {
+            return sum;
+        }
+
+        Integer count = 0;
+        Float value;
+        for (Integer amount : propertyValuesMap.values()) {
+            count += amount ;
+        }
+        for (Object valueObject : propertyValuesMap.keySet()) {
+            value = (Float)valueObject;
+            sum += value * propertyValuesMap.get(valueObject);
+        }
+
+        return sum / count;
+    }
+
+    public DTOAllSimulations getAllFinishSimulations(){
+        List<DTOSimulationInfo> detailsAboutEndSimulation = new ArrayList<>();
+        History history;
+
+        for(String worldName: worldManagerMap.keySet()) {
+            history = worldManagerMap.get(worldName).getHistory();
+            for (Integer simulationId : history.getAllSimulations().keySet()) {
+                Simulation simulation = history.getAllSimulations().get(simulationId);
+                if(simulation.getIsFinish()) {
+                    detailsAboutEndSimulation.add(new DTOSimulationInfo(simulation.getUserName(), worldName, simulationId, simulation.getFormattedDateTime(),
+                            simulation.getIsFinish(), simulation.getIsFailed(), simulation.getMessage()));
+                }
+            }
+        }
+        return new DTOAllSimulations(detailsAboutEndSimulation);
+    }
+
+    public DTOQueueManagementInfo getQueueManagementInfo(){
+        Integer numberOfRunningSimulations = 0;
+        Integer numberOfSimulationsInQueue = 0;
+        Integer numberOfFinishSimulations = 0;
+
+        for (Integer requestId: allocations.getAllAllocation().keySet()){
+            numberOfRunningSimulations += allocations.getAllAllocation().get(requestId).getNumberOfRunningSimulationNow();
+            numberOfFinishSimulations += allocations.getAllAllocation().get(requestId).getNumberFinishSimulation();
+        }
+
+        return new DTOQueueManagementInfo(numberOfRunningSimulations, numberOfSimulationsInQueue, numberOfFinishSimulations);
     }
 }

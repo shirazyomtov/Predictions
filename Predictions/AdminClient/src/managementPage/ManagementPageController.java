@@ -30,6 +30,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -97,6 +98,9 @@ public class ManagementPageController {
 
     private Map<String, DTOWorldDefinitionInfo> allSimulation = new HashMap<>();
 
+    private ManagementRefresher managementRefresher;
+    private Timer timer;
+
     @FXML
     public void initialize() {
         managementPageSplitPane.setDividerPositions(0.75);
@@ -108,6 +112,17 @@ public class ManagementPageController {
         detailsSplitPane.getDividers().get(0).positionProperty().addListener((Observable, oldValue, newValue) -> {
             detailsSplitPane.setDividerPositions(0.3);
         });
+    }
+
+    public void managementRefresher() {
+        //לקרוא לפונקציה
+        managementRefresher = new ManagementRefresher(this::updateQueueManagement);
+        timer = new Timer();
+        timer.schedule(managementRefresher, 1000, 1000);
+    }
+
+    private void updateQueueManagement(DTOQueueManagementInfo dtoQueueManagementInfo){
+
     }
 
     public void setControllers(AppController appController) throws IOException {
@@ -179,6 +194,11 @@ public class ManagementPageController {
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
+                        if(response.isSuccessful()) {
+                            Platform.runLater(() -> {
+                                mainController.setSuccessMessage("The thread count was set successfully");
+                            });
+                        }
                     }
                 });
             }

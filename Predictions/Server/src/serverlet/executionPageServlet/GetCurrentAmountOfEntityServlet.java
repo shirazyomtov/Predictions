@@ -1,6 +1,6 @@
-package serverlet;
+package serverlet.executionPageServlet;
 
-import DTO.DTOAllSimulations;
+import DTO.DTOAllRequests;
 import com.google.gson.Gson;
 import engineManager.EngineManager;
 import jakarta.servlet.ServletException;
@@ -13,17 +13,21 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "Get all simulations by user name", urlPatterns = "/getAllSimulationsByUser")
+@WebServlet(name = "Get current amount of entity", urlPatterns = "/getCurrentAmountOfEntity")
 @MultipartConfig
-public class GetAllSimulationsByUserServlet extends HttpServlet {
+public class GetCurrentAmountOfEntityServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         EngineManager engineManager = (EngineManager) getServletContext().getAttribute("manager");
         Gson gson = new Gson();
         try {
+            String worldName = req.getParameter("worldName");
+            String entityName = req.getParameter("entityName");
             String userName = req.getParameter("userName");
-            DTOAllSimulations allSimulationsByUser =  engineManager.getDetailsAboutEndSimulation(userName);
-            String jsonResponse = gson.toJson(allSimulationsByUser);
+            String executeID = req.getParameter("executeID");
+            Integer amount =  engineManager.getCurrentAmountOfEntity(worldName, entityName, userName, Integer.parseInt(executeID));
+            String jsonResponse = gson.toJson(amount);
+            // System.out.println(jsonResponse);
             try (PrintWriter out = resp.getWriter()) {
                 out.print(jsonResponse);
                 out.flush();

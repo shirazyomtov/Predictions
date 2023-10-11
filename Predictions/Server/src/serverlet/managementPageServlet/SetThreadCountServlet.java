@@ -1,9 +1,9 @@
-package serverlet;
+package serverlet.managementPageServlet;
 
+import com.google.gson.Gson;
 import engineManager.EngineManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
-
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,14 +11,17 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet(name = "update request status", urlPatterns = "/updateStatus")
+@WebServlet(name = "Set thread count", urlPatterns = "/setThreadCount")
 @MultipartConfig
-public class UpdateStatusOfRequest extends HttpServlet {
+public class SetThreadCountServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         EngineManager engineManager = (EngineManager) getServletContext().getAttribute("manager");
-        String status = req.getParameter("status");
-        String requestId = req.getParameter("requestId");
-        engineManager.updateRequestStatus(requestId, status);
+        try {
+            String threadCount = req.getParameter("threadCount");
+            engineManager.setThreadCount(Integer.parseInt(threadCount));
+        } catch (Exception e) {
+            resp.sendError(400, "Error processing the request: " + e.getMessage());
+        }
     }
 }

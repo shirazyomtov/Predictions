@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import managementPage.ManagementPageController;
+import resultsPage.ResultsPageController;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +23,8 @@ public class AppController {
 
     public static final String MANAGEMENT_PAGE_FXML_LIGHT_RESOURCE = "/managementPage/ManagementPage.fxml";
     private static final String ALLOCATIONS_PAGE_FXML_LIGHT_RESOURCE = "/allocationsPage/allocations.fxml";
+
+    private static final String RESULTS_PAGE_FXML_LIGHT_RESOURCE = "/resultsPage/resultsPage.fxml";
 
     @FXML
     private BorderPane borderPaneComponent;
@@ -48,6 +51,10 @@ public class AppController {
     @FXML
     private AllocationsPageController allocationsPageController;
 
+    @FXML
+    private ResultsPageController resultsPageController;
+
+
     public AppController(){
         isFileLoaded = new SimpleBooleanProperty(false);
         xmlPathProperty = new SimpleStringProperty();
@@ -58,18 +65,21 @@ public class AppController {
     public void initialize() throws Exception {
         loadResources();
         if(headerComponentController != null && managementPageController != null &&
-                allocationsPageController != null){
+                allocationsPageController != null && resultsPageController != null){
             headerComponentController.setMainController(this);
             managementPageController.setControllers(this);
             headerComponentController.bindComponents();
             showManagementPage();
+            allocationsPageController.setMainController(this);
             allocationsPageController.setChoiceBoxValues();
+            resultsPageController.setMainController(this);
         }
     }
 
     private void loadResources() throws Exception {
         loadResourcesManagementPage();
         loadResourcesAllocationsPage();
+        loadResourcesResultsPage();
     }
 
 
@@ -91,6 +101,15 @@ public class AppController {
         GridPane gridPane = fxmlLoader.load(inputStream);
         allocationsPageController = fxmlLoader.getController();
         allocationsPageController.allocationsRefresher();
+    }
+
+    private void loadResourcesResultsPage() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(RESULTS_PAGE_FXML_LIGHT_RESOURCE);
+        fxmlLoader.setLocation(url);
+        InputStream inputStream = url.openStream();
+        ScrollPane scrollPane = fxmlLoader.load(inputStream);
+        resultsPageController = fxmlLoader.getController();
     }
 
     public SimpleBooleanProperty getIsFileLoadedProperty() {
@@ -134,4 +153,15 @@ public class AppController {
         headerComponentController.setAllcotionButtonVisble();
     }
 
+    public void showResultsPage() {
+        borderPaneComponent.setCenter(resultsPageController.getResultsPageGridPane());
+    }
+
+    public void setResultsRefresher(){
+        resultsPageController.createRefresherOfSimulation();
+    }
+
+    public void setResultsButtonVisible(){
+        headerComponentController.setVisbleResultsPage();
+    }
 }

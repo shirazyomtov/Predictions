@@ -151,6 +151,7 @@ public class EngineManager {
         runningSimulation = runningSimulation -1;
         if(queueSimulation != 0){
             queueSimulation = queueSimulation -1;
+            runningSimulation = runningSimulation + 1;
         }
     }
 

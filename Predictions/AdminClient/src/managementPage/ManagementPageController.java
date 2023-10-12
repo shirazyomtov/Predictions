@@ -117,7 +117,7 @@ public class ManagementPageController {
     public void createManagementRefresher() {
         managementRefresher = new ManagementRefresher(this::updateQueueManagement);
         timer = new Timer();
-        timer.schedule(managementRefresher, 500, 500);
+        timer.schedule(managementRefresher, 1000, 1000);
     }
 
     private void updateQueueManagement(DTOQueueManagementInfo dtoQueueManagementInfo){

@@ -20,14 +20,23 @@ import java.util.Map;
 
 public class EngineManager {
     private Map<String, WorldManager> worldManagerMap = new HashMap<>();
-    private Allocations allocations = new Allocations();
+    private static Allocations allocations = new Allocations();
     private ThreadManager threadManager;
     private Integer currentSimulationId = 1;
+    private static Integer finishSimulation = 0;
+    private static Integer runningSimulation = 0;
+    private static Integer queueSimulation = 0;
 
 
     public EngineManager() {
         currentSimulationId = 1;
         this.threadManager = new ThreadManager(1);
+    }
+
+    public synchronized static void setSimulationRunAndFinishDetails(Integer requestID) {
+        Allocation allocation = allocations.getAllAllocation().get(requestID);
+        allocation.setNumberFinishSimulation();
+        allocation.setNumberOfRunningSimulationNow(allocation.getNumberOfRunningSimulationNow() - 1);
     }
 
     public DTOAllWorldsInfo getDTOAllWorlds(){
@@ -55,10 +64,6 @@ public class EngineManager {
         catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-    }
-
-    public void getWorldManager(String name){
-        worldManagerMap.get(name);
     }
 
     public void addAllocation(String simulationName, String numberOfSimulationRun, String ticks, String second, String byUser, String username){
@@ -126,12 +131,27 @@ public class EngineManager {
          return worldManagerMap.get(worldName).getSummaryDetails(userName, executeID);
     }
 
-    public void defineSimulation(String worldName, String userName, Integer requestID, Integer executeID){
-        allocations.getAllAllocation().get(requestID).setNumberOfRunningSimulationNow();
+    public synchronized void defineSimulation(String worldName, String userName, Integer requestID, Integer executeID){
+        if(runningSimulation + 1 <= threadManager.getNumberOfThreads()){
+            runningSimulation = runningSimulation + 1;
+        }
+        else{
+            queueSimulation = queueSimulation + 1;
+        }
+        Allocation allocation = allocations.getAllAllocation().get(requestID);
+        allocation.setNumberOfRunningSimulationNow(allocation.getNumberOfRunningSimulationNow() + 1);
         Termination termination = allocations.getAllAllocation().get(requestID).getTermination();
         Simulation simulation = worldManagerMap.get(worldName).setSimulationDetailsAndAddToHistory(currentSimulationId, userName, requestID, executeID, termination);
         currentSimulationId++;
         threadManager.executeSimulation(simulation);
+    }
+
+    public synchronized static void setFinishSimulation(){
+        finishSimulation = finishSimulation + 1;
+        runningSimulation = runningSimulation -1;
+        if(queueSimulation != 0){
+            queueSimulation = queueSimulation -1;
+        }
     }
 
     public void setThreadCount(Integer threadCount) {
@@ -230,15 +250,6 @@ public class EngineManager {
     }
 
     public DTOQueueManagementInfo getQueueManagementInfo(){
-        Integer numberOfRunningSimulations = 0;
-        Integer numberOfSimulationsInQueue = 0;
-        Integer numberOfFinishSimulations = 0;
-
-        for (Integer requestId: allocations.getAllAllocation().keySet()){
-            numberOfRunningSimulations += allocations.getAllAllocation().get(requestId).getNumberOfRunningSimulationNow();
-            numberOfFinishSimulations += allocations.getAllAllocation().get(requestId).getNumberFinishSimulation();
-        }
-
-        return new DTOQueueManagementInfo(numberOfRunningSimulations, numberOfSimulationsInQueue, numberOfFinishSimulations);
+        return new DTOQueueManagementInfo(runningSimulation, queueSimulation, finishSimulation);
     }
 }

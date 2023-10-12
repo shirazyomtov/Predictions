@@ -114,15 +114,16 @@ public class ManagementPageController {
         });
     }
 
-    public void managementRefresher() {
-        //לקרוא לפונקציה
+    public void createManagementRefresher() {
         managementRefresher = new ManagementRefresher(this::updateQueueManagement);
         timer = new Timer();
-        timer.schedule(managementRefresher, 1000, 1000);
+        timer.schedule(managementRefresher, 500, 500);
     }
 
     private void updateQueueManagement(DTOQueueManagementInfo dtoQueueManagementInfo){
-
+        simulationsCompletedLabel.setText(dtoQueueManagementInfo.getNumberOfFinishSimulations().toString());
+        simulationsInQueueLabel.setText(dtoQueueManagementInfo.getNumberOfSimulationsInQueue().toString());
+        simulationsInProgressLabel.setText(dtoQueueManagementInfo.getNumberOfRunningSimulations().toString());
     }
 
     public void setControllers(AppController appController) throws IOException {
@@ -244,6 +245,9 @@ public class ManagementPageController {
                         DTOWorldDefinitionInfo dtoWorldDefinitionInfo = gson.fromJson(response.body().string(), DTOWorldDefinitionInfo.class);
                         addSimulationDetails(dtoWorldDefinitionInfo);
                         Platform.runLater(() -> {
+                            if(managementRefresher == null){
+                                createManagementRefresher();
+                            }
                             mainController.setSuccessMessage("The file was loaded Successfully");
                         });
                     }

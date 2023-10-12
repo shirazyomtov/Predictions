@@ -3,6 +3,7 @@ package managementPage;
 import DTO.DTOAllRequestsByUser;
 import DTO.DTOQueueManagementInfo;
 import com.google.gson.Gson;
+import javafx.application.Platform;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
@@ -37,7 +38,9 @@ public class ManagementRefresher extends TimerTask {
                 if(response.isSuccessful()){
                     Gson gson = new Gson();
                     DTOQueueManagementInfo queueManagementInfo = gson.fromJson(response.body().charStream(), DTOQueueManagementInfo.class);
-                    queueManagementInfoConsumer.accept(queueManagementInfo);
+                    Platform.runLater(() ->{
+                        queueManagementInfoConsumer.accept(queueManagementInfo);
+                    });
                 }
             }
         });

@@ -205,7 +205,7 @@ public class WorldManager implements Serializable{
         }
     }
 
-    public synchronized Simulation setSimulationDetailsAndAddToHistory(Integer currentSimulationId, String userName, Integer requestID, Integer executeID, Termination termination) {
+    public  Simulation setSimulationDetailsAndAddToHistory(Integer currentSimulationId, String userName, Integer requestID, Integer executeID, Termination termination) {
         List<EntityInstance> entityInstanceList = initEntities(userName, executeID);
         Map<String, Integer> initAmountOfEntities = createInitAmountOfEntities(userName, executeID);
         Map<String, Integer> currentAmountOfEntities = createInitAmountOfEntities(userName, executeID);

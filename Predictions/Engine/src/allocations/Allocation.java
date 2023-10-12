@@ -54,11 +54,11 @@ public class Allocation {
         return numberFinishSimulation;
     }
 
-    public void setNumberOfRunningSimulationNow() {
-        this.numberOfRunningSimulationNow++;
+    public void setNumberOfRunningSimulationNow(Integer numberFinishSimulation) {
+        this.numberOfRunningSimulationNow = numberFinishSimulation;
     }
 
-    public void setNumberFinishSimulation(Integer numberFinishSimulation) {
-        this.numberFinishSimulation = numberFinishSimulation;
+    public void setNumberFinishSimulation() {
+        this.numberFinishSimulation ++;
     }
 }

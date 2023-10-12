@@ -1,5 +1,6 @@
 package history.simulation;
 
+import engineManager.EngineManager;
 import exceptions.*;
 import javafx.util.Pair;
 import world.entity.instance.EntityInstance;
@@ -114,6 +115,8 @@ public  class Simulation implements Serializable, Runnable {
         }
         worldInstance.addAmountOfEntitiesPerTick(currentTick);
         isFinish = true;
+        EngineManager.setFinishSimulation();
+        EngineManager.setSimulationRunAndFinishDetails(requestID);
     }
 
     private long runSimulation() throws ObjectNotExist, NumberFormatException, ClassCastException, ArithmeticException, OperationNotSupportedType, OperationNotCompatibleTypes, FormatException, EntityNotDefine{

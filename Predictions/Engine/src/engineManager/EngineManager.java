@@ -56,7 +56,7 @@ public class EngineManager {
             WorldManager worldManager = new WorldManager();
             worldManager.loadXMLAAndCheckValidation(xmlReader);
             if(worldManagerMap.containsKey(worldManager.getWorldName())){
-                throw new NameAlreadyExist("world", worldManager.getWorldName());
+                throw new NameAlreadyExist(worldManager.getWorldName(), "world");
             }
             worldManagerMap.put(worldManager.getWorldName(), worldManager);
             return worldManager.getWorldDefinition();
